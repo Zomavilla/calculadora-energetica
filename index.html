@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Calculadora y Gestor de Eficiencia Energética</title>
+<style>
+:root{
+  --hoja:#0f7a4f; --brote:#3ecf8e; --cielo:#e6f4fb; --agua:#1b8fc7; --blanco:#fff;
+  --tinta:#0d2b2a; --tinta-fija:#0d2b2a; --gris:#53706b; --linea:#cfe3dd;
+  --verde:#22c55e; --amarillo:#f5b50a; --rojo:#e5392f;
+  --menta:#ecfdf5; --hoja-hover:#0b6340; --sobre-hoja:#fff;
+  --tecnm:#1b396a; --tecnm-suave:#e8eef8; --tecnm-hover:#142c52; --sobre-tecnm:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{
+  font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  color:var(--tinta); background:var(--cielo); line-height:1.55;
+  -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent;
+}
+input{-webkit-user-select:text; user-select:text}
+.app{
+  width:100%; background:var(--cielo);
+  height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden;
+}
+header.barra{
+  flex:none; background:var(--blanco); border-bottom:1px solid var(--linea);
+  padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.marca{display:flex; align-items:center; gap:10px; font-weight:700; font-size:.95rem; color:var(--hoja); cursor:pointer; border-radius:10px; padding:2px 4px; margin:-2px -4px}
+.marca:active{opacity:.7}
+.marca:focus-visible{outline:3px solid var(--agua); outline-offset:2px}
+.marca svg{width:30px; height:30px; flex:none}
+.marca{min-width:0}
+.marca span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.progreso{display:flex; gap:4px}
+.progreso span{width:16px; height:6px; border-radius:3px; background:var(--linea); transition:background .25s}
+.progreso span.hecho{background:var(--brote)}
+.progreso span.actual{background:var(--agua)}
+.barra-der{display:flex; align-items:center; gap:10px; flex:none}
+.info{
+  width:38px; height:38px; min-width:0; min-height:0; padding:0; border-radius:50%;
+  background:transparent; color:var(--hoja); display:flex; align-items:center; justify-content:center;
+}
+.info:hover{background:var(--cielo)}
+.info svg{width:26px; height:26px}
+
+main{flex:1; width:100%; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 16px 16px}
+.pantalla{display:none; max-width:640px; margin:0 auto; background:var(--blanco); border:1px solid var(--linea); border-radius:20px; padding:24px 20px}
+.pantalla.activa{display:block; animation:slide-in .35s cubic-bezier(.2,.8,.2,1) backwards}
+.pantalla.activa.atras{animation-name:slide-back}
+@keyframes slide-in{from{transform:translateX(100%); opacity:.4}to{transform:translateX(0); opacity:1}}
+@keyframes slide-back{from{transform:translateX(-100%); opacity:.4}to{transform:translateX(0); opacity:1}}
+
+h1,h2{letter-spacing:-.02em; line-height:1.15; color:var(--tinta); outline:none}
+h1{font-size:2rem; font-weight:800}
+h2{font-size:1.5rem; font-weight:800; margin-bottom:8px}
+p.lead{color:var(--gris); margin:12px 0 22px}
+.ods{display:inline-block; background:var(--hoja); color:var(--sobre-hoja); font-weight:700; font-size:.85rem; padding:4px 12px; border-radius:999px; margin-bottom:14px}
+
+/* Inicio */
+.sol{display:block; width:96px; height:96px; margin-bottom:18px}
+.dato{display:flex; gap:12px; align-items:flex-start; border-left:4px solid var(--brote); padding:2px 0 2px 14px; margin:0 0 24px; color:var(--tinta); font-size:.95rem}
+.inicio-info{display:grid; gap:16px; margin-top:28px}
+.bloque{background:var(--cielo); border-radius:18px; padding:20px}
+.bloque h2{font-size:1.15rem; margin-bottom:14px}
+.bloque p{color:var(--gris); font-size:.9rem}
+.iconos,.pasos{list-style:none; display:grid; gap:16px}
+.iconos li,.pasos li{display:flex; gap:12px; align-items:flex-start}
+.iconos li div,.pasos li div{display:grid; gap:2px; min-width:0}
+.ico{flex:none; width:40px; height:40px; border-radius:12px; background:var(--blanco); color:var(--hoja); display:flex; align-items:center; justify-content:center}
+.ico svg{width:22px; height:22px}
+.num{flex:none; width:32px; height:32px; border-radius:50%; background:var(--hoja); color:var(--sobre-hoja); font-weight:800; font-size:.9rem; display:flex; align-items:center; justify-content:center}
+
+/* Formularios */
+label{display:block; font-weight:700; margin:18px 0 6px}
+input,.dd-campo{
+  width:100%; font:inherit; color:var(--tinta); background-color:var(--blanco);
+  border:2px solid var(--linea); border-radius:12px; padding:13px 14px; min-height:48px;
+  transition:border-color .15s;
+}
+input:focus,.dd-campo:focus,.dd.abierto .dd-campo{border-color:var(--agua)}
+input:focus-visible,.dd-campo:focus-visible,button:focus-visible{outline:3px solid var(--agua); outline-offset:2px}
+
+/* Menús desplegables personalizados */
+.dd{position:relative}
+.dd-campo{position:relative; display:flex; align-items:center; padding-right:46px; cursor:pointer}
+.dd-campo.vacio{color:var(--gris)}
+.dd-texto{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.dd-campo::after{
+  content:""; position:absolute; right:14px; top:50%; width:20px; height:20px; margin-top:-10px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f7a4f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat;
+  transition:transform .2s;
+}
+.dd.abierto .dd-campo::after{transform:rotate(180deg)}
+.dd-lista{
+  position:absolute; left:0; right:0; top:calc(100% + 6px); z-index:20; list-style:none;
+  background:var(--blanco); border:2px solid var(--linea); border-radius:12px; padding:6px;
+  max-height:260px; overflow-y:auto; box-shadow:0 12px 32px rgba(13,43,42,.16);
+  opacity:0; visibility:hidden; pointer-events:none; transform:translateY(-8px) scale(.98); transform-origin:top;
+  transition:opacity .18s, transform .18s, visibility 0s .18s;
+}
+.dd.abierto .dd-lista{opacity:1; visibility:visible; pointer-events:auto; transform:none; transition:opacity .18s, transform .18s}
+.dd-lista li{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:11px 12px; border-radius:8px; cursor:pointer; font-size:.97rem}
+.dd-lista li.activo{background:var(--cielo)}
+.dd-lista li[aria-selected="true"]{background:#e1f7ea; color:var(--hoja); font-weight:700}
+.dd-nota{flex:none; color:var(--gris); font-size:.8rem; font-weight:600}
+/* Selector tipo píldora (Al día / A la semana) */
+.pildora{display:flex; gap:4px; padding:4px; margin-bottom:10px; background:var(--cielo); border:2px solid var(--linea); border-radius:999px}
+.pildora .opt{
+  flex:1; min-width:0; min-height:40px; padding:8px 12px; border-radius:999px;
+  background:transparent; color:var(--gris); transition:background .2s, color .2s;
+}
+.pildora .opt:hover{background:transparent; color:var(--hoja)}
+.pildora .opt:active{transform:none}
+.pildora .opt.activa, .pildora .opt.activa:hover{background:var(--hoja); color:var(--sobre-hoja)}
+.hueco{display:none}
+.tiempo{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.tcampo{position:relative}
+.tcampo input{padding-right:54px}
+.unid{position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--gris); font-weight:700; font-size:.9rem; pointer-events:none}
+.tiempo-total{margin-top:6px; color:var(--hoja); font-weight:700; font-size:.9rem}
+.tiempo-total:empty{display:none}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+.ayuda{font-size:.85rem; color:var(--gris); margin-top:4px}
+.error{color:#b42318; font-weight:600; font-size:.9rem; margin-top:6px}
+.error[hidden]{display:none}
+.invalido{border-color:#b42318}
+.contexto{display:inline-block; margin-top:2px; padding:5px 14px; border-radius:999px; background:var(--cielo); color:var(--hoja); font-weight:700; font-size:.95rem}
+
+/* Botones */
+.acciones{margin-top:26px; display:flex; flex-direction:column; gap:10px}
+button{
+  font:inherit; font-weight:700; cursor:pointer; border:0; border-radius:12px;
+  padding:14px 22px; min-height:50px; background:var(--hoja); color:var(--sobre-hoja); transition:background .15s, transform .1s;
+}
+button:hover{background:var(--hoja-hover)}
+button:active{transform:scale(.98)}
+button.sec{background:transparent; color:var(--hoja); border:2px solid var(--hoja)}
+button.sec:hover{background:var(--menta,#ecfdf5)}
+
+/* Dashboard */
+.resultado{display:flex; align-items:center; gap:22px; margin:18px 0 8px}
+.semaforo{
+  flex:none; width:76px; background:var(--tinta-fija); border-radius:38px; padding:12px 0;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+}
+.luz{width:48px; height:48px; border-radius:50%; background:#1e413f; transition:background .3s, box-shadow .3s}
+.semaforo[data-nivel="rojo"] .luz.rojo{background:var(--rojo); box-shadow:0 0 22px var(--rojo)}
+.semaforo[data-nivel="amarillo"] .luz.amarillo{background:var(--amarillo); box-shadow:0 0 22px var(--amarillo)}
+.semaforo[data-nivel="verde"] .luz.verde{background:var(--verde); box-shadow:0 0 22px var(--verde)}
+.numero{font-size:3.4rem; font-weight:800; line-height:1; letter-spacing:-.03em; color:var(--tinta)}
+.unidad{font-size:1.2rem; font-weight:700; color:var(--agua); margin-left:4px}
+.sub{color:var(--gris); font-size:.9rem; margin-top:6px}
+.estado{margin-top:20px; padding:14px 16px; border-radius:14px; font-weight:600}
+.estado strong{display:block; font-size:1.1rem; margin-bottom:2px}
+.estado.verde{background:#e8f9ee; color:#0c5a2c}
+.estado.amarillo{background:#fff6dc; color:#6b4a00}
+.estado.rojo{background:#fdeceb; color:#8a1d16}
+.resumen{margin-top:16px; color:var(--gris); font-size:.9rem}
+
+/* Guía */
+.consejos{list-style:none; margin-top:14px}
+.consejos li{position:relative; padding:12px 0 12px 38px; border-bottom:1px solid var(--linea); font-size:.97rem}
+.consejos li:last-child{border-bottom:0}
+.consejos li::before{
+  content:"✓"; position:absolute; left:0; top:12px; width:26px; height:26px; border-radius:50%;
+  background:var(--brote); color:var(--tinta-fija); font-weight:800; display:flex; align-items:center; justify-content:center; font-size:.85rem;
+}
+.consejos b{color:var(--hoja)}
+.consejos li.urgente{background:#fdeceb; border-radius:14px; border-bottom:0; padding-left:48px; padding-right:12px; margin:6px 0}
+.consejos li.urgente::before{content:"!"; left:12px; background:var(--rojo); color:#fff}
+.ctit{display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px}
+.cdesc{display:block; color:var(--gris); font-size:.92rem; margin-top:2px}
+.badge{font-size:.72rem; font-weight:700; padding:2px 10px; border-radius:999px; white-space:nowrap}
+.badge.tip{background:#dff1fb; color:#0b5f8a}
+.badge.mant{background:#e1f7ea; color:#0c5a2c}
+.badge.inv{background:#fff1cc; color:#6b4a00}
+.badge.urg{background:var(--rojo); color:#fff}
+
+footer{flex:none; text-align:center; font-size:.75rem; color:var(--gris); padding:20px 16px 6px}
+
+/* Consumos y costo */
+.consumos{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:16px}
+.tile{background:var(--cielo); border-radius:14px; padding:12px 14px; min-width:0}
+.tile span{display:block; color:var(--gris); font-size:.8rem; font-weight:700}
+.tile b{display:block; font-size:1.2rem; line-height:1.35; font-variant-numeric:tabular-nums}
+.tile small{color:var(--gris); font-weight:600; font-size:.8rem}
+.tile.destacada{background:var(--hoja)}
+.tile.destacada span,.tile.destacada small{color:var(--sobre-hoja); opacity:.85}
+.tile.destacada b{color:var(--sobre-hoja)}
+.campo-ancho{grid-column:1 / -1}
+.pildora[hidden]{display:none}
+.comparativo{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
+.comparativo[hidden]{display:none}
+.pulso{animation:pulso .4s ease-out}
+@keyframes pulso{from{transform:scale(.94); opacity:.4}to{transform:none; opacity:1}}
+.costo-principal{margin:20px 0 4px}
+.costo-num{display:block; font-size:3rem; font-weight:800; letter-spacing:-.03em; line-height:1.1; color:var(--hoja); font-variant-numeric:tabular-nums}
+.subtitulo{font-size:1rem; font-weight:800; margin:24px 0 10px}
+.barra-reparto{display:flex; height:14px; border-radius:7px; overflow:hidden; background:var(--linea)}
+.barra-reparto i{display:block; height:100%; transition:width .3s}
+.barra-reparto .b1{background:var(--verde)}
+.barra-reparto .b2{background:var(--amarillo)}
+.barra-reparto .b3{background:var(--rojo)}
+.leyenda{list-style:none; display:grid; gap:8px; margin-top:12px; font-size:.92rem}
+.leyenda li{display:flex; align-items:flex-start; gap:10px}
+.leyenda small{display:block; color:var(--gris); font-size:.8rem; font-weight:600}
+.leyenda li::before{content:""; flex:none; width:10px; height:10px; margin-top:6px; border-radius:50%; background:var(--c)}
+.leyenda li span{margin-left:auto; font-weight:700; white-space:nowrap}
+.leyenda .l1{--c:var(--verde)}
+.leyenda .l2{--c:var(--amarillo)}
+.leyenda .l3{--c:var(--rojo)}
+.datos{list-style:none; display:grid; gap:12px; margin-top:20px}
+.datos li{border-left:4px solid var(--brote); padding:2px 0 2px 12px; font-size:.93rem}
+.datos li b{color:var(--hoja)}
+.datos li.aviso{border-color:var(--amarillo)}
+.datos li.alerta{border-color:var(--rojo)}
+.dato-kwh{margin:22px 0 0}
+.nota-legal{margin-top:18px; color:var(--gris); font-size:.8rem}
+
+/* Paneles desplegables: ahorro eficiente, aporte al ODS 7, metas y fuentes */
+.paneles-ods{display:grid; gap:12px; margin-top:22px}
+.panel{border:1px solid var(--linea); border-radius:16px; background:var(--blanco); overflow:hidden; text-align:left}
+.panel summary{list-style:none; cursor:pointer; padding:12px 16px; display:flex; align-items:center; gap:12px; font-weight:800; line-height:1.3}
+.panel summary::-webkit-details-marker{display:none}
+.panel summary::after{content:""; flex:none; margin:-4px 2px 0 auto; width:9px; height:9px; border-right:2.5px solid var(--hoja); border-bottom:2.5px solid var(--hoja); transform:rotate(45deg); transition:transform .2s}
+.panel[open] > summary{background:var(--cielo)}
+.panel[open] > summary::after{transform:rotate(225deg); margin-top:4px}
+.panel summary:focus-visible{outline:3px solid var(--agua); outline-offset:-3px}
+.panel summary .ico{background:var(--cielo)}
+.panel[open] > summary .ico{background:var(--blanco)}
+.panel-cuerpo{padding:8px 16px 18px; animation:aparecer .25s ease-out}
+.panel-cuerpo label{margin-top:16px}
+@keyframes aparecer{from{opacity:0; transform:translateY(-6px)}to{opacity:1; transform:none}}
+.comparar{display:grid; gap:10px; margin:14px 0 4px}
+.fila{display:grid; grid-template-columns:92px 1fr 74px; align-items:center; gap:10px; font-size:.88rem}
+.fila > span{color:var(--gris); font-weight:700}
+.fila b{text-align:right; font-variant-numeric:tabular-nums}
+.pista{height:12px; border-radius:6px; background:var(--linea); overflow:hidden}
+.pista i{display:block; height:100%; border-radius:6px; transition:width .3s}
+.ef-barra-act{background:var(--rojo)}
+.ef-barra-ef{background:var(--verde)}
+.consumos.tres .tile:first-child{grid-column:1 / -1}
+.consumos.tres .tile b{font-size:1.1rem}
+.ef-recupera{margin-top:10px; font-weight:700; color:var(--hoja)}
+.ef-recupera:empty{display:none}
+.metas{list-style:none; display:grid; gap:14px; margin:12px 0 4px}
+.metas li{display:flex; gap:12px; align-items:flex-start}
+.metas li > div{min-width:0}
+.metas p{color:var(--gris); font-size:.9rem; margin-top:2px}
+.meta-n{flex:none; min-width:46px; text-align:center; background:var(--hoja); color:var(--sobre-hoja); font-weight:800; font-size:.8rem; border-radius:999px; padding:4px 8px}
+.panel .consumos.cuatro .tile b{font-size:1.05rem}
+.fuentes{list-style:disc; display:grid; gap:8px; margin:10px 0 0 18px; font-size:.86rem; color:var(--gris)}
+.fuentes b{color:var(--tinta)}
+.modal-card{max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px); overflow-y:auto}
+.modal .panel{margin:0 0 18px}
+.modal .panel summary::after{border-color:var(--tecnm)}
+.modal .panel[open] > summary{background:var(--tecnm-suave)}
+.modal .panel summary .ico{background:var(--tecnm-suave); color:var(--tecnm)}
+.modal .panel[open] > summary .ico{background:var(--blanco)}
+
+/* Modal "Acerca de" */
+.modal{margin:auto; padding:0; border:0; background:transparent; color:var(--tinta); width:calc(100% - 32px); max-width:440px}
+.modal::backdrop{background:rgba(0,0,0,.5)}
+.modal[open]::backdrop{animation:fundido-in .25s ease-out}
+.modal.cerrando::backdrop{animation:fundido-out .2s ease-in forwards}
+.modal-card{background:var(--blanco); border-radius:24px; padding:28px 24px 24px; box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.modal[open] .modal-card{animation:subir-in .28s cubic-bezier(.2,.8,.2,1)}
+.modal.cerrando .modal-card{animation:fundido-out .2s ease-in forwards}
+.modal-card{text-align:center; border-top:6px solid var(--tecnm)}
+.modal-icono{display:flex; align-items:center; justify-content:center; width:68px; height:68px; margin:0 auto 14px; border-radius:50%; background:var(--tecnm-suave); color:var(--tecnm)}
+.modal-icono svg{width:32px; height:32px}
+.modal h2{font-size:1.5rem; color:var(--tecnm)}
+.modal p{color:var(--gris); margin:6px 0 18px}
+.creditos{display:grid; gap:14px; padding:16px; margin:20px 0 22px; background:var(--tecnm-suave); border-radius:16px; text-align:left}
+.creditos .ico{background:var(--blanco); color:var(--tecnm); border-radius:50%}
+.credito{display:flex; gap:12px; align-items:flex-start}
+.credito > div{min-width:0}
+.credito dt{font-size:.8rem; font-weight:700; color:var(--tecnm)}
+.credito dd{font-weight:700}
+.modal .modal-pie{margin:14px 0 0; font-size:.8rem}
+.modal button{width:100%; background:var(--tecnm); color:var(--sobre-tecnm)}
+.modal button:hover{background:var(--tecnm-hover)}
+@keyframes fundido-in{from{opacity:0}to{opacity:1}}
+@keyframes fundido-out{from{opacity:1}to{opacity:0}}
+@keyframes subir-in{from{opacity:0; transform:translateY(10px) scale(.98)}to{opacity:1; transform:none}}
+
+/* Modo PC: pantalla completa */
+@media (min-width:768px){
+  html{font-size:17px}
+  header.barra{padding:16px 5vw}
+  .marca{font-size:1.1rem; gap:12px}
+  .marca svg{width:36px; height:36px}
+  .progreso{gap:8px}
+  .progreso span{width:40px}
+  main{display:flex; flex-direction:column; padding:5vh 5vw}
+  .pantalla{flex:none; width:100%; max-width:960px; margin:0 auto; padding:48px 56px; border-radius:24px}
+  #pantalla1,#pantalla2{max-width:1060px; padding:56px 64px}
+  #pantalla1 .acciones{flex-direction:row; justify-content:flex-start}
+  #pantalla1.activa{display:grid; grid-template-columns:1fr 260px; column-gap:56px; align-items:start}
+  #pantalla1 > *{grid-column:1}
+  #pantalla1 .sol{grid-column:2; grid-row:1 / span 5; align-self:center; justify-self:center; width:240px; height:240px; margin:0}
+  #pantalla1 .ods{justify-self:start}
+  #pantalla1 .inicio-info{grid-column:1 / -1}
+  #pantalla1 .paneles-ods{grid-column:1 / -1; margin-top:24px}
+  .consumos.tres{grid-template-columns:repeat(3,1fr)}
+  .consumos.tres .tile:first-child{grid-column:auto}
+  .consumos.tres .tile b{font-size:1.3rem}
+  .inicio-info{grid-template-columns:1fr 1fr; gap:24px; margin-top:36px}
+  h1{font-size:3rem}
+  h2{font-size:2.2rem}
+  p.lead{font-size:1.08rem; max-width:60ch}
+  .campos{display:grid; grid-template-columns:1fr 1fr; gap:0 32px; align-items:start}
+  .acciones{flex-direction:row-reverse; justify-content:flex-start}
+  button{min-width:200px}
+  .dash{display:grid; grid-template-columns:auto 1fr; gap:48px; align-items:center}
+  .dash .estado{margin-top:0}
+  .numero{font-size:5rem}
+  .semaforo{width:96px; border-radius:48px}
+  .luz{width:64px; height:64px}
+  .consejos{display:grid; grid-template-columns:1fr 1fr; gap:10px 28px}
+  .consejos li{border-bottom:0; background:var(--cielo); border-radius:14px; padding:14px 14px 14px 52px}
+  .consejos li::before{left:14px; top:14px}
+  .consejos li.urgente{grid-column:1 / -1; margin:0; padding-left:52px}
+  .consejos li.urgente::before{left:14px}
+  .hueco{display:block; height:62px}
+  .consumos.cuatro{grid-template-columns:repeat(4,1fr)}
+  .consumos.seis{grid-template-columns:repeat(3,1fr)}
+  .costo-num{font-size:3.8rem}
+  footer{font-size:.8rem; margin-top:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  *,::backdrop{animation:none !important; transition:none !important}
+}
+
+/* Pantalla ancha y apaisada: el registro de equipos en dos columnas (formulario a la izquierda, guía a la derecha) */
+@media (min-width:768px) and (orientation:landscape){
+  #pantalla2.activa{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-rows:auto auto auto auto 1fr; column-gap:56px; align-items:start}
+  #pantalla2 > *{grid-column:1}
+  #pantalla2 .campos{grid-template-columns:1fr}
+  #pantalla2 .acciones{flex-direction:row; justify-content:flex-start}
+  #pantalla2 .inicio-info{grid-column:2; grid-row:1 / span 5; grid-template-columns:1fr; gap:20px; margin-top:0}
+  #pantalla2 .dato-kwh{grid-column:1; grid-row:5; align-self:end; margin:0}
+}
+/* Pantalla ancha pero vertical (por ejemplo, un teléfono en "modo escritorio"): todo se escala para que no se vea diminuto */
+@media (min-width:768px) and (orientation:portrait){
+  html{font-size:clamp(17px, 2vw, 24px)}
+  main{padding-top:3vh}
+}
+
+/* Modo oscuro automático */
+@media (prefers-color-scheme:dark){
+  :root{
+    color-scheme:dark;
+    --blanco:#0d1f1f; --cielo:#08171a; --tinta:#f0f9ff; --gris:#9fb9b5; --linea:#24413e;
+    --hoja:#34c98a; --hoja-hover:#5ee0a8; --sobre-hoja:#06241a; --menta:#12331f; --agua:#5bb8e8;
+    --tecnm:#8fb2ea; --tecnm-suave:#14253f; --tecnm-hover:#b6cff5; --sobre-tecnm:#0b1a33;
+  }
+  .semaforo{border:1px solid var(--linea)}
+  .error{color:#ff9d94}
+  .invalido{border-color:#ff8f85}
+  .estado.verde{background:#10301f; color:#8be8b3}
+  .estado.amarillo{background:#33290a; color:#f3d37a}
+  .estado.rojo{background:#3a1613; color:#ff9d94}
+  .badge.tip{background:#12303f; color:#8cd0f5}
+  .badge.mant{background:#12331f; color:#8be8b3}
+  .badge.inv{background:#3a2f0c; color:#f3d37a}
+  .consejos li.urgente{background:#3a1613}
+  .dd-lista li.activo{background:#16302d}
+  .dd-lista li[aria-selected="true"]{background:#12331f; color:#8be8b3}
+  .dd-campo::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2334c98a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="barra">
+  <div class="marca" role="button" tabindex="0" aria-label="Volver al inicio" onclick="reiniciar()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();reiniciar();}">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <circle cx="16" cy="16" r="15" fill="#3ecf8e"/>
+      <path d="M18 5 9 18h6l-1 9 9-13h-6z" fill="#0d2b2a"/>
+    </svg>
+    <span>Eficiencia Energética</span>
+  </div>
+  <div class="barra-der">
+    <div class="progreso" id="progreso" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <button type="button" class="info" aria-label="Acerca de este proyecto" onclick="abrirModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/><path d="M12 11v5"/><path d="M12 7.5h.01" stroke-width="2.6"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <!-- Pantalla 1: Inicio -->
+  <section id="pantalla1" class="pantalla activa" aria-labelledby="t1">
+    <svg class="sol" viewBox="0 0 96 96" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" style="fill:var(--cielo)" stroke="#1b8fc7" stroke-width="3"/>
+      <circle cx="48" cy="48" r="26" fill="#3ecf8e"/>
+      <path d="M52 28 38 50h9l-2 18 15-23h-9z" fill="#0d2b2a"/>
+    </svg>
+    <span class="ods">ODS 7 · Energía asequible y no contaminante</span>
+    <h1 id="t1">Calculadora y Gestor de Eficiencia Energética</h1>
+    <p class="lead">El Objetivo de Desarrollo Sostenible 7 busca que todas las personas tengan acceso a energía asequible, segura y limpia. Usar la energía con inteligencia reduce tu recibo de luz y también las emisiones que calientan el planeta.</p>
+    <p class="dato">Mide cuánto consume un equipo de tu casa y descubre cómo gastar menos.</p>
+
+    <div class="acciones">
+      <button type="button" onclick="comenzar()">Comenzar</button>
+    </div>
+
+    <div class="inicio-info">
+      <div class="bloque">
+        <h2>Por qué usamos esta app</h2>
+        <ul class="iconos">
+          <li>
+            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span>
+            <div><b>Impacto ambiental</b><p>Generar electricidad todavía produce emisiones. Cada kWh que no gastas reduce tu huella de carbono.</p></div>
+          </li>
+          <li>
+            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.3C14 8.5 13.1 8 12 8c-1.4 0-2.5.7-2.5 1.8 0 2.6 5 1.3 5 3.9 0 1.1-1.1 1.9-2.5 1.9-1.2 0-2.2-.5-2.7-1.4M12 6.5V8m0 8v1.5"/></svg></span>
+            <div><b>Impacto económico</b><p>Saber qué equipos consumen más te ayuda a bajar tu recibo de luz sin renunciar a lo que usas.</p></div>
+          </li>
+        </ul>
+      </div>
+      <div class="bloque">
+        <h2>Cómo funciona</h2>
+        <ol class="pasos">
+          <li><span class="num">1</span><div><b>Elige tu equipo</b><p>Selecciona la categoría y el aparato que quieres medir.</p></div></li>
+          <li><span class="num">2</span><div><b>Ingresa su uso</b><p>Escribe los Watts y las horas de uso.</p></div></li>
+          <li><span class="num">3</span><div><b>Descubre tu impacto</b><p>Mira tu consumo en kWh, el semáforo y recomendaciones para ahorrar.</p></div></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="paneles-ods">
+      <details class="panel">
+        <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span>Las metas del ODS 7 y cómo te ayuda esta app</span></summary>
+        <div class="panel-cuerpo">
+          <ul class="metas">
+            <li><span class="meta-n">7.1</span><div><b>Energía asequible, fiable y moderna para todos</b><p>La app calcula cuánto te cuesta cada aparato en pesos, con las tarifas de CFE.</p></div></li>
+            <li><span class="meta-n">7.2</span><div><b>Más energía renovable</b><p>Te dice cuántos paneles solares cubrirían el consumo de tu aparato.</p></div></li>
+            <li><span class="meta-n">7.3</span><div><b>Duplicar la mejora en eficiencia energética</b><p>Muestra cuánto ahorrarías con un aparato más eficiente y te da recomendaciones de consumo.</p></div></li>
+            <li><span class="meta-n">7.a</span><div><b>Cooperación internacional y tecnología limpia</b><p>Busca facilitar el acceso a investigación y tecnología de energía limpia, renovables y eficiencia, e impulsar la inversión en infraestructura. Compartir información clara ayuda a que más personas la entiendan.</p></div></li>
+            <li><span class="meta-n">7.b</span><div><b>Infraestructura para energía sostenible</b><p>Busca ampliar y modernizar la infraestructura que lleva energía moderna y sostenible a los países en desarrollo.</p></div></li>
+          </ul>
+          <h3 class="subtitulo">Cómo va el mundo</h3>
+          <div class="consumos cuatro">
+            <div class="tile"><span>Con electricidad (2023)</span><b>92 %</b><small>de la población mundial</small></div>
+            <div class="tile"><span>Sin electricidad (2023)</span><b>666 millones</b><small>de personas</small></div>
+            <div class="tile"><span>Sin cocina limpia (2023)</span><b>2,100 millones</b><small>de personas</small></div>
+            <div class="tile"><span>Energía renovable (2022)</span><b>17.9 %</b><small>del consumo final de energía</small></div>
+          </div>
+          <p class="nota-legal">Fuente: Tracking SDG 7: The Energy Progress Report 2025 (IEA, IRENA, UNSD, Banco Mundial y OMS). En la COP28 (2023) los países acordaron triplicar la capacidad renovable y duplicar el ritmo de mejora de la eficiencia energética para 2030.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- Pantalla 2: Registro de equipos -->
+  <section id="pantalla2" class="pantalla" aria-labelledby="t2">
+    <h2 id="t2" tabindex="-1">Registro de equipos</h2>
+    <p class="lead">Elige el tipo de equipo que quieres medir.</p>
+    <div class="campos">
+      <div class="campo">
+        <label id="lbl-categoria">1 · Categoría del dispositivo</label>
+        <div class="dd">
+          <div class="dd-campo vacio" id="categoria" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-categoria"><span class="dd-texto">Selecciona una categoría</span></div>
+          <ul class="dd-lista" role="listbox" aria-labelledby="lbl-categoria"></ul>
+        </div>
+        <p class="error" id="error-categoria" role="alert" hidden>Selecciona una categoría para continuar.</p>
+      </div>
+      <div class="campo" id="grupo-aparato" hidden>
+        <label id="lbl-aparato">2 · Aparato</label>
+        <div class="dd">
+          <div class="dd-campo vacio" id="aparato" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-aparato"><span class="dd-texto">Selecciona un aparato</span></div>
+          <ul class="dd-lista" role="listbox" aria-labelledby="lbl-aparato"></ul>
+        </div>
+        <p class="error" id="error-aparato" role="alert" hidden>Selecciona un aparato para continuar.</p>
+      </div>
+    </div>
+    <div class="acciones">
+      <button type="button" onclick="siguiente()">Siguiente</button>
+    </div>
+    <div class="inicio-info">
+      <div class="bloque">
+        <h2>Cómo elegir tu equipo</h2>
+        <ol class="pasos">
+          <li><span class="num">1</span><div><b>Elige la categoría</b><p>Electrodomésticos, electrónica, iluminación, climatización y más.</p></div></li>
+          <li><span class="num">2</span><div><b>Elige el aparato</b><p>Verás sus Watts promedio para empezar más rápido.</p></div></li>
+          <li><span class="num">3</span><div><b>¿No aparece? Elige «Otros»</b><p>Escribe sus datos y calcula igual, sin buscarlo en la lista.</p></div></li>
+        </ol>
+      </div>
+      <div class="bloque">
+        <h2>Datos que te servirán</h2>
+        <ul class="iconos">
+          <li>
+            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></span>
+            <div><b>La etiqueta del aparato</b><p>Casi todos traen su consumo en Watts (W) en una etiqueta o en el manual.</p></div>
+          </li>
+          <li>
+            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
+            <div><b>Volts por Amperes</b><p>Si solo ves V y A, multiplícalos: W = V × A.</p></div>
+          </li>
+          <li>
+            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <div><b>Cuánto lo usas</b><p>Piensa en horas y minutos al día o a la semana.</p></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <p class="dato dato-kwh">Dato: 1 kWh equivale a usar un aparato de 1000 W durante 1 hora. Es la unidad que cobra CFE en tu recibo.</p>
+  </section>
+
+  <!-- Pantalla 3: Calculadora -->
+  <section id="pantalla3" class="pantalla" aria-labelledby="t3">
+    <h2 id="t3" tabindex="-1">Calculadora</h2>
+    <p class="contexto" id="contexto-aparato" aria-live="polite"></p>
+    <p class="lead">Escribe los datos del equipo. Los encuentras en su etiqueta o manual.</p>
+    <div class="campos">
+      <div class="campo" id="campo-nombre" hidden>
+        <label for="nombre-otro">Nombre del aparato (opcional)</label>
+        <input type="text" id="nombre-otro" maxlength="40" autocomplete="off" placeholder="Ej. Extractor de aire" oninput="actualizarNombre()">
+      </div>
+      <div class="campo" id="campo-tipo" hidden>
+        <label id="lbl-tipo">¿Qué tipo de aparato es?</label>
+        <div class="dd">
+          <div class="dd-campo vacio" id="tipo-otro" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-tipo"><span class="dd-texto">No estoy seguro</span></div>
+          <ul class="dd-lista" role="listbox" aria-labelledby="lbl-tipo"></ul>
+        </div>
+        <p class="ayuda">Así te damos recomendaciones más precisas.</p>
+      </div>
+      <div class="campo">
+        <label for="watts">Consumo promedio en Watts</label>
+        <div class="hueco" aria-hidden="true"></div>
+        <input type="number" id="watts" inputmode="decimal" min="0" step="any" placeholder="Ej. 60" oninput="limpiarError('watts','error-watts')">
+        <p class="ayuda" id="ayuda-watts"></p>
+        <p class="error" id="error-watts" role="alert" hidden>Escribe un consumo mayor a 0 Watts.</p>
+      </div>
+      <div class="campo">
+        <label for="horas">Tiempo de uso</label>
+        <div class="pildora" role="group" aria-label="Frecuencia de uso">
+          <button type="button" class="opt activa" id="modo-dia" aria-pressed="true" onclick="cambiarModo('dia')">Al día</button>
+          <button type="button" class="opt" id="modo-semana" aria-pressed="false" onclick="cambiarModo('semana')">A la semana</button>
+        </div>
+        <div class="tiempo">
+          <div class="tcampo">
+            <input type="number" id="horas" inputmode="numeric" min="0" max="24" step="1" placeholder="Ej. 5" aria-label="Horas" oninput="alEscribirTiempo()">
+            <span class="unid">h</span>
+          </div>
+          <div class="tcampo">
+            <input type="number" id="minutos" inputmode="numeric" min="0" max="59" step="1" placeholder="Ej. 30" aria-label="Minutos" oninput="alEscribirTiempo()">
+            <span class="unid">min</span>
+          </div>
+        </div>
+        <p class="ayuda" id="ayuda-horas"></p>
+        <p class="tiempo-total" id="tiempo-total" aria-live="polite"></p>
+        <p class="error" id="error-horas" role="alert" hidden></p>
+      </div>
+    </div>
+    <div class="acciones">
+      <button type="button" onclick="calcular()">Calcular</button>
+      <button type="button" class="sec" onclick="volverSeleccion()">Volver a selección</button>
+    </div>
+  </section>
+
+  <!-- Pantalla 4: Dashboard -->
+  <section id="pantalla4" class="pantalla" aria-labelledby="t4">
+    <h2 id="t4" tabindex="-1">Tus resultados</h2>
+    <div class="dash">
+    <div class="resultado">
+      <div class="semaforo" id="semaforo" data-nivel="" role="img" aria-label="Semáforo de consumo">
+        <div class="luz rojo"></div>
+        <div class="luz amarillo"></div>
+        <div class="luz verde"></div>
+      </div>
+      <div>
+        <div class="numero"><span id="kwh">0</span><span class="unidad">kWh</span></div>
+        <p class="sub">de consumo al día</p>
+      </div>
+    </div>
+    <div class="dash-info">
+    <div class="estado" id="estado" aria-live="polite">
+      <strong id="estado-titulo"></strong>
+      <span id="estado-texto"></span>
+    </div>
+    <p class="resumen" id="resumen"></p>
+    </div>
+    </div>
+    <div class="consumos cuatro" aria-label="Consumo estimado por periodo">
+      <div class="tile"><span>Al día</span><b id="c-dia">0</b><small>kWh</small></div>
+      <div class="tile"><span>A la semana</span><b id="c-sem">0</b><small>kWh</small></div>
+      <div class="tile"><span>Al mes (30 días)</span><b id="c-mes">0</b><small>kWh</small></div>
+      <div class="tile destacada"><span>A 2 meses (bimestre)</span><b id="c-bim">0</b><small>kWh</small></div>
+    </div>
+    <div class="acciones">
+      <button type="button" onclick="verGuia()">Ver Recomendaciones de Consumo</button>
+      <button type="button" class="sec" onclick="verCosto()">Ver cuánto cuesta en tu recibo</button>
+      <button type="button" class="sec" onclick="volverCalculadora()">Volver a la calculadora</button>
+    </div>
+  </section>
+
+  <!-- Pantalla 5: Recomendaciones de consumo -->
+  <section id="pantalla5" class="pantalla" aria-labelledby="t5">
+    <h2 id="t5" tabindex="-1">Recomendaciones de Consumo</h2>
+    <p class="lead" id="lead-guia"></p>
+    <ul class="consejos" id="lista-consejos"></ul>
+    <div class="paneles-ods"></div>
+    <div class="acciones">
+      <button type="button" onclick="reiniciar()">Volver al Inicio</button>
+      <button type="button" class="sec" onclick="volverResultados()">Volver a tus resultados</button>
+    </div>
+  </section>
+
+  <!-- Pantalla 6: Costo en tu recibo -->
+  <section id="pantalla6" class="pantalla" aria-labelledby="t6">
+    <h2 id="t6" tabindex="-1">Costo en tu recibo</h2>
+    <p class="contexto" id="contexto-costo"></p>
+    <p class="lead">Estimación con las tarifas domésticas de CFE de octubre de 2026 (energía más IVA).</p>
+    <div class="campos">
+      <div class="campo">
+        <label id="lbl-region">Tarifa CFE de tu región</label>
+        <div class="dd">
+          <div class="dd-campo vacio" id="region" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-region"><span class="dd-texto">Selecciona tu tarifa</span></div>
+          <ul class="dd-lista" role="listbox" aria-labelledby="lbl-region"></ul>
+        </div>
+        <p class="ayuda" id="ayuda-region"></p>
+      </div>
+      <div class="campo">
+        <label>Temporada</label>
+        <div class="pildora" id="pildora-temporada" role="group" aria-label="Temporada">
+          <button type="button" class="opt activa" id="temp-verano" aria-pressed="true" onclick="cambiarTemporada('verano')">Verano</button>
+          <button type="button" class="opt" id="temp-fuera" aria-pressed="false" onclick="cambiarTemporada('fuera')">Fuera de verano</button>
+        </div>
+        <p class="ayuda" id="ayuda-temporada"></p>
+      </div>
+    </div>
+
+    <div class="costo-principal" aria-live="polite">
+      <span class="costo-num" id="costo-bim">$0.00</span>
+      <p class="sub">a los 2 meses (un bimestre), con IVA</p>
+    </div>
+    <div class="comparativo" id="comparativo">
+      <div class="tile" id="cmp-verano"><span>En verano</span><b id="cmp-v">$0</b><small>al bimestre</small></div>
+      <div class="tile" id="cmp-fuera"><span>Fuera de verano</span><b id="cmp-f">$0</b><small>al bimestre</small></div>
+    </div>
+    <p class="ayuda" id="cmp-nota"></p>
+    <div class="consumos seis">
+      <div class="tile"><span>Por hora de uso</span><b id="p-hora">$0</b></div>
+      <div class="tile"><span>Al día</span><b id="p-dia">$0</b></div>
+      <div class="tile"><span>A la semana</span><b id="p-sem">$0</b></div>
+      <div class="tile"><span>Al mes</span><b id="p-mes">$0</b></div>
+      <div class="tile"><span>Al año</span><b id="p-anio">$0</b></div>
+      <div class="tile"><span>Precio medio del kWh</span><b id="p-kwh">$0</b></div>
+    </div>
+
+    <h3 class="subtitulo">Cómo sube el precio según los kWh del aparato (al mes)</h3>
+    <p class="ayuda">El precio sube por escalones: entre más kWh gasta el aparato, más caro sale cada uno.</p>
+    <div class="barra-reparto" id="barra-reparto" role="img" aria-label="Reparto del consumo por bloque de la tarifa"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+    <ul class="leyenda" id="leyenda"></ul>
+    <ul class="datos" id="datos-extra"></ul>
+    <div class="paneles-ods"></div>
+    <p class="nota-legal">Precios de referencia de CFE para octubre de 2026 (básico $1.140, intermedio $1.385 y excedente $4.054 por kWh, más IVA de 16 %). No incluye el DAP ni otros cargos. Los límites de cada bloque y las fechas de verano dependen de tu tarifa y localidad, y los precios cambian cada mes: confirma en tu recibo o en cfe.mx.</p>
+    <div class="acciones">
+      <button type="button" onclick="verGuia()">Ver Recomendaciones de Consumo</button>
+      <button type="button" class="sec" onclick="volverResultados()">Volver a tus resultados</button>
+    </div>
+  </section>
+
+  <footer>Proyecto educativo · ODS 7 de la Agenda 2030</footer>
+</main>
+</div>
+
+<dialog class="modal" id="modal-acerca" aria-labelledby="t-acerca">
+  <div class="modal-card">
+    <span class="modal-icono" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+    </span>
+    <h2 id="t-acerca">Acerca de este proyecto</h2>
+    <p>Calculadora y Gestor de Eficiencia Energética creada para promover el ODS 7 (Energía Asequible y No Contaminante).</p>
+    <dl class="creditos">
+      <div class="credito">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        <div><dt>Desarrolladores</dt><dd>Rafael Lopez Zomavilla</dd><dd>Alonso de Jesús Orduña Mora</dd></div>
+      </div>
+      <div class="credito">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 10-10-5L2 10l10 5 10-5Z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+        <div><dt>Institución</dt><dd>Instituto Tecnológico de Veracruz</dd></div>
+      </div>
+    </dl>
+    <details class="panel">
+      <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span><span>Fuentes y supuestos</span></summary>
+      <div class="panel-cuerpo">
+        <ul class="fuentes">
+          <li><b>Precios:</b> tarifas domésticas de CFE de octubre de 2026 (básico $1.140, intermedio $1.385 y excedente $4.054 por kWh) más IVA de 16 %. Cambian cada mes.</li>
+          <li><b>Tarifa y verano:</b> para el puerto de Veracruz se estima la tarifa 1C con verano de mayo a octubre. Los límites de cada bloque son valores de referencia: confírmalos en tu recibo.</li>
+          <li><b>Emisiones:</b> cerca de 0.44 kg de CO₂ por kWh, valor aproximado de la red eléctrica de México.</li>
+          <li><b>Paneles solares:</b> se supone un panel de 550 W, unas 5 horas de sol pico al día y 80 % de rendimiento del sistema.</li>
+          <li><b>Aparatos eficientes:</b> los porcentajes de ahorro son valores típicos de referencia. El ahorro real depende del modelo, del uso y de tu tarifa.</li>
+          <li><b>ODS 7:</b> metas de las Naciones Unidas y datos de Tracking SDG 7 (2025), de IEA, IRENA, UNSD, Banco Mundial y OMS.</li>
+        </ul>
+      </div>
+    </details>
+    <button type="button" onclick="cerrarModal()">Cerrar</button>
+    <p class="modal-pie">Proyecto educativo · Agenda 2030</p>
+  </div>
+</dialog>
+
+<script>
+  // Catálogo: categoría -> [aparato, Watts promedio, tipo (para los consejos)]
+  var CATALOGO = {
+    "Electrodomésticos": [
+      ["Lavadora", 500, "lavadora"], ["Secadora de ropa", 2500, "secadora"], ["Lavavajillas", 1800, "lavavajillas"],
+      ["Refrigerador", 150, "refri"], ["Congelador", 200, "refri"], ["Dispensador de agua", 100, "dispensador"],
+      ["Microondas", 1000, "microondas"], ["Horno eléctrico", 1500, "horno"], ["Campana de cocina", 150, "campana"],
+      ["Cafetera eléctrica", 800, "cafetera"], ["Licuadora", 400, "licuadora"], ["Tostador", 800, "cocina_peq"],
+      ["Freidora de aire", 1500, "cocina_peq"], ["Olla arrocera", 500, "cocina_peq"], ["Plancha de ropa", 1000, "plancha"],
+      ["Aspiradora", 1000, "aspiradora"]
+    ],
+    "Electrónica": [
+      ["PC de escritorio (Ofimática)", 60, "pc"], ["PC de escritorio (Alto Rendimiento/Gamer)", 450, "pc"],
+      ["Laptop estándar", 30, "laptop"], ["Laptop Gamer", 170, "laptop"], ["Monitor", 30, "monitor"],
+      ["Televisor", 100, "tv"], ["Consola de videojuegos", 150, "consola"], ["Amplificador de audio", 100, "audio"],
+      ["Barra de sonido", 50, "audio"], ["Proyector", 200, "proyector"], ["Impresora", 50, "impresora"],
+      ["Router Wi-Fi", 10, "router"], ["Decodificador / TV box", 15, "decodificador"], ["Tableta", 10, "bateria"],
+      ["Cargador de celular", 10, "bateria"]
+    ],
+    "Iluminación": [
+      ["Foco LED", 9, "luz"], ["Tira LED", 20, "luz"], ["Reflector LED exterior", 30, "exterior"],
+      ["Foco incandescente", 60, "viejo"], ["Foco ahorrador (CFL)", 15, "viejo"], ["Tubo fluorescente", 36, "viejo"],
+      ["Reflector halógeno", 150, "viejo"]
+    ],
+    "Climatización": [
+      ["Aire acondicionado minisplit", 1100, "ac"], ["Aire acondicionado de ventana", 1200, "ac"],
+      ["Ventilador de pedestal", 55, "ventilador"], ["Ventilador de techo", 75, "ventilador"],
+      ["Enfriador evaporativo", 200, "evaporativo"], ["Deshumidificador", 300, "deshumidificador"],
+      ["Calefactor eléctrico", 1500, "calefactor"]
+    ],
+    "Cuidado personal": [
+      ["Secador de cabello", 1800, "secador"], ["Plancha de cabello", 120, "plancha_pelo"],
+      ["Rizador de cabello", 60, "plancha_pelo"], ["Máquina de afeitar", 10, "bateria"]
+    ],
+    "Hogar y taller": [
+      ["Máquina de coser", 100, "coser"], ["Taladro", 600, "herramienta"], ["Esmeriladora", 750, "herramienta"],
+      ["Bomba de agua", 750, "bomba"], ["Hidrolavadora", 1400, "presion"], ["Compresor de aire", 1500, "presion"]
+    ]
+  };
+  var OTROS = "Otros";   // opción genérica: va directo a la calculadora
+  var TIPOS_OTRO = [
+    { valor: "calor_gen", texto: "Genera calor (resistencia)" },
+    { valor: "motor_gen", texto: "Tiene motor" },
+    { valor: "electro_gen", texto: "Electrónico o con pantalla" },
+    { valor: "luz", texto: "Iluminación" }
+  ];
+
+  var BADGES = { tip: "Tip rápido", mant: "Mantenimiento", inv: "Inversión a futuro", urg: "Urgente" };
+
+  // Consejos por tipo de aparato: [título, texto, etiqueta]
+  var TIPS = {
+    lavadora: [
+      ["Lava con carga completa y agua fría", "Junta la ropa hasta llenar el tambor; el agua fría basta para casi todo y te ahorra calentarla.", "tip"],
+      ["Limpia el filtro y el tambor", "Un filtro tapado alarga los ciclos y hace trabajar más al motor.", "mant"]
+    ],
+    secadora: [
+      ["Tiende al sol cuando puedas", "La secadora es de los aparatos que más gastan; el sol seca gratis.", "tip"],
+      ["Limpia el filtro de pelusa", "Con el filtro lleno el secado tarda más y gasta más.", "mant"]
+    ],
+    refri: [
+      ["Cuida el compresor", "Deja espacio libre atrás y a los lados, y limpia el polvo del serpentín o la rejilla: un compresor sucio trabaja más y se calienta.", "mant"],
+      ["Revisa los empaques de la puerta", "Un sello gastado deja escapar el frío y hace que el compresor arranque más seguido.", "mant"],
+      ["Ajusta la temperatura", "Con 3 a 5 °C en el refrigerador y −18 °C en el congelador es suficiente; más frío solo gasta más.", "tip"]
+    ],
+    dispensador: [
+      ["Cuida el compresor", "Si enfría con compresor, limpia la rejilla trasera y deja espacio para que respire; con polvo trabaja más.", "mant"],
+      ["Apaga el agua caliente cuando no la uses", "Mantenerla caliente todo el día gasta energía; usa su interruptor o un temporizador.", "tip"],
+      ["Quita el sarro del depósito", "El sarro en el depósito y en la resistencia obliga al equipo a gastar más.", "mant"]
+    ],
+    microondas: [
+      ["Usa porciones pequeñas y con tapa", "Una tapa apta para microondas acorta el tiempo de calentado; evita encenderlo vacío.", "tip"],
+      ["Descongela en el refrigerador", "Pasar los alimentos la noche anterior ahorra minutos de microondas.", "tip"]
+    ],
+    horno: [
+      ["No abras la puerta a cada rato", "Cada apertura pierde calor y el horno gasta para recuperarlo.", "tip"],
+      ["Aprovecha el calor residual", "Apágalo unos minutos antes de terminar: el calor acumulado completa la cocción.", "tip"]
+    ],
+    audio: [
+      ["Apágalo por completo, no lo dejes en reposo", "En reposo sigue consumiendo; usa su interruptor principal o una regleta con switch.", "tip"],
+      ["Déjalo ventilado y sin polvo", "Un amplificador fresco trabaja más eficiente y dura más.", "mant"]
+    ],
+    tv: [
+      ["Baja el brillo y usa el modo ahorro", "Es de los ajustes que más reducen el consumo de una pantalla.", "tip"],
+      ["Apágalo, no lo dejes en espera", "El botón del control solo lo deja en reposo; usa la regleta si no lo vas a ver.", "tip"]
+    ],
+    pc: [
+      ["Activa la suspensión automática", "Que se duerma tras pocos minutos sin uso.", "tip"],
+      ["Apágalo en pausas largas", "Si no lo usarás en varias horas, apágalo en lugar de dejarlo encendido.", "tip"],
+      ["Elige una fuente 80 PLUS al renovar", "Una fuente certificada desperdicia menos energía en forma de calor.", "inv"]
+    ],
+    laptop: [
+      ["Usa el plan de energía equilibrado", "Evita el modo de máximo rendimiento si no lo necesitas.", "tip"],
+      ["Desconecta el cargador al llegar a 100 %", "Cargar de más no ayuda a la batería ni a tu recibo.", "tip"]
+    ],
+    ac: [
+      ["Ajusta el termostato a 24–25 °C", "Enfriar de más sube el consumo del aire acondicionado sin mejorar mucho el confort.", "tip"],
+      ["Usa el temporizador", "Programa que se apague o suba la temperatura cuando duermes o sales.", "tip"],
+      ["Limpia los filtros cada mes", "Un filtro tapado obliga al aire acondicionado a trabajar más y por más tiempo.", "mant"],
+      ["Cambia a tecnología inverter", "Un aire inverter ajusta su potencia en vez de prender y apagar, y gasta menos.", "inv"]
+    ],
+    ventilador: [
+      ["Mantén las aspas limpias", "El polvo reduce el flujo de aire y obliga al motor a esforzarse más.", "mant"],
+      ["Apágalo si no hay nadie", "Un ventilador enfría a las personas, no al cuarto.", "tip"]
+    ],
+    calefactor: [
+      ["Calienta solo el cuarto que usas", "Cierra la puerta y apágalo al salir.", "tip"],
+      ["Usa termostato o temporizador", "Evita que siga encendido cuando el cuarto ya está caliente.", "tip"]
+    ],
+    viejo: [
+      ["Cámbialo por LED", "Da la misma luz con hasta 80 % menos energía.", "inv"],
+      ["Empieza por los que más usas", "Los focos de más horas recuperan antes la inversión.", "tip"]
+    ],
+    luz: [
+      ["Elige por lúmenes, no por watts", "Compra la luz que necesitas y evita potencias de más.", "tip"],
+      ["Usa temporizador o sensor", "Evita que quede encendida por olvido.", "inv"]
+    ],
+    exterior: [
+      ["Usa sensor de movimiento o fotocelda", "Que solo encienda de noche o cuando haga falta.", "inv"],
+      ["Limpia el reflector", "El polvo reduce la luz y te hace dejarlo más tiempo.", "mant"]
+    ],
+    lavavajillas: [
+      ["Úsalo lleno y en programa eco", "Lavar a medias gasta casi lo mismo que a tope.", "tip"],
+      ["Limpia el filtro y los brazos", "La grasa tapa las salidas de agua y obliga a repetir ciclos.", "mant"]
+    ],
+    campana: [
+      ["Usa la velocidad mínima necesaria", "Casi siempre basta la baja para sacar humos y olores.", "tip"],
+      ["Lava los filtros de grasa", "Filtros tapados fuerzan el motor y extraen menos.", "mant"]
+    ],
+    cafetera: [
+      ["Prepara solo lo que vas a tomar", "Mantener la jarra en la placa caliente gasta de más; usa un termo.", "tip"],
+      ["Descalcifica cada mes", "El sarro en la resistencia alarga el tiempo de calentado.", "mant"]
+    ],
+    licuadora: [
+      ["Procesa en tandas cortas", "Pulsos cortos y el vaso sin llenar al tope exigen menos al motor.", "tip"],
+      ["Revisa aspas y sello", "Aspas desgastadas obligan a licuar más tiempo.", "mant"]
+    ],
+    cocina_peq: [
+      ["Cocina en tandas completas", "Aprovecha cada ciclo con la cantidad justa en vez de encenderlo para porciones pequeñas.", "tip"],
+      ["No lo dejes en «mantener caliente»", "Apágalo al terminar: mantener caliente consume de más.", "tip"]
+    ],
+    plancha: [
+      ["Plancha en tandas", "Junta la ropa y plancha de una vez para calentar la plancha una sola vez.", "tip"],
+      ["Apágala unos minutos antes", "El calor residual alcanza para terminar las últimas prendas.", "tip"]
+    ],
+    aspiradora: [
+      ["Vacía el depósito o la bolsa", "Con el depósito lleno pierde succión y trabaja más.", "mant"],
+      ["Usa la potencia justa", "En pisos lisos basta la potencia baja.", "tip"]
+    ],
+    monitor: [
+      ["Baja el brillo", "Un brillo alto es lo que más consume en una pantalla.", "tip"],
+      ["Activa el apagado automático", "Que se apague tras pocos minutos sin uso.", "tip"]
+    ],
+    consola: [
+      ["Apágala por completo", "El reposo rápido sigue consumiendo; desactívalo en ajustes.", "tip"],
+      ["Programa las descargas", "Evita que actualice juegos mientras está en reposo.", "tip"]
+    ],
+    proyector: [
+      ["Déjalo enfriar antes de desconectar", "Apagarlo bien alarga la vida de la lámpara.", "mant"],
+      ["Usa el modo eco", "Baja el brillo de la lámpara y el consumo si la sala está oscura.", "tip"]
+    ],
+    impresora: [
+      ["Apágala al terminar", "En espera sigue consumiendo; usa una regleta con interruptor.", "tip"],
+      ["Imprime solo lo necesario", "El modo borrador y la doble cara reducen ciclos.", "tip"]
+    ],
+    router: [
+      ["Prográmalo para apagarse de noche", "Es de los pocos equipos que quedan siempre encendidos; un temporizador ahorra.", "tip"],
+      ["Colócalo al centro y sin obstáculos", "Mejor señal evita reintentos y repetidores extra.", "tip"]
+    ],
+    decodificador: [
+      ["Desconéctalo de la regleta", "En espera consume casi igual que encendido.", "tip"],
+      ["Evita que grabe o actualice sin necesidad", "Programa esas tareas solo cuando las uses.", "tip"]
+    ],
+    bateria: [
+      ["Desconecta al llegar a 100 %", "Cargar de más no ayuda a la batería ni a tu recibo.", "tip"],
+      ["No dejes el cargador conectado", "Un cargador sin carga sigue gastando un poco.", "tip"]
+    ],
+    evaporativo: [
+      ["Ventila con una ventana entreabierta", "Necesita renovar el aire; rinde mejor en climas secos.", "tip"],
+      ["Limpia filtros y depósito", "El sarro y el polvo bajan su rendimiento.", "mant"]
+    ],
+    deshumidificador: [
+      ["Cierra puertas y ventanas", "Que solo seque el cuarto que usas.", "tip"],
+      ["Fija la humedad en 50–60 %", "Bajar más de eso solo gasta más.", "tip"]
+    ],
+    secador: [
+      ["Seca con toalla primero", "Menos tiempo de secador, menos energía.", "tip"],
+      ["Usa temperatura media", "La alta gasta más y maltrata el cabello.", "tip"]
+    ],
+    plancha_pelo: [
+      ["Úsala con el cabello seco", "Menos pasadas, menos minutos encendida.", "tip"],
+      ["No la dejes conectada", "Apágala y desconéctala al terminar.", "tip"]
+    ],
+    coser: [
+      ["Limpia la pelusa y aceita", "Una máquina limpia gira con menos esfuerzo.", "mant"],
+      ["Desconéctala al terminar", "Apaga también la lámpara y el pedal.", "tip"]
+    ],
+    herramienta: [
+      ["Usa el accesorio correcto", "Un disco o una broca gastados exigen más tiempo y potencia.", "mant"],
+      ["Desconéctala al terminar", "Evita consumos fantasma y accidentes.", "tip"]
+    ],
+    bomba: [
+      ["Revisa fugas y el flotador", "Una fuga hace que arranque muchas veces al día.", "mant"],
+      ["Evita que trabaje en seco", "Ahorra energía y evita daños al motor.", "mant"]
+    ],
+    presion: [
+      ["Úsalo solo lo necesario", "Trabaja con mucha potencia, así que cada minuto pesa.", "tip"],
+      ["Revisa mangueras y conexiones", "Las fugas de aire o agua lo hacen trabajar de más.", "mant"]
+    ],
+    calor_gen: [
+      ["Úsalo solo el tiempo necesario", "Los equipos que dan calor gastan mucho en poco tiempo.", "tip"],
+      ["Desconéctalo al terminar", "Ahorra energía y evita accidentes.", "tip"]
+    ],
+    motor_gen: [
+      ["Mantenlo limpio y lubricado", "Un motor con fricción gasta más.", "mant"],
+      ["Evita arranques innecesarios", "Cada arranque consume de más; úsalo en tandas.", "tip"]
+    ],
+    electro_gen: [
+      ["Desconéctalo en espera", "Los equipos electrónicos siguen consumiendo aunque estén apagados.", "tip"],
+      ["Usa el modo de ahorro", "Baja el brillo y activa la suspensión automática si la tiene.", "tip"]
+    ],
+    otros: [
+      ["Revisa la etiqueta de consumo", "Compara los Watts reales con lo que escribiste: si gasta más de lo esperado, vale la pena revisarlo.", "tip"],
+      ["Desconéctalo cuando no lo uses", "Muchos aparatos siguen consumiendo en espera.", "tip"],
+      ["Compra con sello de eficiencia", "Al renovarlo, elige modelos con certificación de eficiencia energética.", "inv"]
+    ]
+  };
+
+  // Consejos generales por categoría
+  var TIPS_CAT = {
+    "Electrodomésticos": [
+      ["Desconecta lo que no uses", "Muchos electrodomésticos siguen consumiendo aunque estén apagados.", "tip"],
+      ["Compra con etiqueta de eficiencia", "Al renovar un aparato, elige uno con sello de eficiencia energética.", "inv"]
+    ],
+    "Electrónica": [
+      ["Desconecta cargadores y regletas", "Un aparato en espera sigue gastando; apaga la regleta al terminar.", "tip"],
+      ["Elige equipos certificados", "Los modelos con certificación de eficiencia rinden igual con menos watts.", "inv"]
+    ],
+    "Iluminación": [
+      ["Apaga al salir", "Si el cuarto queda vacío, apaga la luz: es el ahorro más fácil.", "tip"],
+      ["Aprovecha la luz natural", "Abre cortinas de día y acerca tu zona de trabajo a las ventanas.", "tip"],
+      ["Limpia focos y lámparas", "El polvo reduce la luz y te hace encender más focos.", "mant"],
+      ["Agrega sensores de movimiento", "Evitan que las luces queden encendidas por olvido.", "inv"]
+    ],
+    "Climatización": [
+      ["Cierra puertas y ventanas", "Sella rendijas y baja las cortinas en las horas de más sol para que el equipo trabaje menos.", "tip"]
+    ],
+    "Cuidado personal": [
+      ["Desconecta tus aparatos de cuidado personal", "Cargadores, planchas y secadores conectados son un riesgo y a veces siguen consumiendo.", "tip"]
+    ],
+    "Hogar y taller": [
+      ["Desconecta la herramienta al terminar", "Guárdala limpia y desconectada para evitar consumos y accidentes.", "tip"],
+      ["Mantenimiento regular", "Un equipo bien mantenido rinde más con menos energía.", "mant"]
+    ],
+    "Otros": [
+      ["Elige eficiencia al renovar", "Para cualquier aparato, el sello de eficiencia energética ayuda a gastar menos por el mismo trabajo.", "inv"]
+    ]
+  };
+  var TIP_SOLAR = ["Piensa en energía solar", "Un calentador solar o paneles fotovoltaicos reducen lo que compras a la red.", "inv"];
+
+  // Consejos que dependen del contexto (potencia, horas de uso y consumo)
+  var TIP_POTENCIA = ["Escalona su uso con otros equipos grandes", "Con tanta potencia, evita encenderlo junto a otros aparatos que gastan mucho: reparte su uso a lo largo del día.", "tip"];
+  var TIP_CONTINUO = ["Programa su uso", "Lo usas buena parte del día: un temporizador o un horario fijo evita horas encendido sin necesidad.", "tip"];
+  var TIP_BAJO = ["Tu ahorro grande está en otros equipos", "Este consumo es bajo. Mide también tus aparatos de más Watts o más horas para ver dónde se va tu recibo.", "tip"];
+  var SIEMPRE_ENCENDIDO = { refri: true, router: true, dispensador: true };
+
+  // Consejos de PC y laptop cuando los Watts superan el umbral
+  var UMBRAL_PC = 150;
+  var TIPS_CALIENTE = [
+    ["Cierra procesos en segundo plano", "Con este consumo, cada programa o pestaña abierta mantiene el procesador y la gráfica trabajando. Revisa el administrador de tareas y cierra lo que no uses.", "tip"],
+    ["Mejora la gestión térmica", "Limpia el polvo de ventiladores y disipadores, deja espacio de ventilación y renueva la pasta térmica si el equipo ya tiene años: un equipo caliente acelera sus ventiladores y gasta más.", "mant"],
+    ["Limita los cuadros por segundo", "En juegos y programas gráficos, un tope de FPS reduce la carga de la gráfica y el consumo.", "tip"]
+  ];
+
+  // Modos de la frecuencia de uso (el toggle Al día / A la semana)
+  var MODOS = {
+    dia:    { max: 24,  phH: "Ej. 5",  phM: "Ej. 30", ayuda: "Máximo 24 h al día. Los minutos van de 0 a 59 (60 min = 1 h)." },
+    semana: { max: 168, phH: "Ej. 35", phM: "Ej. 0",  ayuda: "Máximo 168 h a la semana. Los minutos van de 0 a 59 (60 min = 1 h)." }
+  };
+  var modoHoras = "dia";
+  var HORAS_ALTAS = 42;  // horas a la semana (6 h diarias) desde las que se considera mucho uso
+
+  var DD = {};
+  var estado = { categoria: "", aparato: "", tipo: "", sugerido: 0, watts: 0, horasSemana: 0, kwh: 0, nivel: "" };
+  var pantallas = document.querySelectorAll(".pantalla");
+  var puntos = document.querySelectorAll("#progreso span");
+  var contenedor = document.querySelector("main");
+
+  function fmt(n) {
+    return n.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function hrs(n) {
+    return n.toLocaleString("es-MX", { maximumFractionDigits: 2 });
+  }
+  // Horas decimales -> "2 h 51 min" (base 60)
+  function hm(horas) {
+    var min = Math.round(horas * 60), h = Math.floor(min / 60), m = min % 60;
+    if (h === 0) { return m + " min"; }
+    return h + " h" + (m ? " " + m + " min" : "");
+  }
+
+  // ---------- Menús desplegables personalizados ----------
+  function cerrarTodos() {
+    Object.keys(DD).forEach(function (k) { DD[k].cerrar(); });
+  }
+
+  function crearDD(id, textoVacio, alCambiar) {
+    var campo = document.getElementById(id);
+    var cont = campo.parentNode;
+    var lista = cont.querySelector(".dd-lista");
+    var texto = campo.querySelector(".dd-texto");
+    var ops = [], resaltado = -1;
+    var dd = {};
+
+    function resaltar(i, desplazar) {
+      var items = lista.children;
+      for (var k = 0; k < items.length; k++) { items[k].classList.toggle("activo", k === i); }
+      resaltado = i;
+      if (items[i]) {
+        campo.setAttribute("aria-activedescendant", items[i].id);
+        if (desplazar) { items[i].scrollIntoView({ block: "nearest" }); }
+      }
+    }
+    dd.abierto = function () { return cont.classList.contains("abierto"); };
+    dd.abrir = function () {
+      if (!ops.length) { return; }
+      cerrarTodos();
+      cont.classList.add("abierto");
+      campo.setAttribute("aria-expanded", "true");
+      var sel = 0;
+      for (var k = 0; k < ops.length; k++) { if (ops[k].valor === campo.dataset.valor) { sel = k; } }
+      resaltar(sel, true);
+    };
+    dd.cerrar = function () {
+      cont.classList.remove("abierto");
+      campo.setAttribute("aria-expanded", "false");
+    };
+    dd.valor = function () { return campo.dataset.valor || ""; };
+    dd.limpiar = function () {
+      delete campo.dataset.valor;
+      texto.textContent = textoVacio;
+      campo.classList.add("vacio");
+      dd.cerrar();
+    };
+    dd.elegir = function (i) {
+      var o = ops[i];
+      if (!o) { return; }
+      var cambio = (campo.dataset.valor !== o.valor);
+      campo.dataset.valor = o.valor;
+      texto.textContent = o.texto;
+      campo.classList.remove("vacio");
+      for (var k = 0; k < lista.children.length; k++) {
+        lista.children[k].setAttribute("aria-selected", k === i ? "true" : "false");
+      }
+      dd.cerrar();
+      if (cambio && alCambiar) { alCambiar(o.valor); }
+    };
+    dd.opciones = function (nuevas) {
+      ops = nuevas;
+      lista.innerHTML = "";
+      dd.limpiar();
+      nuevas.forEach(function (o, i) {
+        var li = document.createElement("li");
+        li.id = id + "-op" + i;
+        li.setAttribute("role", "option");
+        li.setAttribute("aria-selected", "false");
+        var t = document.createElement("span");
+        t.textContent = o.texto;
+        li.appendChild(t);
+        if (o.nota) {
+          var n = document.createElement("span");
+          n.className = "dd-nota";
+          n.textContent = o.nota;
+          li.appendChild(n);
+        }
+        li.addEventListener("click", function () { dd.elegir(i); });
+        li.addEventListener("mousemove", function () { if (resaltado !== i) { resaltar(i, false); } });
+        lista.appendChild(li);
+      });
+    };
+
+    campo.addEventListener("click", function () { if (dd.abierto()) { dd.cerrar(); } else { dd.abrir(); } });
+    campo.addEventListener("keydown", function (e) {
+      var k = e.key;
+      if (k === "ArrowDown" || k === "ArrowUp") {
+        e.preventDefault();
+        if (!dd.abierto()) { dd.abrir(); return; }
+        resaltar((resaltado + (k === "ArrowDown" ? 1 : -1) + ops.length) % ops.length, true);
+      } else if (k === "Enter" || k === " ") {
+        e.preventDefault();
+        if (dd.abierto()) { dd.elegir(resaltado); } else { dd.abrir(); }
+      } else if (k === "Escape" || k === "Tab") {
+        dd.cerrar();
+      }
+    });
+    DD[id] = dd;
+    return dd;
+  }
+
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest(".dd")) { cerrarTodos(); }
+  });
+
+  // ---------- Navegación ----------
+  var pantallaActual = 1;
+  var pila = [1], pos = 0;   // pantalla de cada entrada del historial y posición actual
+
+  function mostrarPantalla(numero, atras, desdeHistorial) {
+    cerrarTodos();
+    pantallas.forEach(function (p, i) {
+      p.classList.remove("activa", "atras");
+      if (i === numero - 1) {
+        p.classList.add("activa");
+        if (atras) { p.classList.add("atras"); }
+      }
+    });
+    var paso = (numero === 6) ? 4 : numero;   // el costo cuelga del paso 4 (resultados)
+    puntos.forEach(function (punto, i) {
+      punto.className = i < paso - 1 ? "hecho" : (i === paso - 1 ? "actual" : "");
+    });
+    contenedor.scrollTop = 0;
+    var titulo = pantallas[numero - 1].querySelector("h1, h2");
+    if (titulo) { titulo.focus({ preventScroll: true }); }
+
+    // Historial: avanzar agrega una entrada; retroceder desde la interfaz recorre el historial,
+    // así el botón "Atrás" o el gesto del teléfono quedan sincronizados paso a paso.
+    if (!desdeHistorial) {
+      try {
+        if (numero !== pantallaActual) {
+          var ant = pos > 0 ? pila.lastIndexOf(numero, pos - 1) : -1;
+          if (atras && ant >= 0) {              // retroceso: salta hasta esa entrada del historial
+            var salto = ant - pos;
+            pos = ant;
+            history.go(salto);
+          } else {                              // avance: nueva entrada
+            pila = pila.slice(0, pos + 1);
+            pila.push(numero);
+            pos = pila.length - 1;
+            history.pushState({ pantalla: numero, pos: pos }, "", "");
+          }
+        }
+      } catch (err) { /* sin historial disponible: la navegación sigue funcionando */ }
+    }
+    pantallaActual = numero;
+  }
+
+  // Una pantalla solo se abre desde el historial si ya hay datos que mostrar
+  function pantallaPermitida(n) {
+    if (n === 6) { return !!estado.nivel; }
+    if (n === 5) { return !!estado.nivel && document.getElementById("lista-consejos").children.length > 0; }
+    if (n === 4) { return !!estado.nivel; }
+    if (n === 3) { return !!estado.aparato; }
+    return true;
+  }
+
+  // Botón "Atrás" / "Adelante" del navegador y gesto táctil de retroceso
+  window.addEventListener("popstate", function (e) {
+    var st = e.state;
+    if (!st || !st.pantalla) { return; }
+    var antes = pos;
+    if (typeof st.pos === "number") { pos = st.pos; pila[pos] = st.modal ? 0 : st.pantalla; }
+    if (st.modal) {                           // "Adelante" hacia la entrada del modal
+      if (!modal.open) { abrirModal(true); }
+      return;
+    }
+    if (modal.open) { cerrarModal(true); }    // "Atrás" con el modal abierto: solo se cierra el modal
+    var n = st.pantalla;
+    while (n > 1 && !pantallaPermitida(n)) { n--; }
+    if (n !== st.pantalla) { try { history.replaceState({ pantalla: n, pos: pos }, "", ""); pila[pos] = n; } catch (err) {} }
+    if (n === pantallaActual) { return; }     // la interfaz ya está en esa pantalla
+    mostrarPantalla(n, pos < antes, true);
+  });
+
+  function mostrarError(idCampo, idError) {
+    document.getElementById(idCampo).classList.add("invalido");
+    document.getElementById(idError).hidden = false;
+  }
+  function limpiarError(idCampo, idError) {
+    document.getElementById(idCampo).classList.remove("invalido");
+    document.getElementById(idError).hidden = true;
+  }
+
+  function comenzar() { mostrarPantalla(2); }
+  function volverSeleccion() { mostrarPantalla(2, true); }     // pantalla 3 -> 2
+  function volverCalculadora() { mostrarPantalla(3, true); }   // pantalla 4 -> 3
+  function volverResultados() { mostrarPantalla(4, true); }    // pantalla 5 -> 4
+
+  // Cambia entre horas al día y horas a la semana
+  function cambiarModo(modo) {
+    var m = MODOS[modo];
+    modoHoras = modo;
+    var h = document.getElementById("horas");
+    h.max = m.max;
+    h.placeholder = m.phH;
+    document.getElementById("minutos").placeholder = m.phM;
+    document.getElementById("ayuda-horas").textContent = m.ayuda;
+    ["dia", "semana"].forEach(function (k) {
+      var b = document.getElementById("modo-" + k);
+      b.classList.toggle("activa", k === modo);
+      b.setAttribute("aria-pressed", k === modo ? "true" : "false");
+    });
+    limpiarError("horas", "error-horas");
+    limpiarError("minutos", "error-horas");
+    actualizarTiempo();
+  }
+
+  // Lee horas y minutos; los minutos se convierten en base 60 (1 h 30 min = 1.5 h, no 1.30)
+  function leerTiempo() {
+    var hTxt = document.getElementById("horas").value.trim();
+    var mTxt = document.getElementById("minutos").value.trim();
+    var h = hTxt === "" ? 0 : Number(hTxt);
+    var m = mTxt === "" ? 0 : Number(mTxt);
+    var max = MODOS[modoHoras].max;
+    var unidad = modoHoras === "dia" ? "al día" : "a la semana";
+    if (!Number.isInteger(h) || h < 0) { return { error: "Escribe las horas como número entero; los minutos van en el otro campo.", campo: "horas" }; }
+    if (!Number.isInteger(m) || m < 0 || m > 59) { return { error: "Los minutos van de 0 a 59: 60 minutos ya son 1 hora.", campo: "minutos" }; }
+    var total = h + m / 60;
+    if (total <= 0) { return { error: "Escribe un tiempo de uso mayor a 0.", campo: "horas" }; }
+    if (total > max) { return { error: "El tiempo máximo es de " + max + " horas " + unidad + ".", campo: "horas" }; }
+    return { h: h, m: m, total: total };
+  }
+
+  // Muestra la equivalencia en horas decimales cuando hay minutos
+  function actualizarTiempo() {
+    var r = leerTiempo();
+    var tt = document.getElementById("tiempo-total");
+    if (r.error || r.m === 0) { tt.textContent = ""; return; }
+    tt.textContent = (r.h ? r.h + " h " : "") + r.m + " min = " + hrs(r.total) + " h";
+  }
+  function alEscribirTiempo() {
+    limpiarError("horas", "error-horas");
+    limpiarError("minutos", "error-horas");
+    actualizarTiempo();
+  }
+  // Aparato "Otros": el nombre escrito aparece en el encabezado
+  function actualizarNombre() {
+    var nom = document.getElementById("nombre-otro").value.trim();
+    estado.aparato = nom || "Otro aparato";
+    document.getElementById("contexto-aparato").textContent = "Calculando: " + estado.aparato;
+  }
+
+  // Al elegir categoría se llena el menú de aparatos
+  function elegirCategoria(cat) {
+    limpiarError("categoria", "error-categoria");
+    limpiarError("aparato", "error-aparato");
+    if (cat === OTROS) {
+      // "Otros" no pide aparato: pasa directo a la calculadora
+      ddAparato.opciones([]);
+      document.getElementById("grupo-aparato").hidden = true;
+      setTimeout(function () {
+        if (ddCategoria.valor() === OTROS && pantallaActual === 2) { siguiente(); }
+      }, 220);
+      return;
+    }
+    ddAparato.opciones((CATALOGO[cat] || []).map(function (a) {
+      return { valor: a[0], texto: a[0], nota: a[1] + " W" };
+    }));
+    document.getElementById("grupo-aparato").hidden = false;
+  }
+
+  function buscarAparato(cat, nombre) {
+    var lista = CATALOGO[cat] || [];
+    for (var i = 0; i < lista.length; i++) {
+      if (lista[i][0] === nombre) { return lista[i]; }
+    }
+    return [nombre, 0, "general"];
+  }
+
+  // Pantalla 2 -> 3 (valida categoría y aparato, sugiere los Watts)
+  function siguiente() {
+    var cat = ddCategoria.valor();
+    var ap = ddAparato.valor();
+    var esOtros = (cat === OTROS);
+    if (!cat) { mostrarError("categoria", "error-categoria"); return; }
+    if (!esOtros && !ap) { mostrarError("aparato", "error-aparato"); return; }
+
+    var watts = document.getElementById("watts");
+    var ayuda;
+    if (esOtros) {
+      if (estado.categoria !== OTROS) {          // viene de otro aparato: empieza limpio
+        estado.categoria = OTROS;
+        estado.aparato = "Otro aparato";
+        estado.tipo = "otros";
+        estado.sugerido = 0;
+        document.getElementById("nombre-otro").value = "";
+        ddTipoOtro.limpiar();
+        watts.value = "";
+        limpiarError("watts", "error-watts");
+      }
+      watts.placeholder = "Ej. 120";
+      ayuda = "Búscalo en la etiqueta del aparato (W). Si solo ves Volts y Amperes, multiplícalos: W = V × A.";
+    } else {
+      var item = buscarAparato(cat, ap);
+      var cambio = (ap !== estado.aparato);
+      estado.categoria = cat;
+      estado.aparato = ap;
+      estado.tipo = item[2];
+      estado.sugerido = item[1];
+      // Autocompleta solo si cambió el aparato, para no perder lo que se editó al volver
+      if (cambio || watts.value === "") {
+        watts.value = estado.sugerido;
+        limpiarError("watts", "error-watts");
+      }
+      watts.placeholder = "Ej. 60";
+      ayuda = "Sugerencia para «" + ap + "»: " + estado.sugerido + " W en promedio. Cámbialo si conoces el dato de tu equipo.";
+    }
+    document.getElementById("campo-nombre").hidden = !esOtros;
+    document.getElementById("campo-tipo").hidden = !esOtros;
+    document.getElementById("contexto-aparato").textContent = "Calculando: " + estado.aparato;
+    document.getElementById("ayuda-watts").textContent = ayuda;
+    mostrarPantalla(3);
+  }
+
+  // Pantalla 3 -> 4 (valida según el modo y calcula el consumo diario)
+  function calcular() {
+    var watts = parseFloat(document.getElementById("watts").value);
+    var t = leerTiempo();
+    var valido = true;
+
+    if (!Number.isFinite(watts) || watts <= 0) { mostrarError("watts", "error-watts"); valido = false; }
+    if (t.error) {
+      document.getElementById("error-horas").textContent = t.error;
+      mostrarError(t.campo, "error-horas");
+      valido = false;
+    }
+    if (!valido) { return; }
+
+    if (estado.categoria === OTROS) {
+      actualizarNombre();
+      estado.tipo = ddTipoOtro.valor() || "otros";
+    }
+    var horasDia = (modoHoras === "semana") ? t.total / 7 : t.total;   // promedio de horas por día
+    estado.watts = watts;
+    estado.horasSemana = horasDia * 7;
+    estado.kwh = (watts * horasDia) / 1000;   // kWh diarios
+    mostrarResultados();
+    mostrarPantalla(4);
+  }
+
+  // Dashboard con semáforo (según los kWh diarios)
+  function mostrarResultados() {
+    var kwh = estado.kwh;
+    var nivel, titulo, texto;
+
+    if (kwh < 1) {
+      nivel = "verde";
+      titulo = "Consumo bajo: eficiente";
+      texto = "Este equipo gasta poca energía. Sigue con estos hábitos.";
+    } else if (kwh <= 3) {
+      nivel = "amarillo";
+      titulo = "Consumo medio: precaución";
+      texto = "Hay margen para ahorrar. Revisa las horas de uso y las recomendaciones de consumo.";
+    } else {
+      nivel = "rojo";
+      titulo = "Consumo alto: ineficiente";
+      texto = "Este equipo pesa mucho en tu recibo. Reduce su uso o busca una opción más eficiente.";
+    }
+    estado.nivel = nivel;
+
+    document.getElementById("kwh").textContent = fmt(kwh);
+    document.getElementById("semaforo").setAttribute("data-nivel", nivel);
+    document.getElementById("semaforo").setAttribute("aria-label", "Semáforo de consumo: " + nivel);
+    document.getElementById("estado").className = "estado " + nivel;
+    document.getElementById("estado-titulo").textContent = titulo;
+    document.getElementById("estado-texto").textContent = texto;
+    document.getElementById("resumen").textContent =
+      estado.aparato + (estado.categoria === OTROS ? "" : " (" + estado.categoria + ")") + " · " + estado.watts + " W · " +
+      hm(estado.horasSemana / 7) + " al día (" + hm(estado.horasSemana) + " a la semana)";
+    document.getElementById("c-dia").textContent = fmt(kwh);
+    document.getElementById("c-sem").textContent = fmt(kwh * 7);
+    document.getElementById("c-mes").textContent = fmt(kwh * 30);
+    document.getElementById("c-bim").textContent = fmt(kwh * 60);
+  }
+
+  // Arma los consejos según el semáforo, el tipo de aparato y los Watts ingresados
+  function armarConsejos() {
+    var lista = [], t = estado.tipo;
+    var horasDia = estado.horasSemana / 7;
+    if (estado.nivel === "rojo") {
+      if (estado.horasSemana >= HORAS_ALTAS) {
+        lista.push(["Reduce el tiempo de uso ya",
+          "Lo usas " + hm(horasDia) + " al día (" + hm(estado.horasSemana) + " a la semana) y gasta " + fmt(estado.kwh) +
+          " kWh diarios. Recortar unas horas por semana, con pausas o temporizador, es tu ahorro más rápido.", "urg"]);
+      } else {
+        lista.push(["Equipo de alta potencia",
+          "Aunque lo uses pocas horas, su potencia es alta. Úsalo solo cuando haga falta y busca una versión más eficiente al renovarlo.", "inv"]);
+      }
+    }
+    if ((t === "pc" || t === "laptop") && estado.watts > UMBRAL_PC) {
+      lista = lista.concat(TIPS_CALIENTE);
+    }
+    lista = lista.concat(TIPS[t] || TIPS.otros);
+    if (estado.watts >= 1500 && t !== "ac") { lista.push(TIP_POTENCIA); }
+    if (horasDia >= 12 && !SIEMPRE_ENCENDIDO[t]) { lista.push(TIP_CONTINUO); }
+    if (estado.kwh < 0.1) { lista.push(TIP_BAJO); }
+    lista = lista.concat(TIPS_CAT[estado.categoria] || []);
+    if (estado.categoria !== "Climatización") { lista.push(TIP_SOLAR); }
+    return lista;
+  }
+
+  // Inyecta los <li> en la guía
+  function mostrarGuia() {
+    var ul = document.getElementById("lista-consejos");
+    ul.innerHTML = "";
+    armarConsejos().forEach(function (c) {
+      var li = document.createElement("li");
+      if (c[2] === "urg") { li.className = "urgente"; }
+
+      var cab = document.createElement("span");
+      cab.className = "ctit";
+      var b = document.createElement("b");
+      b.textContent = c[0];
+      var badge = document.createElement("span");
+      badge.className = "badge " + c[2];
+      badge.textContent = BADGES[c[2]];
+      cab.appendChild(b);
+      cab.appendChild(badge);
+
+      var desc = document.createElement("span");
+      desc.className = "cdesc";
+      desc.textContent = c[1];
+
+      li.appendChild(cab);
+      li.appendChild(desc);
+      ul.appendChild(li);
+    });
+    document.getElementById("lead-guia").textContent =
+      "Recomendaciones para «" + estado.aparato + "» según tu consumo de " + estado.watts +
+      " W. Pequeños cambios acercan el ODS 7 a tu comunidad.";
+  }
+
+  function verGuia() {
+    mostrarGuia();
+    renderPaneles();
+    mostrarPantalla(5);
+  }
+
+  // Reinicia variables y campos, y vuelve a la pantalla 1
+  function reiniciar() {
+    estado = { categoria: "", aparato: "", tipo: "", sugerido: 0, watts: 0, horasSemana: 0, kwh: 0, nivel: "" };
+    ddCategoria.limpiar();
+    ddAparato.opciones([]);
+    ddTipoOtro.limpiar();
+    ddRegion.elegir(0);
+    document.getElementById("grupo-aparato").hidden = true;
+    document.getElementById("campo-nombre").hidden = true;
+    document.getElementById("campo-tipo").hidden = true;
+    document.getElementById("nombre-otro").value = "";
+    document.getElementById("watts").value = "";
+    document.getElementById("horas").value = "";
+    document.getElementById("minutos").value = "";
+    cambiarModo("dia");
+    document.getElementById("ayuda-watts").textContent = "";
+    document.getElementById("contexto-aparato").textContent = "";
+    document.getElementById("lista-consejos").innerHTML = "";
+    precioEf = 0;
+    document.querySelectorAll(".ef-precio").forEach(function (i) { i.value = ""; });
+    document.querySelectorAll(".panel[open]").forEach(function (d) { d.removeAttribute("open"); });
+    limpiarError("categoria", "error-categoria");
+    limpiarError("aparato", "error-aparato");
+    limpiarError("watts", "error-watts");
+    limpiarError("horas", "error-horas");
+    limpiarError("minutos", "error-horas");
+    document.getElementById("semaforo").setAttribute("data-nivel", "");
+    document.getElementById("kwh").textContent = "0";
+    mostrarPantalla(1, true);
+  }
+
+  // ---------- Modal "Acerca de" ----------
+  var modal = document.getElementById("modal-acerca");
+  var cerrandoModal = false;
+
+  function abrirModal(desdeHistorial) {
+    cerrandoModal = false;
+    modal.classList.remove("cerrando");
+    if (!modal.open) { modal.showModal(); }
+    if (desdeHistorial !== true) {
+      try {
+        pila = pila.slice(0, pos + 1);
+        pila.push(0);
+        pos = pila.length - 1;
+        history.pushState({ pantalla: pantallaActual, modal: true, pos: pos }, "", "");
+      } catch (err) {}
+    }
+  }
+  function cerrarModal(desdeHistorial) {
+    if (!modal.open || cerrandoModal) { return; }
+    cerrandoModal = true;
+    modal.classList.add("cerrando");
+    // Si se cierra desde la interfaz, también se retira su entrada del historial
+    if (desdeHistorial !== true && history.state && history.state.modal) {
+      try { pos = Math.max(0, pos - 1); history.back(); } catch (err) {}
+    }
+    var ms = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 200;
+    setTimeout(function () {
+      modal.close();
+      modal.classList.remove("cerrando");
+      cerrandoModal = false;
+    }, ms);
+  }
+  modal.addEventListener("cancel", function (e) { e.preventDefault(); cerrarModal(); });   // tecla Escape
+  modal.addEventListener("click", function (e) { if (e.target === modal) { cerrarModal(); } });   // clic en el fondo oscuro
+
+  // ---------- Costo en tu recibo (tarifas domésticas de CFE, octubre de 2026) ----------
+  var PRECIOS = { basico: 1.140, intermedio: 1.385, excedente: 4.054, iva: 1.16 };   // pesos por kWh, sin IVA
+  // kWh por mes de cada bloque: [básico, intermedio]; lo que pase de eso es excedente
+  var BLOQUES = {
+    "1":  { verano: [75, 65],   fuera: [75, 65] },
+    "1A": { verano: [100, 50],  fuera: [75, 75] },
+    "1B": { verano: [125, 100], fuera: [75, 100] },
+    "1C": { verano: [150, 300], fuera: [75, 100] },
+    "1D": { verano: [175, 225], fuera: [75, 125] },
+    "1E": { verano: [300, 450], fuera: [75, 125] },
+    "1F": { verano: [300, 900], fuera: [75, 125] }
+  };
+  var KG_CO2_POR_KWH = 0.44;   // valor aproximado de la red eléctrica de México
+  var MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+  var REGIONES = [
+    { valor: "ver", texto: "Veracruz, Ver. (puerto)", nota: "Tarifa 1C", tarifa: "1C", inicio: 5,
+      ayuda: "Para el puerto de Veracruz estimamos la tarifa 1C. Confírmala en tu recibo." },
+    { valor: "1",  texto: "Tarifa 1 · clima templado", tarifa: "1" },
+    { valor: "1A", texto: "Tarifa 1A · verano de 25 °C", tarifa: "1A" },
+    { valor: "1B", texto: "Tarifa 1B · verano de 28 °C", tarifa: "1B" },
+    { valor: "1C", texto: "Tarifa 1C · verano de 30 °C", tarifa: "1C" },
+    { valor: "1D", texto: "Tarifa 1D · verano de 31 °C", tarifa: "1D" },
+    { valor: "1E", texto: "Tarifa 1E · verano de 32 °C", tarifa: "1E" },
+    { valor: "1F", texto: "Tarifa 1F · verano de 33 °C", tarifa: "1F" }
+  ];
+  var temporada = "verano";
+  var ddRegion;
+
+  function dinero(n) { return n.toLocaleString("es-MX", { style: "currency", currency: "MXN" }); }
+
+  function regionActual() {
+    var v = ddRegion.valor() || "ver";
+    for (var i = 0; i < REGIONES.length; i++) { if (REGIONES[i].valor === v) { return REGIONES[i]; } }
+    return REGIONES[0];
+  }
+
+  // kWh de este aparato que caen en cada bloque, según lo que el hogar ya consume
+  function reparto(kwhMes, base, tarifa, verano) {
+    var b = BLOQUES[tarifa][verano ? "verano" : "fuera"];
+    var l1 = b[0], l2 = b[0] + b[1], fin = base + kwhMes;
+    function tramo(desde, hasta) { return Math.max(0, Math.min(fin, hasta) - Math.max(base, desde)); }
+    return [tramo(0, l1), tramo(l1, l2), tramo(l2, Infinity)];
+  }
+  // Pesos al mes, con IVA
+  function costoMes(kwhMes, base, tarifa, verano) {
+    var r = reparto(kwhMes, base, tarifa, verano);
+    return (r[0] * PRECIOS.basico + r[1] * PRECIOS.intermedio + r[2] * PRECIOS.excedente) * PRECIOS.iva;
+  }
+
+  function veranoHoy(reg) {
+    var m = new Date().getMonth() + 1, ini = reg.inicio || 5;
+    return m >= ini && m <= ini + 5;
+  }
+  function pintarTemporada() {
+    ["verano", "fuera"].forEach(function (k) {
+      var b = document.getElementById("temp-" + k);
+      b.classList.toggle("activa", k === temporada);
+      b.setAttribute("aria-pressed", k === temporada ? "true" : "false");
+    });
+  }
+  // Elige la temporada según la fecha de hoy y la tarifa
+  function temporadaAutomatica() {
+    var reg = regionActual(), hoy = new Date().getMonth() + 1;
+    var sinTemporada = (reg.tarifa === "1");
+    temporada = (!sinTemporada && veranoHoy(reg)) ? "verano" : "fuera";
+    document.getElementById("pildora-temporada").hidden = sinTemporada;
+    document.getElementById("ayuda-region").textContent = reg.ayuda || "Elige la tarifa que aparece en tu recibo de luz.";
+    var txt;
+    if (sinTemporada) {
+      txt = "La Tarifa 1 cuesta lo mismo todo el año: no tiene temporada de verano.";
+    } else {
+      txt = "Hoy estamos en " + MESES[hoy - 1] + ": " + (veranoHoy(reg) ? "temporada de verano" : "fuera de verano") +
+        " (el verano va de mayo a octubre). ";
+      if (veranoHoy(reg) && hoy === 10) { txt += "Termina el 31 de octubre. "; }
+      txt += "En tu recibo aparece si te aplica.";
+    }
+    document.getElementById("ayuda-temporada").textContent = txt;
+    pintarTemporada();
+  }
+  function cambiarTemporada(t) { temporada = t; pintarTemporada(); renderCosto(); }
+  function alElegirRegion() { temporadaAutomatica(); renderCosto(); }
+
+  function verCosto() {
+    document.getElementById("contexto-costo").textContent = estado.aparato + " · " + hm(estado.horasSemana / 7) + " al día";
+    temporadaAutomatica();
+    renderCosto();
+    mostrarPantalla(6);
+  }
+
+  function renderCosto() {
+    if (!estado.nivel) { return; }
+    var reg = regionActual(), tarifa = reg.tarifa;
+    var verano = (temporada === "verano" && tarifa !== "1");
+    var base = 0;   // se calcula como si este aparato fuera el único consumo
+    var kwhMes = estado.kwh * 30, horasDia = estado.horasSemana / 7;
+    var mes = costoMes(kwhMes, base, tarifa, verano);
+    var r = reparto(kwhMes, base, tarifa, verano);
+    var pr = [PRECIOS.basico, PRECIOS.intermedio, PRECIOS.excedente];
+    var nombres = ["Básico", "Intermedio", "Excedente"];
+
+    document.getElementById("costo-bim").textContent = dinero(mes * 2);
+    document.getElementById("p-hora").textContent = dinero(mes / 30 / horasDia);
+    document.getElementById("p-dia").textContent = dinero(mes / 30);
+    document.getElementById("p-sem").textContent = dinero(mes / 30 * 7);
+    document.getElementById("p-mes").textContent = dinero(mes);
+    document.getElementById("p-anio").textContent = dinero(mes * 365 / 30);
+    document.getElementById("p-kwh").textContent = dinero(mes / kwhMes) + "/kWh";
+
+    var lim = BLOQUES[tarifa][verano ? "verano" : "fuera"];
+    var tope1 = lim[0], tope2 = lim[0] + lim[1];
+    var rangos = ["Primeros " + tope1 + " kWh al mes", "Siguientes " + lim[1] + " kWh (hasta " + tope2 + ")", "Más de " + tope2 + " kWh al mes"];
+    var barras = document.querySelectorAll("#barra-reparto i");
+    var leyenda = document.getElementById("leyenda");
+    leyenda.innerHTML = "";
+    for (var i = 0; i < 3; i++) {
+      barras[i].style.width = (r[i] / kwhMes * 100) + "%";
+      var li = document.createElement("li");
+      li.className = "l" + (i + 1);
+      var txt = document.createElement("div");
+      var nm = document.createElement("b");
+      nm.textContent = nombres[i];
+      txt.appendChild(nm);
+      txt.appendChild(document.createTextNode(" · $" + pr[i].toFixed(3) + " por kWh + IVA"));
+      var sm = document.createElement("small");
+      sm.textContent = rangos[i];
+      txt.appendChild(sm);
+      li.appendChild(txt);
+      var sp = document.createElement("span");
+      sp.textContent = fmt(r[i]) + " kWh";
+      li.appendChild(sp);
+      leyenda.appendChild(li);
+    }
+
+    // Comparativo: se actualiza con cada cambio de temporada, tarifa o consumo
+    var cv = costoMes(kwhMes, base, tarifa, true) * 2, cf = costoMes(kwhMes, base, tarifa, false) * 2;
+    document.getElementById("comparativo").hidden = (tarifa === "1");
+    document.getElementById("cmp-v").textContent = dinero(cv);
+    document.getElementById("cmp-f").textContent = dinero(cf);
+    document.getElementById("cmp-verano").classList.toggle("destacada", verano);
+    document.getElementById("cmp-fuera").classList.toggle("destacada", !verano);
+    document.getElementById("cmp-nota").textContent = (tarifa === "1") ? "" :
+      (cf - cv > 0.005
+        ? "En verano pagas " + dinero(cf - cv) + " menos al bimestre por este aparato."
+        : "Con este consumo el costo es el mismo en las dos temporadas: el aparato cabe en el bloque básico. Lo que cambia es el límite de cada bloque (mira la lista de abajo).");
+
+    var datos = [];   // [texto en negritas, texto, clase]
+    datos.push(["Cómo se calcula:", "como si este aparato fuera tu único consumo, así que sus primeros kWh salen en el bloque más barato. En una casa con más aparatos, parte de sus kWh cae en bloques más caros (hasta " + dinero(PRECIOS.excedente * PRECIOS.iva) + " por kWh).", "aviso"]);
+    datos.push(["Rango al mes:", "entre " + dinero(kwhMes * PRECIOS.basico * PRECIOS.iva) + " (si todo cae en el bloque básico) y " + dinero(kwhMes * PRECIOS.excedente * PRECIOS.iva) + " (si todo cae en excedente).", ""]);
+    if (horasDia > 1) {
+      var menos = Math.max(0, kwhMes - estado.watts / 1000 * 30);
+      var ahorro = mes - costoMes(menos, base, tarifa, verano);
+      datos.push(["Si lo usas 1 hora menos al día:", "ahorras unos " + dinero(ahorro) + " al mes (" + dinero(ahorro * 365 / 30) + " al año).", ""]);
+    }
+    datos.push(["Impacto ambiental:", "emite cerca de " + fmt(kwhMes * KG_CO2_POR_KWH) + " kg de CO₂ al mes (valor aproximado de la red eléctrica de México, unos 0.44 kg por kWh).", ""]);
+    ["costo-bim", "cmp-verano", "cmp-fuera", "p-mes", "p-kwh"].forEach(function (id) {
+      var el = document.getElementById(id);
+      el.classList.remove("pulso");
+      void el.offsetWidth;
+      el.classList.add("pulso");
+    });
+    var ul = document.getElementById("datos-extra");
+    ul.innerHTML = "";
+    datos.forEach(function (d) {
+      var li = document.createElement("li");
+      if (d[2]) { li.className = d[2]; }
+      var b = document.createElement("b");
+      b.textContent = d[0] + " ";
+      li.appendChild(b);
+      li.appendChild(document.createTextNode(d[1]));
+      ul.appendChild(li);
+    });
+    renderPaneles();
+  }
+
+  // ---------- Ahorro con un aparato más eficiente y aporte al ODS 7 ----------
+  // Por tipo de aparato: alternativa típica, ahorro de energía típico (0 a 1) y por qué se ahorra
+  var EFICIENTE = {
+    lavadora: { alt: "una lavadora eficiente con sello de ahorro", ahorro: 0.30, det: "Gasta menos agua y menos energía por ciclo; lo que más ahorras es el agua que ya no tienes que calentar." },
+    secadora: { alt: "una secadora con bomba de calor", ahorro: 0.50, det: "Recicla el calor del aire y puede gastar cerca de la mitad que una secadora de resistencia." },
+    lavavajillas: { alt: "un lavavajillas con sello de eficiencia y programa eco", ahorro: 0.25, det: "Los programas eco lavan a menor temperatura y con menos agua." },
+    refri: { alt: "un refrigerador moderno con sello de eficiencia y compresor inverter", ahorro: 0.35, det: "Los modelos con 10 años o más gastan mucho más; el compresor inverter evita arranques bruscos y consume menos." },
+    dispensador: { alt: "un dispensador con compresor eficiente y apagado del calentamiento", ahorro: 0.30, det: "Mantener agua caliente todo el día es lo que más pesa; un modelo con temporizador o ahorro evita ese gasto." },
+    microondas: { alt: "un microondas inverter", ahorro: 0.15, det: "La potencia continua cocina más parejo y en menos tiempo." },
+    horno: { alt: "una freidora de aire o un horno de convección", ahorro: 0.40, det: "Para porciones pequeñas calientan menos espacio y terminan antes que un horno eléctrico completo." },
+    campana: { alt: "una campana con motor DC y luces LED", ahorro: 0.35, det: "El motor DC mueve el mismo aire con menos potencia y las luces LED gastan casi nada." },
+    cafetera: { alt: "una cafetera con apagado automático y jarra térmica", ahorro: 0.25, det: "Evita mantener la placa caliente durante horas." },
+    licuadora: { alt: "una licuadora con motor eficiente", ahorro: 0.10, det: "El motor y las aspas modernas trituran con un poco menos de potencia." },
+    cocina_peq: { alt: "un equipo del tamaño justo para tus porciones", ahorro: 0.20, det: "Calentar un equipo grande para poca comida desperdicia energía." },
+    plancha: { alt: "una plancha con apagado automático y vapor continuo", ahorro: 0.15, det: "Se apaga sola y plancha en menos pasadas." },
+    aspiradora: { alt: "una aspiradora con motor eficiente y potencia variable", ahorro: 0.30, det: "Limpia igual con menos watts porque el motor moderno aprovecha mejor la energía." },
+    pc: { alt: "un equipo con fuente 80 PLUS y componentes eficientes", ahorro: 0.30, det: "Una fuente certificada desperdicia menos energía en forma de calor y los componentes nuevos rinden más por watt." },
+    laptop: { alt: "una laptop con procesador eficiente", ahorro: 0.30, det: "Los procesadores modernos hacen el mismo trabajo con menos potencia." },
+    monitor: { alt: "un monitor LED con modo eco", ahorro: 0.25, det: "La retroiluminación LED y el modo eco bajan el consumo de la pantalla." },
+    tv: { alt: "una televisión LED moderna con sello de eficiencia", ahorro: 0.40, det: "Las pantallas actuales gastan mucho menos que las antiguas del mismo tamaño." },
+    consola: { alt: "una consola con modo ahorro y apagado automático", ahorro: 0.20, det: "El modo ahorro y el apagado completo evitan el consumo en reposo." },
+    audio: { alt: "un amplificador clase D", ahorro: 0.40, det: "Convierte mejor la energía en sonido y se calienta menos." },
+    proyector: { alt: "un proyector LED o láser con modo eco", ahorro: 0.40, det: "Las fuentes de luz LED o láser gastan menos que una lámpara tradicional." },
+    impresora: { alt: "una impresora con reposo profundo", ahorro: 0.30, det: "Reduce el consumo mientras espera trabajos." },
+    router: { alt: "un router moderno (Wi-Fi 6)", ahorro: 0.20, det: "Los chips nuevos manejan más equipos con menos energía." },
+    decodificador: { alt: "un decodificador con modo de ahorro profundo", ahorro: 0.30, det: "En espera consume mucho menos." },
+    bateria: { alt: "un cargador certificado de carga inteligente", ahorro: 0.15, det: "Corta el consumo cuando la batería ya está llena." },
+    luz: { alt: "el mismo LED con sensor de movimiento o temporizador", ahorro: 0.30, det: "Ya usas tecnología eficiente: el ahorro viene de reducir las horas encendido." },
+    exterior: { alt: "un reflector LED con fotocelda o sensor de movimiento", ahorro: 0.50, det: "Solo enciende de noche o cuando detecta movimiento, en vez de toda la noche." },
+    viejo: { alt: "un foco LED", ahorro: 0.80, det: "Un LED da la misma luz con mucha menos energía y dura muchísimo más." },
+    ac: { alt: "un minisplit inverter con buen SEER", ahorro: 0.35, det: "El compresor inverter ajusta su velocidad en vez de prender y apagar, y consume menos." },
+    ventilador: { alt: "un ventilador con motor DC", ahorro: 0.40, det: "Los motores DC mueven el mismo aire con bastante menos potencia." },
+    evaporativo: { alt: "un enfriador con motor eficiente y control de velocidad", ahorro: 0.20, det: "Ajusta el aire a lo que realmente necesitas." },
+    deshumidificador: { alt: "un deshumidificador con sello ENERGY STAR", ahorro: 0.20, det: "Extrae más agua por cada kWh que consume." },
+    calefactor: { alt: "un minisplit inverter en modo calefacción (bomba de calor)", ahorro: 0.60, det: "Una bomba de calor mueve calor en vez de generarlo con una resistencia y gasta hasta una tercera parte." },
+    secador: { alt: "un secador con motor eficiente", ahorro: 0.20, det: "Seca igual con menos potencia." },
+    plancha_pelo: { alt: "una plancha con termostato y apagado automático", ahorro: 0.20, det: "Mantiene la temperatura sin trabajar al máximo y se apaga sola." },
+    coser: { alt: "una máquina de coser moderna con motor eficiente y luz LED", ahorro: 0.15, det: "El motor y la luz LED gastan menos." },
+    herramienta: { alt: "una herramienta con motor sin escobillas", ahorro: 0.25, det: "Pierde menos energía por fricción y rinde más por watt." },
+    bomba: { alt: "una bomba con motor eficiente o variador de velocidad", ahorro: 0.30, det: "Ajusta su potencia a la demanda en vez de trabajar siempre al máximo." },
+    presion: { alt: "un equipo con variador y presión ajustable", ahorro: 0.20, det: "Usa solo la potencia que la tarea necesita." },
+    calor_gen: { alt: "un equipo con termostato y apagado automático", ahorro: 0.20, det: "Deja de calentar cuando ya alcanzó la temperatura." },
+    motor_gen: { alt: "un motor de alta eficiencia (IE3) o con variador", ahorro: 0.25, det: "Aprovecha mejor la electricidad y evita pérdidas por calor." },
+    electro_gen: { alt: "un modelo con sello de eficiencia y modo ahorro", ahorro: 0.25, det: "Reduce el consumo en uso y en espera." },
+    otros: { alt: "un modelo equivalente con sello de eficiencia energética", ahorro: 0.20, det: "Los modelos certificados hacen el mismo trabajo con menos energía." }
+  };
+  // Aparatos concretos que tienen una alternativa propia (pasan por encima de la de su tipo)
+  var EFICIENTE_NOMBRE = {
+    "Foco incandescente": { alt: "un foco LED de 9 W", ahorro: 0.85, det: "Un LED de 9 W da la luz de un incandescente de 60 W y dura muchísimo más." },
+    "Foco ahorrador (CFL)": { alt: "un foco LED", ahorro: 0.40, det: "El LED enciende al instante, no lleva mercurio y gasta menos que un ahorrador." },
+    "Tubo fluorescente": { alt: "un tubo LED", ahorro: 0.50, det: "Da la misma luz con la mitad de watts y no necesita balastro." },
+    "Reflector halógeno": { alt: "un reflector LED", ahorro: 0.85, det: "Un reflector LED ilumina igual con una fracción de la potencia y casi no se calienta." },
+    "Congelador": { alt: "un congelador eficiente con buen aislante", ahorro: 0.30, det: "Los congeladores horizontales con buen aislante pierden menos frío al abrirse." },
+    "Aire acondicionado de ventana": { alt: "un minisplit inverter", ahorro: 0.40, det: "Es mucho más eficiente que un equipo de ventana y además es más silencioso." },
+    "Ventilador de techo": { alt: "un ventilador de techo con motor DC", ahorro: 0.50, det: "Los motores DC usan cerca de la mitad de potencia con el mismo flujo de aire." },
+    "PC de escritorio (Ofimática)": { alt: "un mini PC", ahorro: 0.50, det: "Un mini PC de oficina trabaja con una fracción de la potencia de una torre." },
+    "PC de escritorio (Alto Rendimiento/Gamer)": { alt: "un equipo con fuente 80 PLUS Gold y componentes eficientes", ahorro: 0.30, det: "Una fuente certificada y una gráfica eficiente, con límite de FPS, bajan mucho el consumo." },
+    "Laptop Gamer": { alt: "una laptop con gráfica eficiente y modo ahorro", ahorro: 0.30, det: "Los modos de energía y las gráficas nuevas dan el mismo rendimiento con menos watts." }
+  };
+  // Paneles solares: un panel de 550 W, 5 horas de sol pico al día y 80 % de rendimiento del sistema
+  var KWH_PANEL_MES = 0.55 * 5 * 0.8 * 30;
+  var precioEf = 0, ahorroMesActual = 0;
+
+  var PANELES_HTML = `
+    <details class="panel">
+      <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg></span><span>¿Cuánto ahorrarías con un aparato más eficiente?</span></summary>
+      <div class="panel-cuerpo">
+        <p class="ef-intro"></p>
+        <div class="comparar">
+          <div class="fila"><span>Tu aparato</span><div class="pista"><i class="ef-barra-act"></i></div><b class="ef-w-act"></b></div>
+          <div class="fila"><span>Más eficiente</span><div class="pista"><i class="ef-barra-ef"></i></div><b class="ef-w-ef"></b></div>
+        </div>
+        <div class="consumos tres">
+          <div class="tile destacada"><span>Ahorro de energía</span><b class="ef-pct"></b><small>menos kWh con el mismo uso</small></div>
+          <div class="tile"><span>Ahorro al bimestre</span><b class="ef-bim"></b></div>
+          <div class="tile"><span>Ahorro al año</span><b class="ef-anio"></b></div>
+        </div>
+        <ul class="datos ef-datos"></ul>
+        <label>¿Cuánto cuesta el aparato eficiente? (opcional)</label>
+        <input type="number" class="ef-precio" inputmode="decimal" min="0" step="any" placeholder="Ej. 3500" oninput="alEscribirPrecio(this)">
+        <p class="ef-recupera" aria-live="polite"></p>
+        <p class="nota-legal">Los porcentajes son valores típicos de referencia. Si tu aparato ya es moderno y eficiente, el ahorro será menor. Con tu consumo real en los bloques caros de la tarifa, el ahorro puede ser mayor.</p>
+      </div>
+    </details>
+    <details class="panel">
+      <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><span>Tu aporte al ODS 7</span></summary>
+      <div class="panel-cuerpo">
+        <p class="ods-intro"></p>
+        <ul class="metas">
+          <li><span class="meta-n">7.1</span><div><b>Energía asequible</b><p class="ods-71"></p></div></li>
+          <li><span class="meta-n">7.2</span><div><b>Más energía renovable</b><p class="ods-72"></p></div></li>
+          <li><span class="meta-n">7.3</span><div><b>Más eficiencia energética</b><p class="ods-73"></p></div></li>
+          <li><span class="meta-n">7.a · 7.b</span><div><b>Cooperación y tecnología para todos</b><p>Cerca de 666 millones de personas siguen sin electricidad y 2,100 millones sin formas limpias de cocinar (2023). Las metas 7.a y 7.b piden cooperación internacional, tecnología limpia e infraestructura para cambiarlo. Usar bien la energía es la parte que sí está en tus manos.</p></div></li>
+        </ul>
+      </div>
+    </details>`;
+
+  function poner(sel, texto) {
+    document.querySelectorAll(sel).forEach(function (e) { e.textContent = texto; });
+  }
+  function llenarLista(sel, items) {
+    document.querySelectorAll(sel).forEach(function (ul) {
+      ul.innerHTML = "";
+      items.forEach(function (d) {
+        var li = document.createElement("li");
+        if (d[2]) { li.className = d[2]; }
+        var b = document.createElement("b");
+        b.textContent = d[0] + " ";
+        li.appendChild(b);
+        li.appendChild(document.createTextNode(d[1]));
+        ul.appendChild(li);
+      });
+    });
+  }
+  function textoPaneles(p) {
+    if (p < 1) { return "menos de un panel (alrededor de " + Math.max(1, Math.round(p * 100)) + " % de uno)"; }
+    var n = Math.ceil(p);
+    return n + (n === 1 ? " panel" : " paneles");
+  }
+
+  function actualizarRecuperacion() {
+    var txt = "";
+    if (precioEf > 0) {
+      if (ahorroMesActual > 0.01) {
+        var meses = precioEf / ahorroMesActual;
+        txt = "Con ese precio se pagaría solo en unos " + (meses < 24 ? Math.ceil(meses) + " meses" : fmt(meses / 12) + " años") + " (contando solo el ahorro de energía).";
+      } else {
+        txt = "Con este consumo no hay un ahorro estimado que recupere la inversión.";
+      }
+    }
+    poner(".ef-recupera", txt);
+  }
+  function alEscribirPrecio(el) {
+    var v = parseFloat(el.value);
+    precioEf = (Number.isFinite(v) && v > 0) ? v : 0;
+    document.querySelectorAll(".ef-precio").forEach(function (i) { if (i !== el) { i.value = el.value; } });
+    actualizarRecuperacion();
+  }
+
+  // Rellena los paneles de la pantalla de recomendaciones y de la de costo con los datos del aparato
+  function renderPaneles() {
+    if (!estado.nivel) { return; }
+    var reg = regionActual(), tarifa = reg.tarifa;
+    var verano = (temporada === "verano" && tarifa !== "1");
+    var ef = EFICIENTE_NOMBRE[estado.aparato] || EFICIENTE[estado.tipo] || EFICIENTE.otros;
+    var kwhMes = estado.kwh * 30, horasDia = estado.horasSemana / 7;
+    var kwhEf = kwhMes * (1 - ef.ahorro), wEf = estado.watts * (1 - ef.ahorro);
+    var mesAct = costoMes(kwhMes, 0, tarifa, verano), mesEf = costoMes(kwhEf, 0, tarifa, verano);
+    var ahorroMes = mesAct - mesEf, ahorroKwh = kwhMes - kwhEf, pct = Math.round(ef.ahorro * 100);
+    var tarifaTxt = "tarifa " + tarifa + (tarifa === "1" ? "" : (verano ? " en verano" : " fuera de verano"));
+    ahorroMesActual = ahorroMes;
+
+    poner(".ef-intro", "Tu «" + estado.aparato + "» (" + hrs(estado.watts) + " W) frente a una alternativa eficiente típica: " + ef.alt + ".");
+    poner(".ef-w-act", hrs(estado.watts) + " W");
+    poner(".ef-w-ef", "≈ " + hrs(Math.round(wEf * 10) / 10) + " W");
+    document.querySelectorAll(".ef-barra-act").forEach(function (i) { i.style.width = "100%"; });
+    document.querySelectorAll(".ef-barra-ef").forEach(function (i) { i.style.width = ((1 - ef.ahorro) * 100) + "%"; });
+    poner(".ef-pct", pct + " %");
+    poner(".ef-bim", dinero(ahorroMes * 2));
+    poner(".ef-anio", dinero(ahorroMes * 365 / 30));
+
+    var datos = [
+      ["Qué cambia:", ef.det, ""],
+      ["Tu consumo al mes:", "pasaría de " + fmt(kwhMes) + " kWh a " + fmt(kwhEf) + " kWh (ahorras " + fmt(ahorroKwh) + " kWh).", ""],
+      ["Tu costo al bimestre:", "de " + dinero(mesAct * 2) + " a " + dinero(mesEf * 2) + " con la " + tarifaTxt + ".", ""],
+      ["Menos emisiones:", "evitas cerca de " + fmt(ahorroKwh * KG_CO2_POR_KWH) + " kg de CO₂ al mes.", ""]
+    ];
+    if (estado.sugerido > 0 && estado.watts >= estado.sugerido * 1.3) {
+      datos.push(["Gasta más que el promedio:", "tu aparato usa " + hrs(estado.watts) + " W y el promedio de su tipo es " + hrs(estado.sugerido) + " W. Puede ser un modelo antiguo, así que cambiarlo podría ahorrarte más de lo estimado.", "aviso"]);
+    } else if (estado.sugerido > 0 && estado.watts <= estado.sugerido * 0.7) {
+      datos.push(["Ya gasta poco:", "tu aparato usa menos que el promedio de su tipo (" + hrs(estado.sugerido) + " W), así que probablemente ya es eficiente y el ahorro real sería menor.", ""]);
+    }
+    if (horasDia >= 8) {
+      datos.push(["Lo usas muchas horas:", "es un buen candidato para cambiarlo, porque el ahorro se acumula todos los días.", ""]);
+    } else if (horasDia < 1) {
+      datos.push(["Lo usas poco:", "el ahorro en pesos es pequeño; conviene priorizar equipos que uses más horas o con más Watts.", ""]);
+    }
+    if (ef.ahorro <= 0.15) {
+      datos.push(["Poco margen de mejora:", "en este tipo de aparato el ahorro está sobre todo en cómo lo usas. Revisa las Recomendaciones de Consumo.", "aviso"]);
+    }
+    llenarLista(".ef-datos", datos);
+    actualizarRecuperacion();
+
+    poner(".ods-intro", "El ODS 7 busca energía asequible, fiable, sostenible y moderna para todos. Así se relaciona tu «" + estado.aparato + "» con sus metas:");
+    poner(".ods-71", "Pagas cerca de " + dinero(mesAct * 2) + " al bimestre por este aparato. Con una alternativa eficiente serían unos " + dinero(mesEf * 2) + ": ese ahorro hace que la energía sea más asequible para tu hogar.");
+    poner(".ods-72", "Para generar con sol lo que gasta en un mes (" + fmt(kwhMes) + " kWh) harían falta " + textoPaneles(kwhMes / KWH_PANEL_MES) + " de 550 W, con unas 5 horas de sol pico al día. Con la alternativa eficiente bastarían " + textoPaneles(kwhEf / KWH_PANEL_MES) + ". Cada kWh renovable sustituye energía de la red, que emite cerca de " + KG_CO2_POR_KWH + " kg de CO₂ por kWh.");
+    poner(".ods-73", "Con la alternativa harías lo mismo usando " + pct + " % menos energía. Mejorar así la eficiencia es justo lo que busca la meta 7.3: ahorrar energía sin perder el servicio.");
+  }
+
+  // Inicialización
+  var ddCategoria = crearDD("categoria", "Selecciona una categoría", elegirCategoria);
+  var ddAparato = crearDD("aparato", "Selecciona un aparato", function () { limpiarError("aparato", "error-aparato"); });
+  var ddTipoOtro = crearDD("tipo-otro", "No estoy seguro", null);
+  document.querySelectorAll(".paneles-ods").forEach(function (c) { if (!c.innerHTML.trim()) { c.innerHTML = PANELES_HTML; } });
+  ddTipoOtro.opciones(TIPOS_OTRO);
+  ddRegion = crearDD("region", "Selecciona tu tarifa", alElegirRegion);
+  ddRegion.opciones(REGIONES.map(function (g) { return { valor: g.valor, texto: g.texto, nota: g.nota }; }));
+  ddRegion.elegir(0);
+  ddCategoria.opciones(Object.keys(CATALOGO).map(function (k) { return { valor: k, texto: k }; })
+    .concat({ valor: OTROS, texto: "Otros", nota: "Cualquier aparato" }));
+  cambiarModo("dia");
+  try { history.replaceState({ pantalla: 1, pos: 0 }, "", ""); } catch (err) {}
+  mostrarPantalla(1, false, true);
+</script>
+</body>
+</html>
