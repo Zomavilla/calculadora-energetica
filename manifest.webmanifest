@@ -1,0 +1,31 @@
+{
+  "name": "Calculadora y Gestor de Eficiencia Energética",
+  "short_name": "Eficiencia",
+  "description": "Estima el consumo y el costo de la luz de tu casa con las tarifas de CFE y conoce el ODS 7.",
+  "lang": "es-MX",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#e6f4fb",
+  "theme_color": "#0f7a4f",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
