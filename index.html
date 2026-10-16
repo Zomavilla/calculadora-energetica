@@ -5,8 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="description" content="Calculadora y Gestor de Eficiencia Energética: estima el consumo y el costo de la luz de tu casa con las tarifas de CFE y conoce el ODS 7.">
-<meta name="theme-color" content="#0f7a4f" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#08171a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0f7a4f" id="meta-tema">
+<script>
+/* Aplica el tema guardado antes de pintar: así no hay parpadeo. Primera visita: tema verde y modo oscuro automático activado. */
+(function () {
+  var d = document.documentElement, g = null;
+  try { g = JSON.parse(localStorage.getItem("eficiencia-apariencia")); } catch (e) {}
+  var temas = ["verde", "oceano", "atardecer", "violeta"];
+  var tema = (g && temas.indexOf(g.tema) >= 0) ? g.tema : "verde";
+  var auto = (g && typeof g.auto === "boolean") ? g.auto : true;
+  var manual = (g && g.manual === "oscuro") ? "oscuro" : "claro";
+  var oscuro = auto ? !!(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) : manual === "oscuro";
+  d.setAttribute("data-tema", tema);
+  d.setAttribute("data-modo", oscuro ? "oscuro" : "claro");
+})();
+</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Eficiencia">
@@ -16,13 +29,22 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Calculadora y Gestor de Eficiencia Energética</title>
 <style>
+/* Variables compartidas y tema por defecto (verde, claro) */
 :root{
-  --hoja:#0f7a4f; --brote:#3ecf8e; --cielo:#e6f4fb; --agua:#1b8fc7; --blanco:#fff;
-  --tinta:#0d2b2a; --tinta-fija:#0d2b2a; --gris:#53706b; --linea:#cfe3dd;
-  --verde:#22c55e; --amarillo:#f5b50a; --rojo:#e5392f;
-  --menta:#ecfdf5; --hoja-hover:#0b6340; --sobre-hoja:#fff;
+  --verde:#22c55e; --amarillo:#f5b50a; --rojo:#e5392f; --tinta-fija:#0d2b2a;
   --tecnm:#1b396a; --tecnm-suave:#e8eef8; --tecnm-hover:#142c52; --sobre-tecnm:#fff;
+  --hoja:#0f7a4f; --brote:#3ecf8e; --cielo:#e6f4fb; --agua:#1b8fc7; --blanco:#ffffff; --tinta:#0d2b2a; --gris:#53706b; --linea:#cfe3dd; --menta:#ecfdf5; --hoja-hover:#0b6340; --sobre-hoja:#ffffff;
 }
+html[data-modo="oscuro"]{color-scheme:dark; --tecnm:#8fb2ea; --tecnm-suave:#14253f; --tecnm-hover:#b6cff5; --sobre-tecnm:#0b1a33}
+/* Temas: cada uno con su variante clara y su variante oscura */
+[data-tema="verde"]{--hoja:#0f7a4f; --brote:#3ecf8e; --cielo:#e6f4fb; --agua:#1b8fc7; --blanco:#ffffff; --tinta:#0d2b2a; --gris:#53706b; --linea:#cfe3dd; --menta:#ecfdf5; --hoja-hover:#0b6340; --sobre-hoja:#ffffff;}
+[data-tema="oceano"]{--hoja:#0a6ea8; --brote:#38b6ff; --cielo:#e4f1fb; --agua:#0f9aa8; --blanco:#ffffff; --tinta:#0b2740; --gris:#4f6a82; --linea:#c9dcec; --menta:#eaf4fd; --hoja-hover:#075783; --sobre-hoja:#ffffff;}
+[data-tema="atardecer"]{--hoja:#b2450a; --brote:#fb923c; --cielo:#fff1e2; --agua:#2b7fb8; --blanco:#ffffff; --tinta:#3a1f0d; --gris:#7a5a45; --linea:#f0d9c2; --menta:#fff7ed; --hoja-hover:#8d3607; --sobre-hoja:#ffffff;}
+[data-tema="violeta"]{--hoja:#6d3fc4; --brote:#b794f6; --cielo:#f3edfc; --agua:#1b8fc7; --blanco:#ffffff; --tinta:#1e1236; --gris:#625580; --linea:#ddd0f1; --menta:#f6f1fd; --hoja-hover:#522d9a; --sobre-hoja:#ffffff;}
+[data-modo="oscuro"][data-tema="verde"],[data-modo="oscuro"] [data-tema="verde"]{--hoja:#34c98a; --brote:#3ecf8e; --cielo:#08171a; --agua:#5bb8e8; --blanco:#0d1f1f; --tinta:#f0f9ff; --gris:#9fb9b5; --linea:#24413e; --menta:#12331f; --hoja-hover:#5ee0a8; --sobre-hoja:#06241a;}
+[data-modo="oscuro"][data-tema="oceano"],[data-modo="oscuro"] [data-tema="oceano"]{--hoja:#4db8f0; --brote:#4db8f0; --cielo:#07121d; --agua:#2fd0cf; --blanco:#0c1c2b; --tinta:#eef7ff; --gris:#9db6cc; --linea:#1f3a52; --menta:#10304a; --hoja-hover:#7ccdf6; --sobre-hoja:#04202f;}
+[data-modo="oscuro"][data-tema="atardecer"],[data-modo="oscuro"] [data-tema="atardecer"]{--hoja:#fb923c; --brote:#fb923c; --cielo:#150e09; --agua:#6bb6e8; --blanco:#211710; --tinta:#fff4ea; --gris:#cdb5a2; --linea:#4a3626; --menta:#3a2514; --hoja-hover:#fdba74; --sobre-hoja:#2a1405;}
+[data-modo="oscuro"][data-tema="violeta"],[data-modo="oscuro"] [data-tema="violeta"]{--hoja:#b794f6; --brote:#b794f6; --cielo:#0e0a1b; --agua:#6cc4f0; --blanco:#17112a; --tinta:#f5efff; --gris:#bcb0d6; --linea:#34285a; --menta:#271c47; --hoja-hover:#cdb4fa; --sobre-hoja:#1d0f3a;}
 *{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px}
 body{
@@ -101,7 +123,7 @@ input:focus-visible,.dd-campo:focus-visible,button:focus-visible{outline:3px sol
 .dd-texto{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .dd-campo::after{
   content:""; position:absolute; right:14px; top:50%; width:20px; height:20px; margin-top:-10px;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f7a4f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat;
+  background:var(--hoja); -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f7a4f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f7a4f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat;
   transition:transform .2s;
 }
 .dd.abierto .dd-campo::after{transform:rotate(180deg)}
@@ -115,7 +137,7 @@ input:focus-visible,.dd-campo:focus-visible,button:focus-visible{outline:3px sol
 .dd.abierto .dd-lista{opacity:1; visibility:visible; pointer-events:auto; transform:none; transition:opacity .18s, transform .18s}
 .dd-lista li{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:11px 12px; border-radius:8px; cursor:pointer; font-size:.97rem}
 .dd-lista li.activo{background:var(--cielo)}
-.dd-lista li[aria-selected="true"]{background:#e1f7ea; color:var(--hoja); font-weight:700}
+.dd-lista li[aria-selected="true"]{background:var(--menta); color:var(--hoja); font-weight:700}
 .dd-nota{flex:none; color:var(--gris); font-size:.8rem; font-weight:600}
 /* Selector tipo píldora (Al día / A la semana) */
 .pildora{display:flex; gap:4px; padding:4px; margin-bottom:10px; background:var(--cielo); border:2px solid var(--linea); border-radius:999px}
@@ -339,8 +361,8 @@ input:disabled{opacity:.6; cursor:not-allowed}
 .credito dt{font-size:.8rem; font-weight:700; color:var(--tecnm)}
 .credito dd{font-weight:700}
 .modal .modal-pie{margin:14px 0 0; font-size:.8rem}
-.modal button{width:100%; background:var(--tecnm); color:var(--sobre-tecnm)}
-.modal button:hover{background:var(--tecnm-hover)}
+.modal .cerrar{width:100%; background:var(--tecnm); color:var(--sobre-tecnm)}
+.modal .cerrar:hover{background:var(--tecnm-hover)}
 @keyframes fundido-in{from{opacity:0}to{opacity:1}}
 @keyframes fundido-out{from{opacity:1}to{opacity:0}}
 @keyframes subir-in{from{opacity:0; transform:translateY(10px) scale(.98)}to{opacity:1; transform:none}}
@@ -399,36 +421,26 @@ input:disabled{opacity:.6; cursor:not-allowed}
   main{padding-top:3vh}
 }
 
-/* Modo oscuro automático */
-@media (prefers-color-scheme:dark){
-  :root{
-    color-scheme:dark;
-    --blanco:#0d1f1f; --cielo:#08171a; --tinta:#f0f9ff; --gris:#9fb9b5; --linea:#24413e;
-    --hoja:#34c98a; --hoja-hover:#5ee0a8; --sobre-hoja:#06241a; --menta:#12331f; --agua:#5bb8e8;
-    --tecnm:#8fb2ea; --tecnm-suave:#14253f; --tecnm-hover:#b6cff5; --sobre-tecnm:#0b1a33;
-  }
-  .semaforo{border:1px solid var(--linea)}
-  .error{color:#ff9d94}
-  .invalido{border-color:#ff8f85}
-  .estado.verde{background:#10301f; color:#8be8b3}
-  .estado.amarillo{background:#33290a; color:#f3d37a}
-  .estado.rojo{background:#3a1613; color:#ff9d94}
-  .badge.tip{background:#12303f; color:#8cd0f5}
-  .badge.mant{background:#12331f; color:#8be8b3}
-  .badge.inv{background:#3a2f0c; color:#f3d37a}
-  .consejos li.urgente{background:#3a1613}
-  .dd-lista li.activo{background:#16302d}
-  .dd-lista li[aria-selected="true"]{background:#12331f; color:#8be8b3}
-  .dd-campo::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2334c98a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")}
-}
+/* Modo oscuro: ajustes de los colores con significado fijo (estados, etiquetas, errores) */
+html[data-modo="oscuro"] .semaforo{border:1px solid var(--linea)}
+html[data-modo="oscuro"] .error{color:#ff9d94}
+html[data-modo="oscuro"] .invalido{border-color:#ff8f85}
+html[data-modo="oscuro"] .estado.verde{background:#10301f; color:#8be8b3}
+html[data-modo="oscuro"] .estado.amarillo{background:#33290a; color:#f3d37a}
+html[data-modo="oscuro"] .estado.rojo{background:#3a1613; color:#ff9d94}
+html[data-modo="oscuro"] .badge.tip{background:#12303f; color:#8cd0f5}
+html[data-modo="oscuro"] .badge.mant{background:#12331f; color:#8be8b3}
+html[data-modo="oscuro"] .badge.inv{background:#3a2f0c; color:#f3d37a}
+html[data-modo="oscuro"] .consejos li.urgente{background:#3a1613}
+html[data-modo="oscuro"] .dd-lista li.activo{background:#16302d}
 
 /* ===== Flujo único: encabezado con regreso, buscador, tarjetas, tiempo en vivo y dashboard con pestañas ===== */
 header.barra{gap:8px}
 button.atras{min-width:0; min-height:0; height:40px; padding:0 10px 0 6px; display:flex; align-items:center; gap:4px; flex:none; background:transparent; color:var(--hoja); border-radius:12px; font-weight:700}
 button.atras:hover:not(:disabled){background:var(--cielo)}
-button.atras:disabled{opacity:.3; cursor:default}
-.atras svg{width:24px; height:24px; flex:none}
-.atras .txt{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+button.atras[hidden]{display:none}
+button.atras svg{width:24px; height:24px; flex:none}
+button.atras .txt{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
 .marca{flex:1}
 
 /* Mi lista de equipos */
@@ -505,7 +517,7 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
 .estado[hidden]{display:none}
 
 @media (min-width:768px){
-  .atras .txt{position:static; width:auto; height:auto; clip:auto; overflow:visible}
+  button.atras .txt{position:static; width:auto; height:auto; clip:auto; overflow:visible}
   #pantalla4{max-width:1060px; padding:48px 64px}
   .bloques-cfe{grid-template-columns:repeat(3,1fr)}
   .resumen-dash{gap:36px}
@@ -520,19 +532,44 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
 .pestanas .opt:nth-child(2){flex:1.8}
 .pestanas .opt:nth-child(3){flex:.8}
 .barra-reparto{margin-top:16px}
+
+/* Logo y sol con los colores del tema */
+.lg-fondo{fill:var(--brote)}
+.lg-rayo{fill:var(--tinta-fija)}
+.sol .lg-aro{fill:var(--cielo); stroke:var(--agua); stroke-width:3}
+
+/* Temas y apariencia (ventana "Acerca de") */
+.fila-switch{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:6px 0 12px}
+.fila-switch b{display:block}
+.fila-switch p{color:var(--gris); font-size:.85rem; margin:2px 0 0}
+button.switch{position:relative; flex:none; min-width:0; min-height:0; width:54px; height:32px; padding:0; border-radius:999px; background:var(--linea); transition:background .2s}
+button.switch:hover{background:var(--linea)}
+button.switch[aria-checked="true"],button.switch[aria-checked="true"]:hover{background:var(--tecnm)}
+.switch .knob{position:absolute; top:3px; left:3px; width:26px; height:26px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.35); transition:transform .2s}
+button.switch[aria-checked="true"] .knob{transform:translateX(22px)}
+.tema-titulo{margin:16px 0 8px; font-weight:800; font-size:.9rem}
+.temas{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+button.tema-op{min-width:0; min-height:0; width:auto; padding:10px; display:grid; gap:8px; justify-items:stretch; text-align:left; background:var(--blanco); color:var(--tinta); border:2px solid var(--linea); border-radius:14px; font-weight:700; font-size:.9rem}
+button.tema-op:hover{background:var(--blanco)}
+button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 0 0 0 1px var(--tecnm)}
+.tema-op .muestra{display:flex; height:32px; border-radius:9px; overflow:hidden; border:1px solid var(--linea)}
+.tema-op .muestra i{flex:1}
+.tema-op .muestra i:nth-child(1){background:var(--cielo)}
+.tema-op .muestra i:nth-child(2){background:var(--hoja)}
+.tema-op .muestra i:nth-child(3){background:var(--brote)}
 </style>
 </head>
 <body>
 <div class="app">
 <header class="barra">
-  <button type="button" class="atras" id="btn-atras" aria-label="Regresar" onclick="regresar()" disabled>
+  <button type="button" class="atras" id="btn-atras" aria-label="Regresar" onclick="regresar()" hidden>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
     <span class="txt">Regresar</span>
   </button>
   <div class="marca" role="button" tabindex="0" aria-label="Volver al inicio" onclick="reiniciar()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();reiniciar();}">
     <svg viewBox="0 0 32 32" aria-hidden="true">
-      <circle cx="16" cy="16" r="15" fill="#3ecf8e"/>
-      <path d="M18 5 9 18h6l-1 9 9-13h-6z" fill="#0d2b2a"/>
+      <circle class="lg-fondo" cx="16" cy="16" r="15"/>
+      <path class="lg-rayo" d="M18 5 9 18h6l-1 9 9-13h-6z"/>
     </svg>
     <span>Eficiencia Energética</span>
   </div>
@@ -552,9 +589,9 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
   <!-- Pantalla 1: Inicio -->
   <section id="pantalla1" class="pantalla activa" aria-labelledby="t1">
     <svg class="sol" viewBox="0 0 96 96" aria-hidden="true">
-      <circle cx="48" cy="48" r="46" style="fill:var(--cielo)" stroke="#1b8fc7" stroke-width="3"/>
-      <circle cx="48" cy="48" r="26" fill="#3ecf8e"/>
-      <path d="M52 28 38 50h9l-2 18 15-23h-9z" fill="#0d2b2a"/>
+      <circle class="lg-aro" cx="48" cy="48" r="46"/>
+      <circle class="lg-fondo" cx="48" cy="48" r="26"/>
+      <path class="lg-rayo" d="M52 28 38 50h9l-2 18 15-23h-9z"/>
     </svg>
     <span class="ods">ODS 7 · Energía asequible y no contaminante</span>
     <h1 id="t1">Calculadora y Gestor de Eficiencia Energética</h1>
@@ -784,6 +821,26 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
       </div>
     </dl>
     <details class="panel">
+      <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span><span>Temas y apariencia</span></summary>
+      <div class="panel-cuerpo">
+        <div class="fila-switch">
+          <div><b>Modo oscuro automático</b><p id="estado-modo">Sigue el modo de tu teléfono o computadora.</p></div>
+          <button type="button" class="switch" id="sw-auto" role="switch" aria-checked="true" aria-label="Modo oscuro automático" onclick="alternarAuto()"><span class="knob"></span></button>
+        </div>
+        <div class="pildora" id="pildora-manual" role="group" aria-label="Modo de color" hidden>
+          <button type="button" class="opt" id="man-claro" aria-pressed="false" onclick="elegirModoManual('claro')">Claro</button>
+          <button type="button" class="opt" id="man-oscuro" aria-pressed="false" onclick="elegirModoManual('oscuro')">Oscuro</button>
+        </div>
+        <p class="tema-titulo">Tema de color</p>
+        <div class="temas" role="radiogroup" aria-label="Tema de color">
+          <button type="button" class="tema-op" role="radio" data-tema="verde" aria-checked="true" onclick="elegirTema('verde')"><span class="muestra"><i></i><i></i><i></i></span><span>Verde ODS</span></button>
+          <button type="button" class="tema-op" role="radio" data-tema="oceano" aria-checked="false" onclick="elegirTema('oceano')"><span class="muestra"><i></i><i></i><i></i></span><span>Océano</span></button>
+          <button type="button" class="tema-op" role="radio" data-tema="atardecer" aria-checked="false" onclick="elegirTema('atardecer')"><span class="muestra"><i></i><i></i><i></i></span><span>Atardecer</span></button>
+          <button type="button" class="tema-op" role="radio" data-tema="violeta" aria-checked="false" onclick="elegirTema('violeta')"><span class="muestra"><i></i><i></i><i></i></span><span>Violeta</span></button>
+        </div>
+      </div>
+    </details>
+    <details class="panel">
       <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span><span>Fuentes y supuestos</span></summary>
       <div class="panel-cuerpo">
         <ul class="fuentes">
@@ -796,7 +853,7 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
         </ul>
       </div>
     </details>
-    <button type="button" onclick="cerrarModal()">Cerrar</button>
+    <button type="button" class="cerrar" onclick="cerrarModal()">Cerrar</button>
     <p class="modal-pie">Proyecto educativo · Agenda 2030</p>
   </div>
 </dialog>
@@ -1275,7 +1332,7 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
       } catch (err) { /* sin historial disponible: la navegación sigue funcionando */ }
     }
     pantallaActual = numero;
-    $("btn-atras").disabled = (numero === 1);
+    $("btn-atras").hidden = (numero === 1);
   }
 
   // Una pantalla solo se abre desde el historial si ya hay datos que mostrar
@@ -1483,7 +1540,7 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
   var LIMITE_DAC = { "1": 250, "1A": 300, "1B": 400, "1C": 850, "1D": 1000, "1E": 2000, "1F": 2500 };   // kWh al mes (promedio de 12 meses)
   var FACTOR_PERIODO = { dia: 1, semana: 7, mes: 30, bim: 60 };
   var ETQ_PERIODO = { dia: "al día", semana: "a la semana", mes: "al mes", bim: "a los 2 meses" };
-  var PALETA = ["#0f7a4f", "#1b8fc7", "#f5b50a", "#e5392f", "#7c5cd6", "#e87d1e", "#3ecf8e"];
+  var PALETA = ["var(--hoja)", "var(--agua)", "#f5b50a", "#e5392f", "#7c5cd6", "#e87d1e", "var(--brote)"];   // los tres de tema siguen el tema elegido
   var COLOR_RESTO = "#8aa39e";
   var REDUCIR = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   var SVG_PAPELERA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
@@ -2137,7 +2194,67 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
     $("tab-" + PESTANAS[i]).focus();
   });
 
+  // ---------- Temas y modo oscuro ----------
+  var CLAVE_APARIENCIA = "eficiencia-apariencia";
+  var TEMAS_IDS = ["verde", "oceano", "atardecer", "violeta"];
+  var apariencia = { tema: "verde", auto: true, manual: "claro" };   // primera visita: modo oscuro automático activado
+  var mqOscuro = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+
+  function leerApariencia() {
+    try {
+      var g = JSON.parse(localStorage.getItem(CLAVE_APARIENCIA));
+      if (g) {
+        if (TEMAS_IDS.indexOf(g.tema) >= 0) { apariencia.tema = g.tema; }
+        if (typeof g.auto === "boolean") { apariencia.auto = g.auto; }
+        if (g.manual === "claro" || g.manual === "oscuro") { apariencia.manual = g.manual; }
+      }
+    } catch (err) { /* sin almacenamiento: se usan los valores de la primera visita */ }
+  }
+  function guardarApariencia() {
+    try { localStorage.setItem(CLAVE_APARIENCIA, JSON.stringify(apariencia)); } catch (err) {}
+  }
+  function esOscuro() { return apariencia.auto ? !!(mqOscuro && mqOscuro.matches) : apariencia.manual === "oscuro"; }
+
+  function aplicarApariencia() {
+    var raiz = document.documentElement, oscuro = esOscuro();
+    raiz.setAttribute("data-tema", apariencia.tema);
+    raiz.setAttribute("data-modo", oscuro ? "oscuro" : "claro");
+    var meta = $("meta-tema");
+    if (meta) { meta.setAttribute("content", getComputedStyle(raiz).getPropertyValue(oscuro ? "--cielo" : "--hoja").trim() || "#0f7a4f"); }
+    $("sw-auto").setAttribute("aria-checked", apariencia.auto ? "true" : "false");
+    $("pildora-manual").hidden = apariencia.auto;
+    ["claro", "oscuro"].forEach(function (m) {
+      var b = $("man-" + m), on = !apariencia.auto && apariencia.manual === m;
+      b.classList.toggle("activa", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    document.querySelectorAll(".tema-op").forEach(function (b) {
+      b.setAttribute("aria-checked", b.getAttribute("data-tema") === apariencia.tema ? "true" : "false");
+    });
+    $("estado-modo").textContent = apariencia.auto
+      ? "Sigue el modo de tu dispositivo (ahora: " + (oscuro ? "oscuro" : "claro") + ")."
+      : "Desactivado: elige claro u oscuro a mano.";
+  }
+  function alternarAuto() {
+    var oscuroAhora = esOscuro();
+    apariencia.auto = !apariencia.auto;
+    if (!apariencia.auto) { apariencia.manual = oscuroAhora ? "oscuro" : "claro"; }   // al apagarlo no cambia lo que ves
+    guardarApariencia();
+    aplicarApariencia();
+  }
+  function elegirModoManual(m) { apariencia.manual = m; guardarApariencia(); aplicarApariencia(); }
+  function elegirTema(id) { apariencia.tema = id; guardarApariencia(); aplicarApariencia(); }
+  function iniciarApariencia() {
+    leerApariencia();
+    aplicarApariencia();
+    if (mqOscuro) {
+      var alCambiar = function () { if (apariencia.auto) { aplicarApariencia(); } };
+      if (mqOscuro.addEventListener) { mqOscuro.addEventListener("change", alCambiar); } else if (mqOscuro.addListener) { mqOscuro.addListener(alCambiar); }
+    }
+  }
+
   // ---------- Inicialización ----------
+  iniciarApariencia();
   ddRegion = crearDD("region", "Selecciona tu tarifa", alElegirRegion);
   ddRegion.opciones(REGIONES.map(function (g) { return { valor: g.valor, texto: g.texto, nota: g.nota }; }));
   ddRegion.elegir(0);
