@@ -178,10 +178,10 @@ button.sec:hover{background:var(--menta,#ecfdf5)}
 /* Dashboard */
 .resultado{display:flex; align-items:center; gap:22px; margin:18px 0 8px}
 .semaforo{
-  flex:none; width:76px; background:var(--tinta-fija); border-radius:38px; padding:12px 0;
+  flex:none; width:76px; background:var(--tinta); border-radius:38px; padding:12px 0;
   display:flex; flex-direction:column; align-items:center; gap:10px;
 }
-.luz{width:48px; height:48px; border-radius:50%; background:#ffffff; opacity:0.1; transition:background .4s ease, box-shadow .4s ease, opacity .4s ease}
+.luz{width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,0.12); transition:background .3s, box-shadow .3s}
 .semaforo[data-nivel="rojo"] .luz.rojo{background:var(--rojo); box-shadow:0 0 22px var(--rojo); opacity:1}
 .semaforo[data-nivel="amarillo"] .luz.amarillo{background:var(--amarillo); box-shadow:0 0 22px var(--amarillo); opacity:1}
 .semaforo[data-nivel="verde"] .luz.verde{background:var(--verde); box-shadow:0 0 22px var(--verde); opacity:1}
@@ -424,8 +424,7 @@ input:disabled{opacity:.6; cursor:not-allowed}
 }
 
 /* Modo oscuro: ajustes de los colores con significado fijo (estados, etiquetas, errores) */
-html[data-modo="oscuro"] .semaforo{border:1px solid var(--linea)}
-html[data-modo="oscuro"] .error{color:#ff9d94}
+html[data-modo="oscuro"] .semaforo{background:var(--cielo); border:3px solid var(--linea); box-shadow:inset 0 4px 10px rgba(0,0,0,0.25)}html[data-modo="oscuro"] .error{color:#ff9d94}
 html[data-modo="oscuro"] .invalido{border-color:#ff8f85}
 html[data-modo="oscuro"] .estado.verde{background:#10301f; color:#8be8b3}
 html[data-modo="oscuro"] .estado.amarillo{background:#33290a; color:#f3d37a}
@@ -501,13 +500,11 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
 .bloque-cfe b{font-size:1.02rem}
 .bloque-cfe span{color:var(--gris); font-size:.86rem}
 .bloque-cfe .bc-casa{color:var(--tinta); font-weight:800}
-.donut-wrap{display:flex; justify-content:center; margin:6px 0 16px}
+.donut-wrap{display:flex; justify-content:center; margin:6px 0 16px; overflow:visible}
 .donut-wrap[hidden]{display:none}
-.donut{position:relative; width:176px; height:176px; border-radius:50%}
-.donut::after{content:""; position:absolute; inset:30px; border-radius:50%; background:var(--blanco)}
-.donut-centro{position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; line-height:1.15}
-.donut-centro b{font-size:1.4rem; font-variant-numeric:tabular-nums}
-.donut-centro small{color:var(--gris); font-weight:700; font-size:.78rem}
+.donut{display:block; width:100%; max-width:560px; margin:0 auto; overflow:visible}
+.donut svg{display:block; width:100%; height:auto; overflow:visible}
+.donut text{font-family:inherit}
 .des-item .des-cab b::before{content:""; display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--c); margin-right:8px}
 .des-item .pista i{background:var(--c)}
 .panel.nota{margin-top:16px}
@@ -617,6 +614,139 @@ html[data-modo="oscuro"] button.vaciar{color:#ff9d94; border-color:#ff8f85}
 .modal .salir-borrar{width:100%; background:transparent; color:var(--error); border:2px solid var(--error)}
 .modal .salir-borrar:hover{background:color-mix(in srgb, var(--error) 12%, transparent); color:var(--error)}
 html[data-modo="oscuro"] .modal .salir-borrar{color:#ff9d94; border-color:#ff8f85}
+
+/* ===== Animaciones extra: botones, barras y SVG ===== */
+:root{--muelle:cubic-bezier(.34,1.56,.64,1); --suave:cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{from{opacity:0; transform:scale(.6)}}
+@keyframes agita{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+@keyframes agita-icono{25%{transform:rotate(-14deg)}50%{transform:rotate(12deg)}75%{transform:rotate(-8deg)}}
+@keyframes late{50%{transform:scale(1.15)}}
+@keyframes llena{from{width:0}}
+@keyframes entra-lado{from{opacity:0; transform:translateX(-14px)}}
+
+/* Botones: elevan, brillan, hacen onda y se aplastan al pulsar */
+button{position:relative; overflow:hidden; transition:background .2s, color .2s, border-color .2s, opacity .25s, box-shadow .25s, transform .2s var(--muelle)}
+button:active:not(:disabled){transform:scale(.96)}
+.acciones button:not(.sec):not(:disabled):hover,.modal .cerrar:hover{transform:translateY(-2px); box-shadow:0 10px 22px color-mix(in srgb,var(--hoja) 38%,transparent)}
+.acciones button.sec:hover{transform:translateY(-2px)}
+.acciones button:not(.sec)::after,.modal .cerrar::after{content:""; position:absolute; inset:0; background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.38) 50%,transparent 65%); transform:translateX(-120%); transition:transform .7s var(--suave); pointer-events:none}
+.acciones button:not(.sec):not(:disabled):hover::after,.modal .cerrar:hover::after{transform:translateX(120%)}
+button.sec{background-image:linear-gradient(var(--menta),var(--menta)); background-repeat:no-repeat; background-size:0 100%; transition:background-size .35s var(--suave), color .2s, transform .2s var(--muelle), box-shadow .25s}
+button.sec:hover{background-image:linear-gradient(var(--menta),var(--menta)); background-size:100% 100%}
+#btn-siguiente-lista:not(:disabled){animation:listo .6s var(--muelle)}
+@keyframes listo{0%{transform:scale(.94)}60%{transform:scale(1.05)}}
+#pantalla1 .acciones button{animation:anillo 2.4s ease-out 1.2s 3}
+@keyframes anillo{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--hoja) 55%,transparent)}70%,100%{box-shadow:0 0 0 16px transparent}}
+.onda{position:absolute; border-radius:50%; background:currentColor; opacity:.25; transform:scale(0); pointer-events:none; animation:onda .6s ease-out forwards}
+@keyframes onda{to{transform:scale(1); opacity:0}}
+button svg{transition:transform .3s var(--muelle)}
+button.atras:hover svg{transform:translateX(-4px)}
+.info:hover svg{transform:rotate(14deg) scale(1.12)}
+.papelera:hover svg,.vaciar:hover svg{animation:agita-icono .5s}
+.copiar:hover svg{transform:translate(-2px,-2px) scale(1.12)}
+button.vaciar:not([hidden]){animation:pop .4s var(--muelle)}
+.switch .knob{transition:transform .35s var(--muelle), width .2s}
+button.switch:active .knob{width:32px}
+button.switch[aria-checked="true"]:active .knob{transform:translateX(16px)}
+.chip{animation:pop .45s var(--muelle) backwards}
+.chip:hover{transform:translateY(-2px)}
+button.tema-op:hover{transform:translateY(-2px)}
+.tema-op .muestra i{transition:flex .35s var(--suave)}
+.tema-op:hover .muestra i:nth-child(2){flex:2}
+button.tema-op[aria-checked="true"]{animation:pop-sel .4s var(--muelle)}
+@keyframes pop-sel{40%{transform:scale(1.05)}}
+
+/* Selectores de píldora: el fondo activo se desliza entre opciones */
+.pildora.con-ind:not(.pestanas){position:relative}
+.pildora .opt{position:relative; z-index:1}
+.pildora .ind{position:absolute; left:0; top:0; z-index:0; width:0; height:0; border-radius:999px; background:var(--hoja); opacity:0; pointer-events:none; transition:transform .4s var(--muelle), width .4s var(--muelle), opacity .2s}
+.pildora .ind.on{opacity:1}
+.pildora.con-ind .opt.activa,.pildora.con-ind .opt.activa:hover{background:transparent; color:var(--sobre-hoja)}
+
+/* Barras */
+.progreso span{transition:background .3s, width .45s var(--muelle)}
+.progreso span.actual{width:30px; background:linear-gradient(90deg,var(--hoja),var(--brote),var(--hoja)) 0 0/200% 100%; animation:corre 2.2s linear infinite}
+@keyframes corre{to{background-position:-200% 0}}
+@media (min-width:768px){.progreso span.actual{width:64px}}
+.barra-reparto i{transition:width .7s var(--suave); animation:llena .7s var(--suave) backwards}
+.barra-reparto .b2{animation-delay:.2s}
+.barra-reparto .b3{animation-delay:.4s}
+.pista i{animation:llena .8s var(--suave) backwards; animation-delay:calc(min(var(--i,0),10)*55ms + .15s)}
+.it-slider::-webkit-slider-thumb{transition:transform .2s var(--muelle), box-shadow .2s}
+.it-slider:not(:disabled):hover::-webkit-slider-thumb{transform:scale(1.15)}
+.it-slider:not(:disabled):active::-webkit-slider-thumb{transform:scale(1.3); box-shadow:0 0 0 9px color-mix(in srgb,var(--hoja) 22%,transparent)}
+.it-slider::-moz-range-thumb{transition:transform .2s var(--muelle), box-shadow .2s}
+.it-slider:not(:disabled):active::-moz-range-thumb{transform:scale(1.3); box-shadow:0 0 0 9px color-mix(in srgb,var(--hoja) 22%,transparent)}
+.item-tiempo{transition:background .25s, transform .25s var(--muelle)}
+.item-tiempo:has(.it-slider:active){background:var(--menta); transform:scale(1.015)}
+.cf-costo.tick{animation:tick .3s var(--muelle); transform-origin:left center}
+@keyframes tick{40%{transform:scale(1.08)}}
+
+/* SVG: sol, logo, iconos, lupa, dona y semáforo */
+.sol{animation:pop .8s var(--muelle) .15s backwards}
+.sol .lg-fondo,.sol .sol-orbita,.sol .lg-rayo{transform-box:fill-box; transform-origin:center}
+.sol .lg-fondo{animation:respira 3.4s ease-in-out infinite}
+.sol .sol-orbita{animation:gira 14s linear infinite}
+.sol .lg-rayo{animation:chispa 4.5s ease-in-out 1.5s infinite}
+@keyframes respira{50%{transform:scale(1.07)}}
+@keyframes gira{to{transform:rotate(360deg)}}
+@keyframes chispa{0%,78%,100%{transform:none; filter:none}82%{transform:rotate(-6deg) scale(1.12); filter:drop-shadow(0 0 4px var(--brote))}86%{transform:rotate(5deg) scale(1.16); filter:drop-shadow(0 0 7px var(--brote))}92%{transform:none; filter:drop-shadow(0 0 2px var(--brote))}}
+@keyframes zap{30%{transform:rotate(-9deg) scale(1.2); filter:drop-shadow(0 0 4px var(--brote))}60%{transform:rotate(7deg) scale(1.25)}}
+.marca svg{animation:pop .7s var(--muelle) .1s backwards; transition:transform .35s var(--muelle)}
+.marca:hover svg{transform:rotate(-10deg) scale(1.1)}
+.marca:hover .lg-rayo{transform-box:fill-box; transform-origin:center; animation:zap .7s ease-in-out}
+.ico,.num,.meta-n{transition:transform .3s var(--muelle)}
+.iconos li:hover .ico,.pasos li:hover .num,.metas li:hover .meta-n,.panel summary:hover .ico{transform:scale(1.15) rotate(-6deg)}
+.iconos .ico,.pasos .num{animation:pop .5s var(--muelle) backwards; animation-delay:calc(var(--i,0)*90ms + .3s)}
+.lupa{transition:color .2s}
+.buscador:focus-within .lupa{color:var(--agua); animation:lupa .5s var(--muelle)}
+@keyframes lupa{40%{transform:translateY(-50%) scale(1.25) rotate(-12deg)}}
+.modal[open] .modal-icono{animation:pop .6s var(--muelle) .12s backwards}
+.modal[open] .modal-icono svg{animation:late 2.4s ease-in-out .8s infinite}
+.modal-salir[open] .modal-icono svg{animation:agita-icono .7s .3s}
+.donut path{transition:transform .3s var(--muelle), opacity .25s, filter .25s; cursor:pointer}
+.donut path:hover{transform:translate(var(--dx,0),var(--dy,0)); filter:brightness(1.1)}
+.donut:has(path:hover) path:not(:hover){opacity:.5}
+.donut-intro .barrido{animation:dona-barre 1s cubic-bezier(.4,0,.2,1) backwards}
+@keyframes dona-barre{from{stroke-dashoffset:420}}
+.donut-intro polyline{stroke-dasharray:1; animation:linea-dibuja .5s ease-out .8s backwards}
+@keyframes linea-dibuja{from{stroke-dashoffset:1}}
+.donut-intro g text{animation:fundido-in .4s ease-out 1s backwards}
+.donut-intro>text{animation:pop .5s var(--muelle) .3s backwards; transform-box:fill-box; transform-origin:center}
+.luz{animation:luz-prueba .9s ease-out backwards; animation-delay:calc(var(--n,0)*.15s)}
+.luz.rojo{--lc:var(--rojo); --n:0}
+.luz.amarillo{--lc:var(--amarillo); --n:1}
+.luz.verde{--lc:var(--verde); --n:2}
+@keyframes luz-prueba{0%{background:rgba(255,255,255,.12); box-shadow:none}35%{background:var(--lc); box-shadow:0 0 22px var(--lc)}}
+@keyframes luz-late{50%{box-shadow:0 0 36px var(--lc),0 0 6px var(--lc); transform:scale(1.05)}}
+.semaforo[data-nivel="rojo"] .luz.rojo,.semaforo[data-nivel="amarillo"] .luz.amarillo,.semaforo[data-nivel="verde"] .luz.verde{animation:luz-prueba .9s ease-out calc(var(--n)*.15s) backwards, luz-late 2.2s ease-in-out 1.2s infinite}
+
+/* Listas y avisos */
+:is(.iconos,.pasos,.chips,.bloques-cfe,.des-lista,.consejos,.metas,.lista-tiempo,.dd-lista)>:nth-child(1){--i:0}
+:is(.iconos,.pasos,.chips,.bloques-cfe,.des-lista,.consejos,.metas,.lista-tiempo,.dd-lista)>:nth-child(2){--i:1}
+:is(.iconos,.pasos,.chips,.bloques-cfe,.des-lista,.consejos,.metas,.lista-tiempo,.dd-lista)>:nth-child(3){--i:2}
+:is(.iconos,.pasos,.chips,.bloques-cfe,.des-lista,.consejos,.metas,.lista-tiempo,.dd-lista)>:nth-child(4){--i:3}
+:is(.iconos,.pasos,.chips,.bloques-cfe,.des-lista,.consejos,.metas,.lista-tiempo,.dd-lista)>:nth-child(5){--i:4}
+:is(.iconos,.pasos,.chips,.bloques-cfe,.des-lista,.consejos,.metas,.lista-tiempo,.dd-lista)>:nth-child(6){--i:5}
+:is(.iconos,.pasos,.chips,.bloques-cfe,.des-lista,.consejos,.metas,.lista-tiempo,.dd-lista)>:nth-child(7){--i:6}
+:is(.iconos,.pasos,.chips,.bloques-cfe,.des-lista,.consejos,.metas,.lista-tiempo,.dd-lista)>:nth-child(8){--i:7}
+:is(.iconos,.pasos,.chips,.bloques-cfe,.des-lista,.consejos,.metas,.lista-tiempo,.dd-lista)>:nth-child(9){--i:8}
+:is(.iconos,.pasos,.chips,.bloques-cfe,.des-lista,.consejos,.metas,.lista-tiempo,.dd-lista)>:nth-child(n+10){--i:9}
+.bloque-cfe,.des-item,.consejos li,.item-tiempo,.dd.abierto .dd-lista li{animation:entra-lado .45s var(--suave) backwards; animation-delay:calc(min(var(--i,0),9)*55ms)}
+.chip{animation-delay:calc(var(--i,0)*45ms)}
+.consejos li::before{animation:pop .45s var(--muelle) backwards; animation-delay:calc(min(var(--i,0),9)*55ms + .15s)}
+.consejos li.urgente::before{animation:ping 2.2s ease-out 1s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--rojo) 55%,transparent)}70%,100%{box-shadow:0 0 0 12px transparent}}
+.tarjeta{animation:tarjeta-entra .5s var(--muelle)}
+@keyframes tarjeta-entra{from{opacity:0; transform:translateY(-12px) scale(.94)}}
+.estado.rojo:not([hidden]){animation:agita .6s .3s}
+.error:not([hidden]),.invalido{animation:agita .4s}
+.resultados-busqueda:not([hidden]){animation:aparecer .2s ease-out}
+.rb-n{transition:transform .2s var(--muelle)}
+.rb-op:hover .rb-n{transform:translateX(4px)}
+input,.dd-campo{transition:border-color .2s, box-shadow .25s}
+input:not(.in-watts):not(.nombre-edit):not(.it-slider):focus,.dd.abierto .dd-campo{box-shadow:0 0 0 4px color-mix(in srgb,var(--agua) 22%,transparent)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important; transition:none !important}}
 </style>
 </head>
 <body>
@@ -655,6 +785,7 @@ html[data-modo="oscuro"] .modal .salir-borrar{color:#ff9d94; border-color:#ff8f8
   <section id="pantalla1" class="pantalla activa" aria-labelledby="t1">
     <svg class="sol" viewBox="0 0 96 96" aria-hidden="true">
       <circle class="lg-aro" cx="48" cy="48" r="46"/>
+      <circle class="sol-orbita" cx="48" cy="48" r="36" fill="none" stroke="var(--brote)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 9"/>
       <circle class="lg-fondo" cx="48" cy="48" r="26"/>
       <path class="lg-rayo" d="M52 28 38 50h9l-2 18 15-23h-9z"/>
     </svg>
@@ -812,9 +943,7 @@ html[data-modo="oscuro"] .modal .salir-borrar{color:#ff9d94; border-color:#ff8f8
 
       <h3 class="subtitulo">Cuánto consume cada aparato</h3>
       <div class="donut-wrap" id="donut-wrap" hidden>
-        <div class="donut" id="donut" role="img" aria-label="Gráfico de dona del consumo por aparato">
-          <div class="donut-centro"><b id="donut-v">0</b><small>kWh al mes</small></div>
-        </div>
+        <div class="donut" id="donut"></div>
       </div>
       <div class="pildora cuatro" role="group" aria-label="Periodo del desglose">
         <button type="button" class="opt" id="per-dia" aria-pressed="false" onclick="cambiarPeriodo('dia')">Día</button>
@@ -1697,16 +1826,22 @@ var TIPS_CAT = {
   function $(id) { return document.getElementById(id); }
   function normalizar(t) { return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
 
-  // Animación CountUp: cuenta rápido de 0 al valor final
+ // Animación dinámica: cuenta desde el valor actual hacia el nuevo valor
   function contar(el, valor, formato, ms) {
     if (el._raf) { cancelAnimationFrame(el._raf); }
-    if (REDUCIR || !ms) { el.textContent = formato(valor); return; }
+    var inicio = (typeof el._val === "number") ? el._val : 0;
+    if (REDUCIR || !ms || inicio === valor) { 
+      el._val = valor; el.textContent = formato(valor); return; 
+    }
     var t0 = null;
     function paso(t) {
       if (t0 === null) { t0 = t; }
       var p = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - p, 3);
-      el.textContent = formato(valor * e);
-      if (p < 1) { el._raf = requestAnimationFrame(paso); } else { el.textContent = formato(valor); }
+      var actual = inicio + (valor - inicio) * e;
+      el._val = actual; // Guarda el valor exacto en tiempo real
+      el.textContent = formato(actual);
+      if (p < 1) { el._raf = requestAnimationFrame(paso); } 
+      else { el._val = valor; el.textContent = formato(valor); }
     }
     el._raf = requestAnimationFrame(paso);
   }
@@ -2061,8 +2196,10 @@ var APARATOS = [];
     var total = 0;
     lista.forEach(function (it) { total += kwhDiaEquipo(it); });
     var kwhMes = total * 30, reg = regionActual(), tarifa = reg.tarifa, verano = (temporada === "verano" && tarifa !== "1");
-    $("cf-costo").textContent = dinero(modo ? costoMes(kwhMes, 0, tarifa, verano) : 0);
-    $("cf-kwh").textContent = fmt(kwhMes) + " kWh al mes";
+    var costo = modo ? costoMes(kwhMes, 0, tarifa, verano) : 0, ce = $("cf-costo");
+    if (ce._val !== costo) { ce.classList.remove("tick"); void ce.offsetWidth; ce.classList.add("tick"); }
+    contar(ce, costo, dinero, 320);
+    contar($("cf-kwh"), kwhMes, function (v) { return fmt(v) + " kWh al mes"; }, 320);
     $("cf-tarifa").textContent = "Tarifa " + tarifa + (tarifa === "1" ? "" : (verano ? " · verano" : " · fuera de verano"));
   }
 
@@ -2092,9 +2229,146 @@ var APARATOS = [];
       return { nombre: it.etq, aparato: it.nombre, cat: it.cat, tipo: it.tipo, watts: w, horasDia: horasDia, kwhDia: w * horasDia / 1000 };
     });
     periodo = "mes";
+    $("donut")._firma = "";
     irPestana("consumo");
     renderDashboard(true);
     mostrarPantalla(4);
+  }
+
+  // ---------- Dona SVG con Spider Labels (sin conic-gradient) ----------
+  function dibujarDonaSpider(contenedor, datos, opc) {
+    opc = opc || {};
+    var NS = "http://www.w3.org/2000/svg";
+    var R = 80, r = 52;      // radio exterior e interior
+    var PROY = 14;           // P1 -> P2 (radial)
+    var CODO = 22;           // P2 -> P3 (horizontal)
+    var SEP = 14;            // separación vertical mínima entre etiquetas
+    var AJ = 4, TOPE_Y = 122, LH = 11, MAXL = 17;   // LH: alto de línea; MAXL: caracteres por línea
+    var total = datos.reduce(function (s, d) { return s + d.valor; }, 0);
+    if (!(total > 0)) { contenedor.innerHTML = ""; return; }
+
+    function el(tag, attrs, parent) {
+      var n = document.createElementNS(NS, tag);
+      Object.keys(attrs || {}).forEach(function (k) { n.setAttribute(k, attrs[k]); });
+      if (parent) { parent.appendChild(n); }
+      return n;
+    }
+    function polar(radio, ang) { return { x: radio * Math.cos(ang), y: radio * Math.sin(ang) }; }
+    function f(n) { return n.toFixed(2); }
+    function cortar(t) { return t.length > MAXL ? t.slice(0, MAXL - 1) + "…" : t; }
+    // Parte el texto en líneas (máx. 2 para el nombre); el porcentaje va al final de la última o en línea propia
+    function envolver(nombre, pct) {
+      var pal = nombre.split(/\s+/), lin = [], act = "", i;
+      for (i = 0; i < pal.length; i++) {
+        var prueba = act ? act + " " + pal[i] : pal[i];
+        if (prueba.length <= MAXL) { act = prueba; }
+        else {
+          if (act) { lin.push(act); }
+          act = pal[i];
+        }
+      }
+      if (act) { lin.push(act); }
+      if (lin.length > 2) { lin = [lin[0], lin.slice(1).join(" ")]; }
+      lin = lin.map(cortar);
+      var ult = lin[lin.length - 1];
+      if ((ult + " " + pct).length <= MAXL + 7) { lin[lin.length - 1] = ult + " " + pct; } else { lin.push(pct); }
+      return lin;
+    }
+
+    var svg = el("svg", {
+      viewBox: "-220 -130 440 260",
+      role: "img",
+      "aria-label": "Gráfico de dona del consumo: " + datos.map(function (d) { return d.nombre + " " + (d.valor / total * 100).toFixed(1) + "%"; }).join(", ")
+    });
+    svg.style.cssText = "display:block;width:100%;height:auto;overflow:visible";
+    var gSeg = el("g", {}, svg), gLin = el("g", {}, svg), gTxt = el("g", {}, svg);
+    var mk = el("mask", { id: "dona-mascara", maskUnits: "userSpaceOnUse", x: -100, y: -100, width: 200, height: 200 }, el("defs", {}, svg));
+    el("circle", { "class": "barrido", r: 66, fill: "none", stroke: "#fff", "stroke-width": 44, "stroke-dasharray": "420 420", transform: "rotate(-90)" }, mk);
+    gSeg.setAttribute("mask", "url(#dona-mascara)");
+    if (opc.intro) { svg.setAttribute("class", "donut-intro"); }
+    var etiquetas = [], ang = -Math.PI / 2;
+
+    datos.forEach(function (d) {
+      var frac = d.valor / total;
+      if (frac <= 0) { return; }
+      var a0 = ang, a1 = ang + frac * 2 * Math.PI, mid = (a0 + a1) / 2;
+      ang = a1;
+      var path;
+      if (frac >= 0.9999) {
+        path = "M" + R + ",0 A" + R + "," + R + " 0 1 1 " + (-R) + ",0 A" + R + "," + R + " 0 1 1 " + R + ",0 Z" +
+               "M" + r + ",0 A" + r + "," + r + " 0 1 0 " + (-r) + ",0 A" + r + "," + r + " 0 1 0 " + r + ",0 Z";
+      } else {
+        var o0 = polar(R, a0), o1 = polar(R, a1), i0 = polar(r, a0), i1 = polar(r, a1), g = frac > 0.5 ? 1 : 0;
+        path = "M" + f(o0.x) + "," + f(o0.y) + " A" + R + "," + R + " 0 " + g + " 1 " + f(o1.x) + "," + f(o1.y) +
+               " L" + f(i1.x) + "," + f(i1.y) + " A" + r + "," + r + " 0 " + g + " 0 " + f(i0.x) + "," + f(i0.y) + " Z";
+      }
+      var seg = el("path", { d: path, "fill-rule": "evenodd" }, gSeg);
+      seg.style.fill = d.color;
+      seg.style.stroke = "var(--blanco, #fff)";
+      seg.style.strokeWidth = "1.5";
+      seg.style.setProperty("--dx", (Math.cos(mid) * 6).toFixed(1) + "px");
+      seg.style.setProperty("--dy", (Math.sin(mid) * 6).toFixed(1) + "px");
+      var derecha = Math.cos(mid) >= 0, p1 = polar(R, mid), p2 = polar(R + PROY, mid);
+      etiquetas.push({ d: d, frac: frac, derecha: derecha, x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, x3: p2.x + (derecha ? CODO : -CODO), y3: p2.y });
+    });
+
+    etiquetas.forEach(function (e) {
+      e.lineas = envolver(e.d.nombre, "(" + (e.frac * 100).toFixed(2) + "%)");
+      e.h = e.lineas.length * LH + 3;
+    });
+    // Anti-solapamiento por hemisferio, según el alto real de cada etiqueta
+    [true, false].forEach(function (lado) {
+      var gr = etiquetas.filter(function (e) { return e.derecha === lado; }).sort(function (a, b) { return a.y2 - b.y2; });
+      var i;
+      for (i = 1; i < gr.length; i++) {
+        var min = (gr[i].h + gr[i - 1].h) / 2;
+        if (gr[i].y2 - gr[i - 1].y2 < min) { gr[i].y2 = gr[i - 1].y2 + min; }
+      }
+      if (gr.length && gr[gr.length - 1].y2 > TOPE_Y) { gr[gr.length - 1].y2 = TOPE_Y; }
+      for (i = gr.length - 2; i >= 0; i--) {
+        var min2 = (gr[i + 1].h + gr[i].h) / 2;
+        if (gr[i + 1].y2 - gr[i].y2 < min2) { gr[i].y2 = gr[i + 1].y2 - min2; }
+      }
+      gr.forEach(function (e) { e.y3 = e.y2; });
+    });
+
+    etiquetas.forEach(function (e) {
+      var pl = el("polyline", { points: f(e.x1) + "," + f(e.y1) + " " + f(e.x2) + "," + f(e.y2) + " " + f(e.x3) + "," + f(e.y3), fill: "none", pathLength: 1 }, gLin);
+      pl.style.stroke = "var(--gris, #777)";
+      pl.style.strokeWidth = "1";
+      var tx = e.x3 + (e.derecha ? AJ : -AJ);
+      var t = el("text", { x: f(tx), y: f(e.y3 - (e.lineas.length - 1) * LH / 2), "dominant-baseline": "middle" }, gTxt);
+      t.style.textAnchor = e.derecha ? "start" : "end";
+      t.style.fontSize = "10px";
+      t.style.fontWeight = "600";
+      t.style.fill = "var(--tinta, #111)";
+      e.lineas.forEach(function (ln, k) {
+        var ts = el("tspan", { x: f(tx), dy: k === 0 ? "0" : LH }, t);
+        ts.textContent = ln;
+      });
+    });
+
+    if (opc.centroValor != null) {
+      var v = el("text", { id: "donut-v", x: 0, y: -2, "text-anchor": "middle", "dominant-baseline": "middle" }, svg);
+      v.style.cssText = "font-size:22px;font-weight:800;fill:var(--tinta,#111);font-variant-numeric:tabular-nums";
+      v.textContent = opc.centroValor;
+      if (opc.centroTexto) {
+        var s2 = el("text", { x: 0, y: 16, "text-anchor": "middle" }, svg);
+        s2.style.cssText = "font-size:9px;font-weight:700;fill:var(--gris,#777)";
+        s2.textContent = opc.centroTexto;
+      }
+    }
+    contenedor.innerHTML = "";
+    contenedor.appendChild(svg);
+    // Prevención de clipping: si algún texto se sale del viewBox, se amplía (simétrico) para que quepa
+    try {
+      var bb = svg.getBBox();
+      if (bb.width > 0) {
+        var mx = Math.max(220, Math.ceil(Math.max(-bb.x, bb.x + bb.width)) + 8);
+        var my = Math.max(130, Math.ceil(Math.max(-bb.y, bb.y + bb.height)) + 8);
+        svg.setAttribute("viewBox", (-mx) + " " + (-my) + " " + (mx * 2) + " " + (my * 2));
+      }
+    } catch (err) { /* sin medidas: se queda el viewBox base */ }
   }
 
   // ---------- Pantalla 4: dashboard con pestañas ----------
@@ -2110,8 +2384,8 @@ var APARATOS = [];
     });
     contenedor.scrollTop = 0;
   }
-  function cambiarPeriodo(k) { periodo = k; renderDashboard(false); }
-  function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarContador(); renderDashboard(false); }
+  function cambiarPeriodo(k) { periodo = k; renderDashboard(true); }
+function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarContador(); renderDashboard(true); }
 
   // Región y temporada: Veracruz (puerto) por defecto y verano según la fecha de hoy
   function pintarTemporada() {
@@ -2136,7 +2410,7 @@ var APARATOS = [];
     $("ayuda-temporada").textContent = txt;
     pintarTemporada();
   }
-  function alElegirRegion() { temporadaAutomatica(); actualizarContador(); renderDashboard(false); }
+  function alElegirRegion() { temporadaAutomatica(); actualizarContador(); renderDashboard(true); }
 
   // Todo lo que necesitan las pestañas, calculado una sola vez
   function contexto() {
@@ -2207,16 +2481,17 @@ var APARATOS = [];
     var dw = $("donut-wrap"), multiples = c.items.length >= 2;
     dw.hidden = !multiples;
     if (multiples) {
-      var stops = [], acum = 0, resto = 0, etiquetas = [];
+      var datosDona = [], resto = 0, prevV = $("donut-v") ? $("donut-v")._val : undefined;
       c.items.forEach(function (it, i) {
-        var p = c.totalDia > 0 ? it.kwhDia / c.totalDia * 100 : 0;
-        if (i < PALETA.length) { stops.push(PALETA[i] + " " + acum + "% " + (acum + p) + "%"); acum += p; etiquetas.push(it.nombre + " " + Math.round(p) + "%"); }
-        else { resto += p; }
+        if (i < PALETA.length) { datosDona.push({ nombre: it.nombre, valor: it.kwhDia, color: PALETA[i] }); }
+        else { resto += it.kwhDia; }
       });
-      if (resto > 0) { stops.push(COLOR_RESTO + " " + acum + "% 100%"); etiquetas.push("Otros " + Math.round(resto) + "%"); }
-      $("donut").style.background = "conic-gradient(" + stops.join(", ") + ")";
-      $("donut").setAttribute("aria-label", "Gráfico de dona del consumo: " + etiquetas.join(", "));
-      num("donut-v", c.kwhMes, fmt, ms);
+      if (resto > 0) { datosDona.push({ nombre: "Otros", valor: resto, color: COLOR_RESTO }); }
+      var firma = datosDona.map(function (d) { return d.nombre + d.valor.toFixed(4); }).join("|"), intro = $("donut")._firma !== firma;
+      $("donut")._firma = firma;   // el barrido solo se repite si cambian los datos, no al cambiar de periodo
+      dibujarDonaSpider($("donut"), datosDona, { centroValor: fmt(c.totalDia * fac), centroTexto: "kWh " + ETQ_PERIODO[periodo], intro: intro });
+      var vEl = $("donut-v");
+      if (vEl) { vEl._val = prevV; num("donut-v", c.totalDia * fac, fmt, ms); }
     }
     ["dia", "semana", "mes", "bim"].forEach(function (k) {
       var b = $("per-" + k);
@@ -2489,6 +2764,50 @@ window.addEventListener("beforeunload", function (e) {
       return msj;
     }
   });
+  // ---------- Animaciones: onda al pulsar e indicador deslizante de las píldoras ----------
+  function onda(b, x, y) {
+    var r = b.getBoundingClientRect(), d = Math.max(r.width, r.height) * 2, s = document.createElement("span");
+    s.className = "onda"; s.setAttribute("aria-hidden", "true");
+    s.style.width = s.style.height = d + "px";
+    s.style.left = (x - r.left - d / 2) + "px"; s.style.top = (y - r.top - d / 2) + "px";
+    b.appendChild(s);
+    s.addEventListener("animationend", function () { s.remove(); });
+    setTimeout(function () { if (s.parentNode) { s.remove(); } }, 900);
+  }
+  function botonOnda(e) {
+    var b = e.target.closest && e.target.closest("button");
+    return (!REDUCIR && b && !b.disabled && !b.classList.contains("switch")) ? b : null;
+  }
+  document.addEventListener("pointerdown", function (e) { var b = botonOnda(e); if (b && e.button === 0) { onda(b, e.clientX, e.clientY); } }, { passive: true });
+  document.addEventListener("click", function (e) {
+    var b = botonOnda(e);
+    if (b && e.detail === 0) { var r = b.getBoundingClientRect(); onda(b, r.left + r.width / 2, r.top + r.height / 2); }   // activado con teclado
+  });
+  (function () {
+    if (!window.ResizeObserver || !window.MutationObserver) { return; }
+    function colocar(p) {
+      var ind = p._ind, act = p.querySelector(".opt.activa");
+      if (!act || !p.offsetWidth) { ind.classList.remove("on"); p._vis = false; return; }
+      var ini = !p._vis;
+      if (ini) { ind.style.transition = "none"; }
+      ind.style.width = act.offsetWidth + "px"; ind.style.height = act.offsetHeight + "px";
+      ind.style.top = act.offsetTop + "px"; ind.style.transform = "translateX(" + act.offsetLeft + "px)";
+      if (ini) { void ind.offsetWidth; ind.style.transition = ""; }
+      ind.classList.add("on"); p._vis = true;
+    }
+    var ro = new ResizeObserver(function (es) { es.forEach(function (e) { var p = e.target.closest(".pildora"); if (p && p._ind) { colocar(p); } }); });
+    var mo = new MutationObserver(function (ms) { ms.forEach(function (m) { var p = m.target.closest(".pildora"); if (p && p._ind && m.target !== p._ind) { colocar(p); } }); });
+    document.querySelectorAll(".pildora").forEach(function (p) {
+      var ind = document.createElement("span");
+      ind.className = "ind"; ind.setAttribute("aria-hidden", "true");
+      p.appendChild(ind); p._ind = ind; p.classList.add("con-ind");   // al final, para no alterar los :nth-child de las opciones
+      ro.observe(p);
+      p.querySelectorAll(".opt").forEach(function (b) { ro.observe(b); });
+      mo.observe(p, { attributes: true, attributeFilter: ["class"], subtree: true });
+      colocar(p);
+    });
+  })();
+
   // ---------- Inicialización ----------
   iniciarApariencia();
   ddRegion = crearDD("region", "Selecciona tu tarifa", alElegirRegion);
