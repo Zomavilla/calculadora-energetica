@@ -34,6 +34,7 @@
   --verde:#22c55e; --amarillo:#f5b50a; --rojo:#e5392f; --tinta-fija:#0d2b2a;
   --tecnm:#1b396a; --tecnm-suave:#e8eef8; --tecnm-hover:#142c52; --sobre-tecnm:#fff;
   --hoja:#0f7a4f; --brote:#3ecf8e; --cielo:#e6f4fb; --agua:#1b8fc7; --blanco:#ffffff; --tinta:#0d2b2a; --gris:#53706b; --linea:#cfe3dd; --menta:#ecfdf5; --hoja-hover:#0b6340; --sobre-hoja:#ffffff;
+  --error:#e5392f;
 }
 html[data-modo="oscuro"]{color-scheme:dark; --tecnm:#8fb2ea; --tecnm-suave:#14253f; --tecnm-hover:#b6cff5; --sobre-tecnm:#0b1a33}
 /* Temas: cada uno con su variante clara y su variante oscura */
@@ -70,7 +71,7 @@ header.barra{
 .progreso{display:flex; gap:4px}
 .progreso span{width:16px; height:6px; border-radius:3px; background:var(--linea); transition:background .25s}
 .progreso span.hecho{background:var(--brote)}
-.progreso span.actual{background:var(--agua)}
+.progreso span.actual{background:var(--hoja)}
 .barra-der{display:flex; align-items:center; gap:10px; flex:none}
 .info{
   width:38px; height:38px; min-width:0; min-height:0; padding:0; border-radius:50%;
@@ -180,10 +181,10 @@ button.sec:hover{background:var(--menta,#ecfdf5)}
   flex:none; width:76px; background:var(--tinta-fija); border-radius:38px; padding:12px 0;
   display:flex; flex-direction:column; align-items:center; gap:10px;
 }
-.luz{width:48px; height:48px; border-radius:50%; background:#1e413f; transition:background .3s, box-shadow .3s}
-.semaforo[data-nivel="rojo"] .luz.rojo{background:var(--rojo); box-shadow:0 0 22px var(--rojo)}
-.semaforo[data-nivel="amarillo"] .luz.amarillo{background:var(--amarillo); box-shadow:0 0 22px var(--amarillo)}
-.semaforo[data-nivel="verde"] .luz.verde{background:var(--verde); box-shadow:0 0 22px var(--verde)}
+.luz{width:48px; height:48px; border-radius:50%; background:#ffffff; opacity:0.1; transition:background .4s ease, box-shadow .4s ease, opacity .4s ease}
+.semaforo[data-nivel="rojo"] .luz.rojo{background:var(--rojo); box-shadow:0 0 22px var(--rojo); opacity:1}
+.semaforo[data-nivel="amarillo"] .luz.amarillo{background:var(--amarillo); box-shadow:0 0 22px var(--amarillo); opacity:1}
+.semaforo[data-nivel="verde"] .luz.verde{background:var(--verde); box-shadow:0 0 22px var(--verde); opacity:1}
 .numero{font-size:3.4rem; font-weight:800; line-height:1; letter-spacing:-.03em; color:var(--tinta)}
 .unidad{font-size:1.2rem; font-weight:700; color:var(--agua); margin-left:4px}
 .sub{color:var(--gris); font-size:.9rem; margin-top:6px}
@@ -290,9 +291,9 @@ footer{flex:none; text-align:center; font-size:.75rem; color:var(--gris); paddin
 .fuentes b{color:var(--tinta)}
 .modal-card{max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px); overflow-y:auto}
 .modal .panel{margin:0 0 18px}
-.modal .panel summary::after{border-color:var(--tecnm)}
-.modal .panel[open] > summary{background:var(--tecnm-suave)}
-.modal .panel summary .ico{background:var(--tecnm-suave); color:var(--tecnm)}
+.modal .panel summary::after{border-color:var(--hoja)}
+.modal .panel[open] > summary{background:var(--cielo)}
+.modal .panel summary .ico{background:var(--cielo); color:var(--hoja)}
 .modal .panel[open] > summary .ico{background:var(--blanco)}
 
 /* Varios aparatos (casa) */
@@ -342,8 +343,7 @@ input:disabled{opacity:.6; cursor:not-allowed}
 .pildora + .des-lista{margin-top:14px}
 
 /* Modal "Acerca de" */
-.modal{margin:auto; padding:0; border:0; background:transparent; color:var(--tinta); width:calc(100% - 32px); max-width:440px}
-.modal::backdrop{background:rgba(0,0,0,.5)}
+.modal{margin:auto; padding:0; border:0; background:transparent; color:var(--tinta); width:calc(100% - 32px); max-width:440px; max-height:none; overflow:visible}.modal::backdrop{background:rgba(0,0,0,.5)}
 .modal[open]::backdrop{animation:fundido-in .25s ease-out}
 .modal.cerrando::backdrop{animation:fundido-out .2s ease-in forwards}
 .modal-card{background:var(--blanco); border-radius:24px; padding:28px 24px 24px; box-shadow:0 24px 64px rgba(0,0,0,.25)}
@@ -352,17 +352,19 @@ input:disabled{opacity:.6; cursor:not-allowed}
 .modal-card{text-align:center; border-top:6px solid var(--tecnm)}
 .modal-icono{display:flex; align-items:center; justify-content:center; width:68px; height:68px; margin:0 auto 14px; border-radius:50%; background:var(--tecnm-suave); color:var(--tecnm)}
 .modal-icono svg{width:32px; height:32px}
-.modal h2{font-size:1.5rem; color:var(--tecnm)}
+.modal-card{text-align:center; border-top:6px solid var(--hoja)}
+.modal-icono{display:flex; align-items:center; justify-content:center; width:68px; height:68px; margin:0 auto 14px; border-radius:50%; background:var(--cielo); color:var(--hoja)}
+.modal h2{font-size:1.5rem; color:var(--hoja)}
 .modal p{color:var(--gris); margin:6px 0 18px}
-.creditos{display:grid; gap:14px; padding:16px; margin:20px 0 22px; background:var(--tecnm-suave); border-radius:16px; text-align:left}
-.creditos .ico{background:var(--blanco); color:var(--tecnm); border-radius:50%}
+.creditos{display:grid; gap:14px; padding:16px; margin:20px 0 22px; background:var(--cielo); border-radius:16px; text-align:left}
+.creditos .ico{background:var(--blanco); color:var(--hoja); border-radius:50%}
 .credito{display:flex; gap:12px; align-items:flex-start}
 .credito > div{min-width:0}
-.credito dt{font-size:.8rem; font-weight:700; color:var(--tecnm)}
+.credito dt{font-size:.8rem; font-weight:700; color:var(--hoja)}
 .credito dd{font-weight:700}
 .modal .modal-pie{margin:14px 0 0; font-size:.8rem}
-.modal .cerrar{width:100%; background:var(--tecnm); color:var(--sobre-tecnm)}
-.modal .cerrar:hover{background:var(--tecnm-hover)}
+.modal .cerrar{width:100%; background:var(--hoja); color:var(--sobre-hoja)}
+.modal .cerrar:hover{background:var(--hoja-hover)}
 @keyframes fundido-in{from{opacity:0}to{opacity:1}}
 @keyframes fundido-out{from{opacity:1}to{opacity:0}}
 @keyframes subir-in{from{opacity:0; transform:translateY(10px) scale(.98)}to{opacity:1; transform:none}}
@@ -432,7 +434,6 @@ html[data-modo="oscuro"] .badge.tip{background:#12303f; color:#8cd0f5}
 html[data-modo="oscuro"] .badge.mant{background:#12331f; color:#8be8b3}
 html[data-modo="oscuro"] .badge.inv{background:#3a2f0c; color:#f3d37a}
 html[data-modo="oscuro"] .consejos li.urgente{background:#3a1613}
-html[data-modo="oscuro"] .dd-lista li.activo{background:#16302d}
 
 /* ===== Flujo único: encabezado con regreso, buscador, tarjetas, tiempo en vivo y dashboard con pestañas ===== */
 header.barra{gap:8px}
@@ -461,8 +462,8 @@ input.buscar-grande{height:64px; padding:0 18px 0 56px; font-size:1.08rem; borde
 .vacio b{display:block; color:var(--tinta); font-size:1.05rem}
 .vacio p{margin:4px 0 14px; font-size:.92rem}
 .vacio .chips{justify-content:center}
-.tarjetas{list-style:none; display:grid; gap:10px}
-.tarjeta{display:grid; grid-template-columns:minmax(0,1fr) auto 40px; align-items:center; gap:10px; padding:12px 12px 12px 16px; background:var(--cielo); border-radius:16px; animation:aparecer .25s ease-out}
+.tarjetas{list-style:none}
+.tarjeta{display:grid; grid-template-columns:minmax(0,1fr) auto 40px 40px; align-items:center; gap:10px; padding:12px 12px 12px 16px; margin-bottom:10px; background:var(--cielo); border-radius:16px; animation:aparecer .25s ease-out}
 .t-info{min-width:0}
 .t-info b{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .t-cat{display:block; color:var(--gris); font-size:.8rem; font-weight:600}
@@ -544,29 +545,93 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
 .fila-switch p{color:var(--gris); font-size:.85rem; margin:2px 0 0}
 button.switch{position:relative; flex:none; min-width:0; min-height:0; width:54px; height:32px; padding:0; border-radius:999px; background:var(--linea); transition:background .2s}
 button.switch:hover{background:var(--linea)}
-button.switch[aria-checked="true"],button.switch[aria-checked="true"]:hover{background:var(--tecnm)}
+button.switch[aria-checked="true"],button.switch[aria-checked="true"]:hover{background:var(--hoja)}
 .switch .knob{position:absolute; top:3px; left:3px; width:26px; height:26px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.35); transition:transform .2s}
 button.switch[aria-checked="true"] .knob{transform:translateX(22px)}
 .tema-titulo{margin:16px 0 8px; font-weight:800; font-size:.9rem}
 .temas{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
 button.tema-op{min-width:0; min-height:0; width:auto; padding:10px; display:grid; gap:8px; justify-items:stretch; text-align:left; background:var(--blanco); color:var(--tinta); border:2px solid var(--linea); border-radius:14px; font-weight:700; font-size:.9rem}
 button.tema-op:hover{background:var(--blanco)}
-button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 0 0 0 1px var(--tecnm)}
+button.tema-op[aria-checked="true"]{border-color:var(--hoja); box-shadow:inset 0 0 0 1px var(--hoja)}
 .tema-op .muestra{display:flex; height:32px; border-radius:9px; overflow:hidden; border:1px solid var(--linea)}
 .tema-op .muestra i{flex:1}
-.tema-op .muestra i:nth-child(1){background:var(--cielo)}
-.tema-op .muestra i:nth-child(2){background:var(--hoja)}
-.tema-op .muestra i:nth-child(3){background:var(--brote)}
+.tema-op[data-tema="verde"]{--p1:#e6f4fb; --p2:#0f7a4f; --p3:#3ecf8e}
+.tema-op[data-tema="oceano"]{--p1:#e4f1fb; --p2:#0a6ea8; --p3:#38b6ff}
+.tema-op[data-tema="atardecer"]{--p1:#fff1e2; --p2:#b2450a; --p3:#fb923c}
+.tema-op[data-tema="violeta"]{--p1:#f3edfc; --p2:#6d3fc4; --p3:#b794f6}
+.tema-op .muestra i:nth-child(1){background:var(--p1)}
+.tema-op .muestra i:nth-child(2){background:var(--p2)}
+.tema-op .muestra i:nth-child(3){background:var(--p3)}
+
+/* ===== Pantalla 2: copiar, vaciar lista, animación de salida y rayo animado ===== */
+button.copiar{min-width:0; min-height:0; width:40px; height:40px; padding:0; display:flex; align-items:center; justify-content:center; background:transparent; color:var(--gris); border-radius:12px}
+button.copiar:hover{background:transparent; color:var(--hoja)}
+.copiar svg{width:20px; height:20px}
+@media (max-width:420px){
+  .tarjeta{grid-template-columns:minmax(0,1fr) auto 36px 36px; gap:4px; padding:10px 6px 10px 12px}
+  input.in-watts{width:76px}
+  button.papelera,button.copiar{width:36px; height:36px}
+}
+@media (max-width:380px){
+  .tarjeta{grid-template-columns:minmax(0,1fr) 36px 36px}
+  .t-info{grid-column:1 / -1}
+  .tarjeta-w{justify-self:start}
+}
+
+.fila-lista{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:10px}
+.fila-lista .resumen-lista{margin:0 2px}
+button.vaciar{min-width:0; min-height:0; padding:7px 14px; display:inline-flex; align-items:center; gap:6px; flex:none; font-size:.85rem; background:transparent; color:var(--error); border:2px solid var(--error); border-radius:999px}
+button.vaciar:hover{background:color-mix(in srgb, var(--error) 12%, transparent); color:var(--error)}
+button.vaciar[hidden]{display:none}
+button.vaciar svg{width:16px; height:16px; flex:none}
+html[data-modo="oscuro"] button.vaciar{color:#ff9d94; border-color:#ff8f85}
+
+/* Salida de una tarjeta: se desliza y se desvanece, luego se pliega para que la lista suba sin saltos */
+.tarjeta.saliendo{overflow:hidden; pointer-events:none; animation:tarjeta-sale .4s cubic-bezier(.4,0,.2,1) both}
+@keyframes tarjeta-sale{
+  0%{opacity:1; transform:none; height:var(--h); margin-bottom:10px; padding-top:12px; padding-bottom:12px}
+  50%{opacity:0; transform:translateX(48px) scale(.96); height:var(--h); margin-bottom:10px; padding-top:12px; padding-bottom:12px}
+  100%{opacity:0; transform:translateX(48px) scale(.96); height:0; margin-bottom:0; padding-top:0; padding-bottom:0}
+}
+
+/* Rayo del estado vacío: se dibuja al aparecer y, de vez en cuando, se carga y chispea */
+.vacio > svg{overflow:visible; animation:rayo-zap 3.6s ease-in-out -1.4s infinite}
+.vacio > svg path{animation:rayo-trazo .9s ease-out .1s backwards, rayo-carga 3.6s ease-in-out -1.4s infinite}
+@keyframes rayo-trazo{from{stroke-dasharray:70; stroke-dashoffset:70}to{stroke-dasharray:70; stroke-dashoffset:0}}
+@keyframes rayo-carga{0%,66%,92%,100%{fill:transparent}72%,80%{fill:var(--brote)}}
+@keyframes rayo-zap{
+  0%,66%,100%{transform:none; filter:none}
+  70%{transform:translateX(-1px) rotate(-5deg) scale(1.1); filter:drop-shadow(0 0 5px var(--brote))}
+  73%{transform:translateX(1px) rotate(4deg) scale(1.14); filter:drop-shadow(0 0 9px var(--brote))}
+  76%{transform:translateX(-1px) rotate(-3deg) scale(1.1); filter:drop-shadow(0 0 6px var(--brote))}
+  82%{transform:none; filter:drop-shadow(0 0 3px var(--brote))}
+  92%{transform:none; filter:none}
+}
+
+/* Modal: advertencia al salir con datos en la lista */
+.modal-salir .modal-card{border-top-color:var(--error)}
+.modal-salir .modal-icono{background:color-mix(in srgb, var(--error) 14%, var(--blanco)); color:var(--error)}
+.modal-salir h2{color:var(--tinta)}
+.modal-salir p b{color:var(--tinta)}
+.modal-acciones{display:grid; gap:10px; margin-top:6px}
+.modal .salir-borrar{width:100%; background:transparent; color:var(--error); border:2px solid var(--error)}
+.modal .salir-borrar:hover{background:color-mix(in srgb, var(--error) 12%, transparent); color:var(--error)}
+html[data-modo="oscuro"] .modal .salir-borrar{color:#ff9d94; border-color:#ff8f85}
 </style>
 </head>
 <body>
+<noscript>
+  <div style="padding:20px; text-align:center; background:#b42318; color:#fff; font-weight:800; font-family:sans-serif; position:fixed; top:0; left:0; right:0; z-index:9999;">
+    Esta aplicación requiere JavaScript habilitado para funcionar correctamente.
+  </div>
+</noscript>
 <div class="app">
 <header class="barra">
   <button type="button" class="atras" id="btn-atras" aria-label="Regresar" onclick="regresar()" hidden>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
     <span class="txt">Regresar</span>
   </button>
-  <div class="marca" role="button" tabindex="0" aria-label="Volver al inicio" onclick="reiniciar()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();reiniciar();}">
+  <div class="marca" role="button" tabindex="0" aria-label="Volver al inicio" onclick="intentarSalir()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();intentarSalir();}">
     <svg viewBox="0 0 32 32" aria-hidden="true">
       <circle class="lg-fondo" cx="16" cy="16" r="15"/>
       <path class="lg-rayo" d="M18 5 9 18h6l-1 9 9-13h-6z"/>
@@ -644,7 +709,13 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
       <div class="chips" id="chips-rapidos"></div>
     </div>
     <ul class="tarjetas" id="lista-tarjetas"></ul>
-    <p class="resumen-lista" id="contador-ap" aria-live="polite"></p>
+    <div class="fila-lista">
+      <p class="resumen-lista" id="contador-ap" aria-live="polite"></p>
+      <button type="button" class="vaciar" id="btn-vaciar" onclick="vaciarLista()" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Vaciar lista
+      </button>
+    </div>
 
     <details class="panel ayuda-lista">
       <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span><span>¿Cómo armar tu lista?</span></summary>
@@ -728,8 +799,8 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
           <p class="ayuda" id="ayuda-region"></p>
         </div>
         <div class="campo">
-          <label>Temporada</label>
-          <div class="pildora" id="pildora-temporada" role="group" aria-label="Temporada">
+          <label id="lbl-temporada">Temporada</label>
+          <div class="pildora" id="pildora-temporada" role="group" aria-labelledby="lbl-temporada">
             <button type="button" class="opt activa" id="temp-verano" aria-pressed="true" onclick="cambiarTemporada('verano')">Verano</button>
             <button type="button" class="opt" id="temp-fuera" aria-pressed="false" onclick="cambiarTemporada('fuera')">Fuera de verano</button>
           </div>
@@ -858,263 +929,338 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
   </div>
 </dialog>
 
+<dialog class="modal modal-salir" id="modal-salir" aria-labelledby="t-salir" aria-describedby="d-salir">
+  <div class="modal-card">
+    <span class="modal-icono" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    </span>
+    <h2 id="t-salir">¿Salir y perder tu lista?</h2>
+    <p id="d-salir">Tienes <b id="salir-n">equipos</b> en tu lista. Si vuelves al inicio, se borrarán los equipos y los tiempos de uso que ya capturaste.</p>
+    <div class="modal-acciones">
+      <button type="button" class="cerrar" id="salir-seguir" autofocus onclick="cerrarModalSalir()">Seguir editando</button>
+      <button type="button" class="salir-borrar" onclick="confirmarSalida()">Salir y borrar</button>
+    </div>
+  </div>
+</dialog>
+
 <script>
-  // Catálogo: categoría -> [aparato, Watts promedio, tipo (para los consejos)]
-  var CATALOGO = {
-    "Electrodomésticos": [
-      ["Lavadora", 500, "lavadora"], ["Secadora de ropa", 2500, "secadora"], ["Lavavajillas", 1800, "lavavajillas"],
-      ["Refrigerador", 150, "refri"], ["Congelador", 200, "refri"], ["Dispensador de agua", 100, "dispensador"],
-      ["Microondas", 1000, "microondas"], ["Horno eléctrico", 1500, "horno"], ["Campana de cocina", 150, "campana"],
-      ["Cafetera eléctrica", 800, "cafetera"], ["Licuadora", 400, "licuadora"], ["Tostador", 800, "cocina_peq"],
-      ["Freidora de aire", 1500, "cocina_peq"], ["Olla arrocera", 500, "cocina_peq"], ["Plancha de ropa", 1000, "plancha"],
-      ["Aspiradora", 1000, "aspiradora"]
-    ],
-    "Electrónica": [
-      ["PC de escritorio (Ofimática)", 60, "pc"], ["PC de escritorio (Alto Rendimiento/Gamer)", 450, "pc"],
-      ["Laptop estándar", 30, "laptop"], ["Laptop Gamer", 170, "laptop"], ["Monitor", 30, "monitor"],
-      ["Televisor", 100, "tv"], ["Consola de videojuegos", 150, "consola"], ["Amplificador de audio", 100, "audio"],
-      ["Barra de sonido", 50, "audio"], ["Proyector", 200, "proyector"], ["Impresora", 50, "impresora"],
-      ["Router Wi-Fi", 10, "router"], ["Decodificador / TV box", 15, "decodificador"], ["Tableta", 10, "bateria"],
-      ["Cargador de celular", 10, "bateria"]
-    ],
-    "Iluminación": [
-      ["Foco LED", 9, "luz"], ["Tira LED", 20, "luz"], ["Reflector LED exterior", 30, "exterior"],
-      ["Foco incandescente", 60, "viejo"], ["Foco ahorrador (CFL)", 15, "viejo"], ["Tubo fluorescente", 36, "viejo"],
-      ["Reflector halógeno", 150, "viejo"]
-    ],
-    "Climatización": [
-      ["Aire acondicionado minisplit", 1100, "ac"], ["Aire acondicionado de ventana", 1200, "ac"],
-      ["Ventilador de pedestal", 55, "ventilador"], ["Ventilador de techo", 75, "ventilador"],
-      ["Enfriador evaporativo", 200, "evaporativo"], ["Deshumidificador", 300, "deshumidificador"],
-      ["Calefactor eléctrico", 1500, "calefactor"]
-    ],
-    "Cuidado personal": [
-      ["Secador de cabello", 1800, "secador"], ["Plancha de cabello", 120, "plancha_pelo"],
-      ["Rizador de cabello", 60, "plancha_pelo"], ["Máquina de afeitar", 10, "bateria"]
-    ],
-    "Hogar y taller": [
-      ["Máquina de coser", 100, "coser"], ["Taladro", 600, "herramienta"], ["Esmeriladora", 750, "herramienta"],
-      ["Bomba de agua", 750, "bomba"], ["Hidrolavadora", 1400, "presion"], ["Compresor de aire", 1500, "presion"]
-    ]
-  };
-  var OTROS = "Otros";   // opción genérica: va directo a la calculadora
-  var TIPOS_OTRO = [
-    { valor: "calor_gen", texto: "Genera calor (resistencia)" },
-    { valor: "motor_gen", texto: "Tiene motor" },
-    { valor: "electro_gen", texto: "Electrónico o con pantalla" },
-    { valor: "luz", texto: "Iluminación" }
-  ];
+ // Catálogo: categoría -> [aparato, Watts promedio, tipo (para los consejos), "palabras clave opcionales"]
+var CATALOGO = {
+  "Climatización": [
+    ["Aire acondicionado de ventana", 1200, "ac"],
+    ["Aire acondicionado minisplit", 1100, "ac", "clima split"],
+    ["Aire acondicionado minisplit inverter", 600, "ac_inverter", "clima split inverter"],
+    ["Calefactor eléctrico", 1500, "calefactor"],
+    ["Deshumidificador", 300, "deshumidificador"],
+    ["Enfriador evaporativo", 200, "evaporativo"],
+    ["Humidificador", 30, "ventilador", "vaporizador"],
+    ["Purificador de aire", 40, "ventilador", "filtro hepa"],
+    ["Ventilador de pedestal", 55, "ventilador", "Ventilador-de-pedestal-grande-de-la-sala-de-la-tia-del-cuñado-del-que-tiene-3-hijos-en-sonara-con-la-gringa-llamada-juana-que-parece-cubana-del-5to-piso-de-la-noche"],
+    ["Ventilador de techo", 75, "ventilador"]
+  ],
+  "Cuidado personal": [
+    ["Cepillo de dientes eléctrico", 3, "bateria"], 
+    ["Máquina de afeitar / Rasuradora", 10, "bateria", "recortadora barba"],
+    ["Plancha de cabello", 120, "plancha_pelo"],
+    ["Rizador de cabello", 60, "plancha_pelo"],
+    ["Secador de cabello", 1800, "secador"]
+  ],
+  "Electrodomésticos": [
+    ["Aspiradora", 1000, "aspiradora"],
+    ["Batidora", 300, "cocina_peq"],
+    ["Cafetera eléctrica", 800, "cafetera"],
+    ["Campana de cocina", 150, "campana"],
+    ["Congelador", 200, "refri"],
+    ["Dispensador de agua", 100, "dispensador"],
+    ["Freidora de aire", 1500, "cocina_peq"],
+    ["Hervidor de agua eléctrico", 1500, "cocina_peq", "tetera calienta agua"],
+    ["Horno eléctrico", 1500, "horno"],
+    ["Lavadora", 500, "lavadora"],
+    ["Lavavajillas", 1800, "lavavajillas"],
+    ["Licuadora", 400, "licuadora"],
+    ["Microondas", 1000, "microondas"],
+    ["Olla arrocera", 500, "cocina_peq"],
+    ["Plancha de ropa", 1000, "plancha"],
+    ["Refrigerador", 150, "refri", "nevera heladera frigobar"],
+    ["Sandwichera / Waflera", 800, "cocina_peq", "parrilla panini"],
+    ["Secadora de ropa", 2500, "secadora"],
+    ["Tostador", 800, "cocina_peq"]
+  ],
+  "Electrónica": [
+    ["Amplificador de audio", 100, "audio"],
+    ["Asistente Inteligente (Alexa/Google)", 5, "router", "bocina inteligente echo dot"],
+    ["Barra de sonido", 50, "audio"],
+    ["Cargador de celular", 10, "bateria"],
+    ["Consola de videojuegos", 150, "consola"],
+    ["Cámara de seguridad Wi-Fi", 5, "router", "cctv vigilancia"],
+    ["Decodificador / TV box", 15, "decodificador"],
+    ["Impresora", 50, "impresora"],
+    ["Laptop Gamer", 170, "laptop"],
+    ["Laptop estándar", 30, "laptop"],
+    ["Monitor", 30, "monitor"],
+    ["PC de escritorio (Alto Rendimiento/Gamer)", 450, "pc"],
+    ["PC de escritorio (Ofimática)", 60, "pc"],
+    ["Proyector", 200, "proyector"],
+    ["Router Wi-Fi", 10, "router", "modem"],
+    ["Smartwatch / Reloj inteligente", 5, "bateria", "reloj pulsera"], 
+    ["Tableta", 10, "bateria"],
+    ["Televisor", 100, "tv", "tele pantalla television"]
+  ],
+  "Taller y Reparación": [
+    ["Bomba de agua", 750, "bomba"],
+    ["Calentador de agua eléctrico", 3000, "calor_gen", "boiler voiler"],
+    ["Cautín / Estación de soldadura", 60, "herramienta", "soldador estaño"],
+    ["Compresor de aire", 1500, "presion"],
+    ["Cortadora de césped", 1200, "motor_gen", "podadora"], 
+    ["Esmeriladora", 750, "herramienta"],
+    ["Fuente de poder de banco", 150, "electro_gen", "fuente variable dc regulada"],
+    ["Hidrolavadora", 1400, "presion"],
+    ["Horno de convección", 1500, "horno"],
+    ["Máquina de coser", 100, "coser"],
+    ["Pistola de calor", 1800, "calor_gen", "decapador aire caliente"],
+    ["Resistencia eléctrica", 1000, "calor_gen", "resistencia calefactor"],
+    ["Taladro", 600, "herramienta"]
+  ],
+  "Iluminación": [
+    ["Foco LED", 9, "luz"],
+    ["Foco ahorrador (CFL)", 15, "viejo"],
+    ["Foco incandescente", 60, "viejo"],
+    ["Reflector LED exterior", 30, "exterior"],
+    ["Reflector halógeno", 150, "viejo"],
+    ["Tira LED", 20, "luz"],
+    ["Tubo fluorescente", 36, "viejo"]
+  ]
+};
 
-  var BADGES = { tip: "Tip rápido", mant: "Mantenimiento", inv: "Inversión a futuro", urg: "Urgente" };
+var OTROS = "Otros";   // opción genérica: va directo a la calculadora
+var TIPOS_OTRO = [
+  { valor: "calor_gen", texto: "Genera calor (resistencia)" },
+  { valor: "motor_gen", texto: "Tiene motor" },
+  { valor: "electro_gen", texto: "Electrónico o con pantalla" },
+  { valor: "luz", texto: "Iluminación" }
+];
 
-  // Consejos por tipo de aparato: [título, texto, etiqueta]
-  var TIPS = {
-    lavadora: [
-      ["Lava con carga completa y agua fría", "Junta la ropa hasta llenar el tambor; el agua fría basta para casi todo y te ahorra calentarla.", "tip"],
-      ["Limpia el filtro y el tambor", "Un filtro tapado alarga los ciclos y hace trabajar más al motor.", "mant"]
-    ],
-    secadora: [
-      ["Tiende al sol cuando puedas", "La secadora es de los aparatos que más gastan; el sol seca gratis.", "tip"],
-      ["Limpia el filtro de pelusa", "Con el filtro lleno el secado tarda más y gasta más.", "mant"]
-    ],
-    refri: [
-      ["Cuida el compresor", "Deja espacio libre atrás y a los lados, y limpia el polvo del serpentín o la rejilla: un compresor sucio trabaja más y se calienta.", "mant"],
-      ["Revisa los empaques de la puerta", "Un sello gastado deja escapar el frío y hace que el compresor arranque más seguido.", "mant"],
-      ["Ajusta la temperatura", "Con 3 a 5 °C en el refrigerador y −18 °C en el congelador es suficiente; más frío solo gasta más.", "tip"]
-    ],
-    dispensador: [
-      ["Cuida el compresor", "Si enfría con compresor, limpia la rejilla trasera y deja espacio para que respire; con polvo trabaja más.", "mant"],
-      ["Apaga el agua caliente cuando no la uses", "Mantenerla caliente todo el día gasta energía; usa su interruptor o un temporizador.", "tip"],
-      ["Quita el sarro del depósito", "El sarro en el depósito y en la resistencia obliga al equipo a gastar más.", "mant"]
-    ],
-    microondas: [
-      ["Usa porciones pequeñas y con tapa", "Una tapa apta para microondas acorta el tiempo de calentado; evita encenderlo vacío.", "tip"],
-      ["Descongela en el refrigerador", "Pasar los alimentos la noche anterior ahorra minutos de microondas.", "tip"]
-    ],
-    horno: [
-      ["No abras la puerta a cada rato", "Cada apertura pierde calor y el horno gasta para recuperarlo.", "tip"],
-      ["Aprovecha el calor residual", "Apágalo unos minutos antes de terminar: el calor acumulado completa la cocción.", "tip"]
-    ],
-    audio: [
-      ["Apágalo por completo, no lo dejes en reposo", "En reposo sigue consumiendo; usa su interruptor principal o una regleta con switch.", "tip"],
-      ["Déjalo ventilado y sin polvo", "Un amplificador fresco trabaja más eficiente y dura más.", "mant"]
-    ],
-    tv: [
-      ["Baja el brillo y usa el modo ahorro", "Es de los ajustes que más reducen el consumo de una pantalla.", "tip"],
-      ["Apágalo, no lo dejes en espera", "El botón del control solo lo deja en reposo; usa la regleta si no lo vas a ver.", "tip"]
-    ],
-    pc: [
-      ["Activa la suspensión automática", "Que se duerma tras pocos minutos sin uso.", "tip"],
-      ["Apágalo en pausas largas", "Si no lo usarás en varias horas, apágalo en lugar de dejarlo encendido.", "tip"],
-      ["Elige una fuente 80 PLUS al renovar", "Una fuente certificada desperdicia menos energía en forma de calor.", "inv"]
-    ],
-    laptop: [
-      ["Usa el plan de energía equilibrado", "Evita el modo de máximo rendimiento si no lo necesitas.", "tip"],
-      ["Desconecta el cargador al llegar a 100 %", "Cargar de más no ayuda a la batería ni a tu recibo.", "tip"]
-    ],
-    ac: [
-      ["Ajusta el termostato a 24–25 °C", "Enfriar de más sube el consumo del aire acondicionado sin mejorar mucho el confort.", "tip"],
-      ["Usa el temporizador", "Programa que se apague o suba la temperatura cuando duermes o sales.", "tip"],
-      ["Limpia los filtros cada mes", "Un filtro tapado obliga al aire acondicionado a trabajar más y por más tiempo.", "mant"],
-      ["Cambia a tecnología inverter", "Un aire inverter ajusta su potencia en vez de prender y apagar, y gasta menos.", "inv"]
-    ],
-    ventilador: [
-      ["Mantén las aspas limpias", "El polvo reduce el flujo de aire y obliga al motor a esforzarse más.", "mant"],
-      ["Apágalo si no hay nadie", "Un ventilador enfría a las personas, no al cuarto.", "tip"]
-    ],
-    calefactor: [
-      ["Calienta solo el cuarto que usas", "Cierra la puerta y apágalo al salir.", "tip"],
-      ["Usa termostato o temporizador", "Evita que siga encendido cuando el cuarto ya está caliente.", "tip"]
-    ],
-    viejo: [
-      ["Cámbialo por LED", "Da la misma luz con hasta 80 % menos energía.", "inv"],
-      ["Empieza por los que más usas", "Los focos de más horas recuperan antes la inversión.", "tip"]
-    ],
-    luz: [
-      ["Elige por lúmenes, no por watts", "Compra la luz que necesitas y evita potencias de más.", "tip"],
-      ["Usa temporizador o sensor", "Evita que quede encendida por olvido.", "inv"]
-    ],
-    exterior: [
-      ["Usa sensor de movimiento o fotocelda", "Que solo encienda de noche o cuando haga falta.", "inv"],
-      ["Limpia el reflector", "El polvo reduce la luz y te hace dejarlo más tiempo.", "mant"]
-    ],
-    lavavajillas: [
-      ["Úsalo lleno y en programa eco", "Lavar a medias gasta casi lo mismo que a tope.", "tip"],
-      ["Limpia el filtro y los brazos", "La grasa tapa las salidas de agua y obliga a repetir ciclos.", "mant"]
-    ],
-    campana: [
-      ["Usa la velocidad mínima necesaria", "Casi siempre basta la baja para sacar humos y olores.", "tip"],
-      ["Lava los filtros de grasa", "Filtros tapados fuerzan el motor y extraen menos.", "mant"]
-    ],
-    cafetera: [
-      ["Prepara solo lo que vas a tomar", "Mantener la jarra en la placa caliente gasta de más; usa un termo.", "tip"],
-      ["Descalcifica cada mes", "El sarro en la resistencia alarga el tiempo de calentado.", "mant"]
-    ],
-    licuadora: [
-      ["Procesa en tandas cortas", "Pulsos cortos y el vaso sin llenar al tope exigen menos al motor.", "tip"],
-      ["Revisa aspas y sello", "Aspas desgastadas obligan a licuar más tiempo.", "mant"]
-    ],
-    cocina_peq: [
-      ["Cocina en tandas completas", "Aprovecha cada ciclo con la cantidad justa en vez de encenderlo para porciones pequeñas.", "tip"],
-      ["No lo dejes en «mantener caliente»", "Apágalo al terminar: mantener caliente consume de más.", "tip"]
-    ],
-    plancha: [
-      ["Plancha en tandas", "Junta la ropa y plancha de una vez para calentar la plancha una sola vez.", "tip"],
-      ["Apágala unos minutos antes", "El calor residual alcanza para terminar las últimas prendas.", "tip"]
-    ],
-    aspiradora: [
-      ["Vacía el depósito o la bolsa", "Con el depósito lleno pierde succión y trabaja más.", "mant"],
-      ["Usa la potencia justa", "En pisos lisos basta la potencia baja.", "tip"]
-    ],
-    monitor: [
-      ["Baja el brillo", "Un brillo alto es lo que más consume en una pantalla.", "tip"],
-      ["Activa el apagado automático", "Que se apague tras pocos minutos sin uso.", "tip"]
-    ],
-    consola: [
-      ["Apágala por completo", "El reposo rápido sigue consumiendo; desactívalo en ajustes.", "tip"],
-      ["Programa las descargas", "Evita que actualice juegos mientras está en reposo.", "tip"]
-    ],
-    proyector: [
-      ["Déjalo enfriar antes de desconectar", "Apagarlo bien alarga la vida de la lámpara.", "mant"],
-      ["Usa el modo eco", "Baja el brillo de la lámpara y el consumo si la sala está oscura.", "tip"]
-    ],
-    impresora: [
-      ["Apágala al terminar", "En espera sigue consumiendo; usa una regleta con interruptor.", "tip"],
-      ["Imprime solo lo necesario", "El modo borrador y la doble cara reducen ciclos.", "tip"]
-    ],
-    router: [
-      ["Prográmalo para apagarse de noche", "Es de los pocos equipos que quedan siempre encendidos; un temporizador ahorra.", "tip"],
-      ["Colócalo al centro y sin obstáculos", "Mejor señal evita reintentos y repetidores extra.", "tip"]
-    ],
-    decodificador: [
-      ["Desconéctalo de la regleta", "En espera consume casi igual que encendido.", "tip"],
-      ["Evita que grabe o actualice sin necesidad", "Programa esas tareas solo cuando las uses.", "tip"]
-    ],
-    bateria: [
-      ["Desconecta al llegar a 100 %", "Cargar de más no ayuda a la batería ni a tu recibo.", "tip"],
-      ["No dejes el cargador conectado", "Un cargador sin carga sigue gastando un poco.", "tip"]
-    ],
-    evaporativo: [
-      ["Ventila con una ventana entreabierta", "Necesita renovar el aire; rinde mejor en climas secos.", "tip"],
-      ["Limpia filtros y depósito", "El sarro y el polvo bajan su rendimiento.", "mant"]
-    ],
-    deshumidificador: [
-      ["Cierra puertas y ventanas", "Que solo seque el cuarto que usas.", "tip"],
-      ["Fija la humedad en 50–60 %", "Bajar más de eso solo gasta más.", "tip"]
-    ],
-    secador: [
-      ["Seca con toalla primero", "Menos tiempo de secador, menos energía.", "tip"],
-      ["Usa temperatura media", "La alta gasta más y maltrata el cabello.", "tip"]
-    ],
-    plancha_pelo: [
-      ["Úsala con el cabello seco", "Menos pasadas, menos minutos encendida.", "tip"],
-      ["No la dejes conectada", "Apágala y desconéctala al terminar.", "tip"]
-    ],
-    coser: [
-      ["Limpia la pelusa y aceita", "Una máquina limpia gira con menos esfuerzo.", "mant"],
-      ["Desconéctala al terminar", "Apaga también la lámpara y el pedal.", "tip"]
-    ],
-    herramienta: [
-      ["Usa el accesorio correcto", "Un disco o una broca gastados exigen más tiempo y potencia.", "mant"],
-      ["Desconéctala al terminar", "Evita consumos fantasma y accidentes.", "tip"]
-    ],
-    bomba: [
-      ["Revisa fugas y el flotador", "Una fuga hace que arranque muchas veces al día.", "mant"],
-      ["Evita que trabaje en seco", "Ahorra energía y evita daños al motor.", "mant"]
-    ],
-    presion: [
-      ["Úsalo solo lo necesario", "Trabaja con mucha potencia, así que cada minuto pesa.", "tip"],
-      ["Revisa mangueras y conexiones", "Las fugas de aire o agua lo hacen trabajar de más.", "mant"]
-    ],
-    calor_gen: [
-      ["Úsalo solo el tiempo necesario", "Los equipos que dan calor gastan mucho en poco tiempo.", "tip"],
-      ["Desconéctalo al terminar", "Ahorra energía y evita accidentes.", "tip"]
-    ],
-    motor_gen: [
-      ["Mantenlo limpio y lubricado", "Un motor con fricción gasta más.", "mant"],
-      ["Evita arranques innecesarios", "Cada arranque consume de más; úsalo en tandas.", "tip"]
-    ],
-    electro_gen: [
-      ["Desconéctalo en espera", "Los equipos electrónicos siguen consumiendo aunque estén apagados.", "tip"],
-      ["Usa el modo de ahorro", "Baja el brillo y activa la suspensión automática si la tiene.", "tip"]
-    ],
-    otros: [
-      ["Revisa la etiqueta de consumo", "Compara los Watts reales con lo que escribiste: si gasta más de lo esperado, vale la pena revisarlo.", "tip"],
-      ["Desconéctalo cuando no lo uses", "Muchos aparatos siguen consumiendo en espera.", "tip"],
-      ["Compra con sello de eficiencia", "Al renovarlo, elige modelos con certificación de eficiencia energética.", "inv"]
-    ]
-  };
+var BADGES = { 
+  tip: "Tip rápido", 
+  mant: "Mantenimiento", 
+  inv: "Inversión a futuro", 
+  urg: "Urgente" 
+};
 
-  // Consejos generales por categoría
-  var TIPS_CAT = {
-    "Electrodomésticos": [
-      ["Desconecta lo que no uses", "Muchos electrodomésticos siguen consumiendo aunque estén apagados.", "tip"],
-      ["Compra con etiqueta de eficiencia", "Al renovar un aparato, elige uno con sello de eficiencia energética.", "inv"]
-    ],
-    "Electrónica": [
-      ["Desconecta cargadores y regletas", "Un aparato en espera sigue gastando; apaga la regleta al terminar.", "tip"],
-      ["Elige equipos certificados", "Los modelos con certificación de eficiencia rinden igual con menos watts.", "inv"]
-    ],
-    "Iluminación": [
-      ["Apaga al salir", "Si el cuarto queda vacío, apaga la luz: es el ahorro más fácil.", "tip"],
-      ["Aprovecha la luz natural", "Abre cortinas de día y acerca tu zona de trabajo a las ventanas.", "tip"],
-      ["Limpia focos y lámparas", "El polvo reduce la luz y te hace encender más focos.", "mant"],
-      ["Agrega sensores de movimiento", "Evitan que las luces queden encendidas por olvido.", "inv"]
-    ],
-    "Climatización": [
-      ["Cierra puertas y ventanas", "Sella rendijas y baja las cortinas en las horas de más sol para que el equipo trabaje menos.", "tip"]
-    ],
-    "Cuidado personal": [
-      ["Desconecta tus aparatos de cuidado personal", "Cargadores, planchas y secadores conectados son un riesgo y a veces siguen consumiendo.", "tip"]
-    ],
-    "Hogar y taller": [
-      ["Desconecta la herramienta al terminar", "Guárdala limpia y desconectada para evitar consumos y accidentes.", "tip"],
-      ["Mantenimiento regular", "Un equipo bien mantenido rinde más con menos energía.", "mant"]
-    ],
-    "Otros": [
-      ["Elige eficiencia al renovar", "Para cualquier aparato, el sello de eficiencia energética ayuda a gastar menos por el mismo trabajo.", "inv"]
-    ]
-  };
+// Consejos por tipo de aparato: ordenados alfabéticamente por la llave
+var TIPS = {
+  ac: [
+    ["Ajusta el termostato a 24–25 °C", "Enfriar de más sube el consumo sin mejorar mucho el confort.", "tip"],
+    ["Usa el temporizador", "Programa que se apague o suba la temperatura cuando duermes o sales.", "tip"],
+    ["Limpia los filtros cada mes", "Un filtro tapado obliga al aire a trabajar más y por más tiempo.", "mant"],
+    ["Cambia a tecnología inverter", "Un aire inverter ajusta su potencia en vez de prender y apagar, y gasta menos.", "inv"]
+  ],
+  ac_inverter: [
+    ["Mantén el termostato estable a 24–25 °C", "Los motores inverter ahorran más al mantener una temperatura constante en lugar de enfriar el cuarto desde cero.", "tip"],
+    ["Evita apagarlo por salidas cortas", "Si sales por menos de una hora, es mejor dejarlo encendido. Arrancar de nuevo consume más que mantener el clima.", "tip"],
+    ["Limpia los filtros cada mes", "Un filtro tapado obliga al equipo a aumentar la velocidad del compresor, anulando el ahorro.", "mant"],
+    ["Usa el modo Eco o Automático", "Aprovecha los sensores del inverter; en modo automático el equipo regula su propia potencia de forma óptima.", "tip"]
+  ],
+  aspiradora: [
+    ["Vacía el depósito o la bolsa", "Con el depósito lleno pierde succión y el motor se sobrecalienta.", "mant"],
+    ["Usa la potencia justa", "En pisos lisos basta la potencia baja, reserva la máxima para alfombras.", "tip"]
+  ],
+  audio: [
+    ["Apágalo por completo, no lo dejes en reposo", "En reposo sigue consumiendo; usa su interruptor principal o una regleta.", "tip"],
+    ["Déjalo ventilado y sin polvo", "Un amplificador fresco trabaja más eficiente y dura más.", "mant"]
+  ],
+  bateria: [
+    ["Desconecta al llegar a 100 %", "Cargar de más degrada la vida útil de la batería y suma a tu recibo.", "tip"],
+    ["No dejes el cargador conectado", "Un cargador sin equipo conectado sigue consumiendo un pequeño amperaje fantasma.", "tip"]
+  ],
+  bomba: [
+    ["Revisa fugas y el flotador", "Una fuga hace que arranque muchas veces al día encendiendo el motor innecesariamente.", "mant"],
+    ["Evita que trabaje en seco", "Trabajar sin agua daña el sello mecánico y quema el motor.", "urg"] // Badge extra usado
+  ],
+  cafetera: [
+    ["Prepara solo lo que vas a tomar", "Mantener la jarra en la placa caliente gasta demasiada energía; usa un termo.", "tip"],
+    ["Descalcifica cada mes", "El sarro en la resistencia alarga el tiempo de calentado.", "mant"]
+  ],
+  calefactor: [
+    ["Calienta solo el cuarto que usas", "Cierra la puerta, sella ventanas y apágalo al salir.", "tip"],
+    ["Usa termostato o temporizador", "Evita que siga encendido cuando el cuarto ya está a buena temperatura.", "tip"]
+  ],
+  calor_gen: [
+    ["Úsalo solo el tiempo necesario", "Los equipos que dan calor (resistencias) son los que más energía demandan.", "tip"],
+    ["Desconéctalo al terminar", "Ahorra energía y evita riesgos de incendio.", "urg"]
+  ],
+  campana: [
+    ["Usa la velocidad mínima necesaria", "Casi siempre basta la velocidad baja para sacar humos y olores diarios.", "tip"],
+    ["Lava los filtros de grasa", "Filtros tapados fuerzan el motor, extraen menos y consumen más.", "mant"]
+  ],
+  cocina_peq: [
+    ["Cocina en tandas completas", "Aprovecha cada ciclo térmico con la cantidad justa en vez de encenderlo para porciones minúsculas.", "tip"],
+    ["No lo dejes en «mantener caliente»", "Apágalo al terminar; la función de mantener caliente es una resistencia encendida constantemente.", "tip"]
+  ],
+  consola: [
+    ["Apágala por completo", "El modo de reposo rápido o 'Stand-by' sigue consumiendo; desactívalo desde los ajustes.", "tip"],
+    ["Programa las descargas", "Evita que el equipo encienda a descargar actualizaciones grandes durante horas pico.", "tip"]
+  ],
+  coser: [
+    ["Limpia la pelusa y aceita", "Una máquina limpia y lubricada gira con mucha menos fricción en el motor.", "mant"],
+    ["Desconéctala al terminar", "Apaga también el interruptor de la lámpara y desconecta el pedal.", "tip"]
+  ],
+  decodificador: [
+    ["Desconéctalo de la regleta", "En espera (foquito rojo) consume casi lo mismo que estando encendido dando imagen.", "tip"],
+    ["Evita que grabe o actualice sin necesidad", "Programa esas tareas solo cuando realmente las utilices.", "tip"]
+  ],
+  deshumidificador: [
+    ["Cierra puertas y ventanas", "Que solo seque el cuarto que usas, si abres, entrará humedad nueva.", "tip"],
+    ["Fija la humedad en 50–60 %", "Bajar más de eso reseca el ambiente y obliga al compresor a no detenerse nunca.", "tip"]
+  ],
+  electro_gen: [
+    ["Desconéctalo en espera", "Los equipos electrónicos con pantallas o LEDs siguen consumiendo energía fantasma.", "tip"],
+    ["Usa el modo de ahorro", "Baja el brillo y activa la suspensión automática si el dispositivo lo permite.", "tip"]
+  ],
+  evaporativo: [
+    ["Ventila con una ventana entreabierta", "A diferencia del A/C, este necesita flujo de aire cruzado para no saturar el cuarto de humedad.", "tip"],
+    ["Limpia filtros y depósito", "El sarro en los paneles de celulosa y el polvo bajan drásticamente su rendimiento.", "mant"]
+  ],
+  exterior: [
+    ["Usa sensor de movimiento o fotocelda", "Asegura que solo encienda de noche o cuando alguien pase.", "inv"],
+    ["Limpia el cristal del reflector", "El polvo reduce la luminosidad y te hace creer que necesitas focos de más watts.", "mant"]
+  ],
+  herramienta: [
+    ["Usa el accesorio correcto y afilado", "Un disco gastado o una broca sin filo exigen más tiempo, presión y amperaje al motor.", "mant"],
+    ["Desconéctala al terminar", "Evita consumos fantasma y arranques accidentales peligrosos.", "urg"]
+  ],
+  horno: [
+    ["No abras la puerta a cada rato", "Cada apertura pierde un 20% del calor y el horno enciende la resistencia de nuevo para recuperarlo.", "tip"],
+    ["Aprovecha el calor residual", "Apágalo de 5 a 10 minutos antes de terminar: el calor acumulado sella y completa la cocción.", "tip"]
+  ],
+  impresora: [
+    ["Apágala al terminar", "En espera, especialmente las láser por su fusor, siguen consumiendo; usa una regleta.", "tip"],
+    ["Imprime en borrador", "El modo borrador mueve los cabezales más rápido y gasta menos luz y tinta.", "tip"]
+  ],
+  laptop: [
+    ["Usa el plan de energía equilibrado", "Evita el modo de máximo rendimiento si solo estás navegando o en ofimática.", "tip"],
+    ["Desconecta el cargador al llegar a 100 %", "Tenerla siempre conectada degrada la batería más rápido.", "tip"],
+    ["Limpia las rendijas de ventilación", "Si se calienta mucho, los ventiladores girarán al máximo gastando batería extra.", "mant"] // Tip agregado
+  ],
+  lavadora: [
+    ["Lava con carga completa y agua fría", "Junta ropa hasta llenar el tambor; el agua fría basta para todo y te ahorra encender resistencias térmicas.", "tip"],
+    ["Limpia el filtro y el tambor", "Un filtro de bomba tapado alarga los ciclos de drenado y hace trabajar más al motor.", "mant"]
+  ],
+  lavavajillas: [
+    ["Úsalo lleno y en programa eco", "Lavar a medias gasta exactamente los mismos litros de agua y electricidad que a tope.", "tip"],
+    ["Limpia el filtro y los aspersores", "La grasa tapa las salidas de agua disminuyendo la presión y obligando a repetir ciclos.", "mant"]
+  ],
+  licuadora: [
+    ["Procesa en tandas cortas", "Usar pulsos cortos y no llenar el vaso al tope exige mucho menos al embobinado del motor.", "tip"],
+    ["Revisa aspas y cuadro de arrastre", "Aspas sin filo o barridas te obligan a licuar por más minutos.", "mant"]
+  ],
+  luz: [
+    ["Elige por lúmenes, no por watts", "Compra la luz que necesitas (lúmenes) y busca el foco que logre eso con menos watts.", "tip"],
+    ["Usa temporizador o sensor", "Automatiza pasillos y baños para que no queden luces encendidas por olvido.", "inv"]
+  ],
+  monitor: [
+    ["Baja el brillo", "La retroiluminación alta es lo que más consume energía en una pantalla.", "tip"],
+    ["Activa el apagado automático", "Configura en tu PC que el monitor se apague tras 5 minutos sin uso.", "tip"]
+  ],
+  motor_gen: [
+    ["Mantenlo limpio y lubricado", "Un motor con baleros secos o fricción consume más amperaje para poder girar.", "mant"],
+    ["Evita arranques innecesarios", "El pico de arranque consume hasta 3 veces más que el funcionamiento continuo; úsalo en tandas.", "tip"]
+  ],
+  otros: [
+    ["Revisa la etiqueta de consumo", "Compara los Watts de la etiqueta trasera con los que escribiste para asegurar precisión.", "tip"],
+    ["Desconéctalo cuando no lo uses", "Si tiene reloj digital, foquito o transformador pesado en la clavija, gasta en reposo.", "tip"],
+    ["Compra con sello de eficiencia", "Si vas a renovarlo, elige modelos con certificación (ej. FIDE o Energy Star).", "inv"]
+  ],
+  pc: [
+    ["Activa la suspensión automática", "Configura que el equipo se duerma tras 15-20 minutos de inactividad.", "tip"],
+    ["Apágalo en pausas largas", "Si no lo usarás en un par de horas, apágalo. El mito de que apagando gastas más es falso en PCs modernas.", "tip"],
+    ["Elige una fuente 80 PLUS", "Una fuente certificada transforma la energía mejor y desperdicia menos en forma de calor.", "inv"]
+  ],
+  plancha: [
+    ["Plancha en tandas grandes", "Junta toda la ropa y plancha un solo día; calentar la resistencia inicial es lo que más gasta.", "tip"],
+    ["Apágala minutos antes", "Desconéctala y usa el calor residual de la suela para terminar las últimas prendas delgadas.", "tip"]
+  ],
+  plancha_pelo: [
+    ["Úsala con el cabello seco", "Planchar cabello húmedo requiere muchas pasadas, dañando tu pelo y sumando minutos de luz.", "tip"],
+    ["No la dejes conectada", "Las resistencias calentando sin uso son un gasto enorme y un riesgo.", "urg"]
+  ],
+  presion: [
+    ["Úsalo solo lo necesario", "Los motores de hidrolavadoras y compresores demandan mucha corriente continua.", "tip"],
+    ["Revisa mangueras y purga de aire", "Las fugas de presión hacen que el motor de compresión arranque a cada rato.", "mant"]
+  ],
+  proyector: [
+    ["Déjalo enfriar antes de desconectar", "El ventilador debe seguir girando al apagarlo. Cortarle la luz de golpe funde la lámpara.", "mant"],
+    ["Usa el modo eco", "Baja el brillo de la lámpara. Si oscureces bien tu sala, se verá igual y gastará menos.", "tip"]
+  ],
+  refri: [
+    ["Cuida el condensador trasero", "Limpia el polvo de la parrilla negra trasera; un condensador bloqueado hierve el compresor.", "mant"],
+    ["Revisa los empaques magnéticos", "Cierra la puerta sobre un billete; si se cae fácil, el frío se escapa y el motor no descansa.", "mant"],
+    ["Ajusta la temperatura", "Con 4 °C en el refrigerador y −18 °C en el congelador es el balance ideal.", "tip"]
+  ],
+  router: [
+    ["Prográmalo para apagarse de noche", "Es de los pocos equipos 24/7. Un temporizador en el enchufe (12am-6am) ahora energía anual.", "tip"],
+    ["Colócalo al centro y alto", "Mejor señal evita que tus dispositivos gasten batería extra buscando red.", "tip"]
+  ],
+  secador: [
+    ["Seca con toalla primero", "Quitar la humedad pesada con toalla reduce a la mitad los minutos del motor y la resistencia.", "tip"],
+    ["Usa temperatura media o fría", "La máxima temperatura acciona la resistencia al 100%, gasta más y maltrata el cabello.", "tip"]
+  ],
+  secadora: [
+    ["Tiende al sol cuando puedas", "La secadora eléctrica tiene una resistencia enorme; usar el sol y el aire es gratis.", "tip"],
+    ["Limpia el filtro de pelusa antes de cada uso", "Con el filtro lleno el aire no circula, el secado tarda el doble y gastas el doble.", "mant"]
+  ],
+  tv: [
+    ["Baja el brillo de la retroiluminación", "Es el ajuste número uno que reduce el consumo en pantallas LED.", "tip"],
+    ["Apágalo, no lo dejes en espera", "Si vas a dormir, apaga la regleta. Las Smart TVs en reposo siguen conectadas al WiFi.", "tip"]
+  ],
+  ventilador: [
+    ["Mantén las aspas limpias", "Una capa gruesa de polvo altera la aerodinámica y hace al motor forzarse inútilmente.", "mant"],
+    ["Apágalo si no hay nadie", "Los ventiladores no enfrían habitaciones, solo refrescan la piel humana.", "tip"]
+  ],
+  viejo: [
+    ["Cámbialo por LED", "Un foco LED de 9W da la misma luz que uno incandescente viejo de 60W.", "inv"],
+    ["Empieza por los que más usas", "Cambia primero los focos de sala y cocina; recuperarás la inversión en el primer recibo.", "tip"]
+  ]
+};
+// Consejos generales por categoría
+var TIPS_CAT = {
+  "Climatización": [
+    ["Aísla térmicamente tu hogar", "Sellar ventanas y usar aislantes en el techo puede reducir el consumo de climatización hasta un 30%.", "inv"],
+    ["Cierra puertas y ventanas", "Sella rendijas y baja las cortinas en las horas de más sol para que el equipo trabaje menos.", "tip"],
+    ["Usa la ventilación cruzada", "En días frescos o por la noche, abre ventanas opuestas para crear corriente natural antes de encender equipos.", "tip"]
+  ],
+  "Cuidado personal": [
+    ["Aprovecha el secado natural", "Secar el cabello o arreglarse con métodos manuales siempre que sea posible ahorra mucha energía térmica.", "tip"],
+    ["Desconecta tus aparatos", "Cargadores, planchas y secadores conectados son un riesgo y a veces siguen consumiendo energía fantasma.", "tip"],
+    ["No dejes baterías cargando toda la noche", "Desconecta rasuradoras o cepillos eléctricos cuando lleguen al 100% para evitar desgaste de la pila.", "mant"]
+  ],
+  "Electrodomésticos": [
+    ["Compra con etiqueta de eficiencia", "Al renovar un aparato, elige uno con sello de eficiencia energética (como FIDE o Energy Star).", "inv"],
+    ["Desconecta lo que no uses", "Muchos electrodomésticos (licuadoras, tostadoras) siguen consumiendo aunque estén apagados.", "tip"],
+    ["Evita usarlos en horas pico", "Si tu tarifa depende del horario, usa los aparatos de mayor consumo (lavadora, secadora) fuera de las horas de mayor demanda.", "tip"]
+  ],
+  "Electrónica": [
+    ["Desconecta cargadores y regletas", "Un aparato en espera sigue gastando; apaga la regleta con interruptor al terminar.", "tip"],
+    ["Elige equipos certificados", "Los modelos con certificación de eficiencia rinden igual con menos watts.", "inv"],
+    ["Usa enchufes inteligentes", "Invertir en 'smart plugs' te permite cortar la corriente por completo desde tu celular, matando los consumos fantasma.", "inv"]
+  ],
+  "Hogar, Taller y Reparación": [
+    ["Desconecta la herramienta al terminar", "Guárdala limpia y desconectada para evitar consumos y arranques accidentales.", "urg"],
+    ["Mantenimiento regular", "Un equipo bien lubricado y con discos o aspas afiladas rinde más y exige menos amperaje al motor.", "mant"],
+    ["Usa extensiones del calibre correcto", "Cables muy delgados en herramientas de motor generan calor, pérdida de energía y riesgo de incendio.", "urg"]
+  ],
+  "Iluminación": [
+    ["Agrega sensores de movimiento", "Evitan que las luces queden encendidas por olvido en pasillos, patios y baños.", "inv"],
+    ["Apaga al salir", "Si el cuarto queda vacío, apaga la luz: es el ahorro más fácil e inmediato.", "tip"],
+    ["Aprovecha la luz natural", "Abre cortinas de día y acerca tu zona de trabajo a las ventanas para no encender focos.", "tip"],
+    ["Limpia focos y lámparas", "El polvo reduce la luz útil y te hace creer que necesitas encender focos adicionales.", "mant"],
+    ["Pinta con colores claros", "Paredes y techos blancos reflejan mejor la luz, reduciendo drásticamente la necesidad de iluminación artificial.", "tip"]
+  ],
+  "Otros": [
+    ["Caza a los vampiros eléctricos", "Cualquier aparato apagado pero con un foquito encendido o reloj digital consume las 24 horas. Desconéctalos.", "tip"],
+    ["Elige eficiencia al renovar", "Para cualquier aparato, el sello de eficiencia energética ayuda a gastar menos por el mismo trabajo.", "inv"]
+  ]
+};
   var TIP_SOLAR = ["Piensa en energía solar", "Un calentador solar o paneles fotovoltaicos reducen lo que compras a la red.", "inv"];
 
   // Consejos que dependen del contexto (potencia, horas de uso y consumo)
@@ -1353,6 +1499,7 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
       return;
     }
     if (modal.open) { cerrarModal(true); }    // "Atrás" con el modal abierto: solo se cierra el modal
+    if (modalSalir.open) { cerrarModalSalir(); }
     var n = st.pantalla;
     while (n > 1 && !pantallaPermitida(n)) { n--; }
     if (n !== st.pantalla) { try { history.replaceState({ pantalla: n, pos: pos }, "", ""); pila[pos] = n; } catch (err) {} }
@@ -1543,6 +1690,8 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
   var PALETA = ["var(--hoja)", "var(--agua)", "#f5b50a", "#e5392f", "#7c5cd6", "#e87d1e", "var(--brote)"];   // los tres de tema siguen el tema elegido
   var COLOR_RESTO = "#8aa39e";
   var REDUCIR = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var SVG_COPIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  var MIN_VACIAR = 8;   // con tantos equipos o más aparece el botón «Vaciar lista»
   var SVG_PAPELERA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
 
   function $(id) { return document.getElementById(id); }
@@ -1564,10 +1713,11 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
   function num(id, valor, formato, ms) { contar($(id), valor, formato, ms); }
 
   // Datos de la búsqueda
-  var APARATOS = [];
+var APARATOS = [];
   Object.keys(CATALOGO).forEach(function (cat) {
     CATALOGO[cat].forEach(function (a) {
-      APARATOS.push({ nombre: a[0], cat: cat, watts: a[1], tipo: a[2], clave: normalizar(a[0] + " " + cat) });
+      // a[3] lee palabras clave ocultas si existen
+      APARATOS.push({ nombre: a[0], cat: cat, watts: a[1], tipo: a[2], clave: normalizar(a[0] + " " + cat + (a[3] ? " " + a[3] : "")) });
     });
   });
 
@@ -1632,11 +1782,13 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
   function elegirAparato(a) {
     agregarAparato({ nombre: a.nombre, cat: a.cat, tipo: a.tipo, watts: a.watts, otro: false });
     $("buscar").value = "";
+    $("buscar").blur();
     cerrarBusqueda();
   }
   function elegirOtro(texto) {
     var it = agregarAparato({ nombre: texto || "Otro aparato", cat: OTROS, tipo: "otros", watts: 0, otro: true });
     $("buscar").value = "";
+    $("buscar").blur();
     cerrarBusqueda();
     it.el.querySelector(".in-watts").focus();
   }
@@ -1677,12 +1829,13 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
     });
   }
 
-  function agregarAparato(a) {
+  function agregarAparato(a, tras) {
     var it = { id: ++cont, nombre: a.nombre, cat: a.cat, tipo: a.tipo, watts: a.watts ? String(a.watts) : "", sugerido: a.watts || 0, otro: !!a.otro, minutos: 0, manualMal: false };
     var li = document.createElement("li");
     li.className = "tarjeta";
     li.innerHTML = '<div class="t-info"></div>' +
-      '<div class="tarjeta-w"><input type="number" class="in-watts" inputmode="decimal" min="0" step="any" placeholder="W" aria-label="Consumo en Watts"><span class="unid">W</span></div>' +
+      '<div class="tarjeta-w"><input type="number" class="in-watts" inputmode="decimal" min="0" max="50000" step="any" placeholder="W" aria-label="Consumo en Watts"><span class="unid">W</span></div>' +
+      '<button type="button" class="copiar" aria-label="Copiar este aparato" title="Copiar este aparato">' + SVG_COPIAR + '</button>' +
       '<button type="button" class="papelera" aria-label="Quitar este aparato">' + SVG_PAPELERA + '</button>' +
       '<p class="error" role="alert" hidden></p>';
     var info = li.querySelector(".t-info");
@@ -1691,25 +1844,70 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
     var inW = li.querySelector(".in-watts");
     inW.value = it.watts;
     inW.addEventListener("input", function () { it.watts = inW.value; limpiarTarjeta(it); });
+    inW.addEventListener("focus", function() { this.select(); });
     if (it.otro) {
       var inN = info.querySelector(".nombre-edit");
       inN.value = it.nombre;
-      inN.addEventListener("input", function () { it.nombre = inN.value.trim() || "Otro aparato"; etiquetarLista(); });
+      inN.addEventListener("input", function () { 
+        var val = inN.value.trim();
+        it.nombre = val ? val.charAt(0).toUpperCase() + val.slice(1) : "Otro aparato"; 
+        etiquetarLista(); 
+      });
     }
+    li.querySelector(".copiar").addEventListener("click", function () { copiarAparato(it); });
     li.querySelector(".papelera").addEventListener("click", function () { quitarAparato(it); });
     it.el = li;
-    lista.push(it);
-    $("lista-tarjetas").appendChild(li);
+    if (tras && tras.el && tras.el.parentNode) {          // copia: se coloca justo debajo del original
+      tras.el.parentNode.insertBefore(li, tras.el.nextSibling);
+      lista.splice(lista.indexOf(tras) + 1, 0, it);
+    } else {
+      lista.push(it);
+      $("lista-tarjetas").appendChild(li);
+    }
     confirmada = false;
     actualizarLista();
     li.scrollIntoView({ block: "nearest", behavior: REDUCIR ? "auto" : "smooth" });
     return it;
   }
+  // Duplica la tarjeta tal como está (nombre, categoría, tipo y Watts actuales) sin volver a buscar el aparato
+  function copiarAparato(it) {
+    var c = agregarAparato({ nombre: it.nombre, cat: it.cat, tipo: it.tipo, watts: it.watts, otro: it.otro }, it);
+    c.sugerido = it.sugerido;
+  }
+  // Animación de salida: la tarjeta se desliza y se desvanece, y después se pliega
+  function animarSalida(el, retraso, fin) {
+    var hecho = false;
+    function terminar() {
+      if (hecho) { return; }
+      hecho = true;
+      if (el.parentNode) { el.remove(); }
+      if (fin) { fin(); }
+    }
+    if (REDUCIR) { terminar(); return; }
+    el.style.setProperty("--h", el.offsetHeight + "px");
+    el.style.animationDelay = retraso + "ms";
+    el.classList.add("saliendo");
+    el.addEventListener("animationend", function (e) { if (e.target === el && e.animationName === "tarjeta-sale") { terminar(); } });
+    setTimeout(terminar, retraso + 700);   // respaldo por si el navegador no avisa del fin de la animación
+  }
   function quitarAparato(it) {
-    it.el.remove();
+    if (it.saliendo) { return; }
+    it.saliendo = true;
     lista = lista.filter(function (x) { return x !== it; });
     confirmada = false;
+    animarSalida(it.el, 0, actualizarLista);
     actualizarLista();
+  }
+  // Vacía toda la lista: las tarjetas salen en cascada
+  function vaciarLista() {
+    if (!lista.length) { return; }
+    var items = lista.slice();
+    var paso = Math.min(60, 420 / items.length);
+    lista = [];
+    confirmada = false;
+    items.forEach(function (it, i) { it.saliendo = true; animarSalida(it.el, Math.round(i * paso), actualizarLista); });
+    actualizarLista();
+    $("t2").focus({ preventScroll: true });
   }
   function limpiarTarjeta(it) {
     it.el.querySelector(".error").hidden = true;
@@ -1731,7 +1929,9 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
   function actualizarLista() {
     var n = lista.length;
     etiquetarLista();
-    $("estado-vacio").hidden = n > 0;
+    // el estado vacío espera a que terminen de salir las tarjetas que se están quitando
+    $("estado-vacio").hidden = n > 0 || !!$("lista-tarjetas").querySelector(".saliendo");
+    $("btn-vaciar").hidden = n < MIN_VACIAR;
     $("contador-ap").textContent = n ? n + (n === 1 ? " equipo en tu lista" : " equipos en tu lista") : "";
     $("btn-siguiente-lista").disabled = n === 0;
     $("error-casa").hidden = true;
@@ -1742,9 +1942,9 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
     var primero = null;
     lista.forEach(function (it) {
       var w = parseFloat(it.watts);
-      if (!Number.isFinite(w) || w <= 0) {
+      if (!Number.isFinite(w) || w <= 0 || w > 50000) {
         var er = it.el.querySelector(".error");
-        er.textContent = "Escribe un consumo mayor a 0 Watts.";
+        er.textContent = "Escribe un consumo válido (entre 1 y 50,000 W).";
         er.hidden = false;
         it.el.querySelector(".in-watts").classList.add("invalido");
         primero = primero || it;
@@ -1782,7 +1982,9 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
       it.sl.setAttribute("aria-label", "Tiempo de uso de " + it.etq);
       it.sl.addEventListener("input", function () { it.minutos = Number(it.sl.value); it.manualMal = false; pintarTiempo(it, "slider"); });
       it.inH.addEventListener("input", function () { leerManual(it); });
+      it.inH.addEventListener("focus", function() { this.select(); });
       it.inM.addEventListener("input", function () { leerManual(it); });
+      it.inM.addEventListener("focus", function() { this.select(); });
       ul.appendChild(li);
     });
     aplicarModoVisual();
@@ -1989,7 +2191,7 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
     var ul = $("bloques-cfe"), barras = document.querySelectorAll("#barra-casa i");
     ul.innerHTML = "";
     for (var i = 0; i < 3; i++) {
-      barras[i].style.width = (r[i] / c.kwhMes * 100) + "%";
+      barras[i].style.width = (c.kwhMes > 0 ? (r[i] / c.kwhMes * 100) : 0) + "%";
       var li = document.createElement("li");
       li.className = "bloque-cfe" + (r[i] > 0 ? " activo" : "");
       li.style.setProperty("--c", colores[i]);
@@ -2183,6 +2385,34 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
     mostrarPantalla(1, true);
   }
 
+  // ---------- Advertencia al salir con datos en la lista ----------
+  var modalSalir = document.getElementById("modal-salir");
+  var cerrandoSalir = false;
+
+  // Clic en «Eficiencia Energética»: si hay equipos en la lista, antes pregunta
+  function intentarSalir() {
+    var n = lista.length;
+    if (!n) { reiniciar(); return; }
+    $("salir-n").textContent = n + (n === 1 ? " equipo" : " equipos");
+    cerrandoSalir = false;
+    modalSalir.classList.remove("cerrando");
+    if (!modalSalir.open) { modalSalir.showModal(); }
+  }
+  function cerrarModalSalir(despues) {
+    if (!modalSalir.open || cerrandoSalir) { return; }
+    cerrandoSalir = true;
+    modalSalir.classList.add("cerrando");
+    setTimeout(function () {
+      modalSalir.close();
+      modalSalir.classList.remove("cerrando");
+      cerrandoSalir = false;
+      if (typeof despues === "function") { despues(); }
+    }, REDUCIR ? 0 : 200);
+  }
+  function confirmarSalida() { cerrarModalSalir(reiniciar); }
+  modalSalir.addEventListener("cancel", function (e) { e.preventDefault(); cerrarModalSalir(); });     // tecla Escape
+  modalSalir.addEventListener("click", function (e) { if (e.target === modalSalir) { cerrarModalSalir(); } });   // clic en el fondo
+
   // Teclado en las pestañas: flechas izquierda y derecha
   $("pestanas").addEventListener("keydown", function (e) {
     var i = PESTANAS.indexOf(pestana);
@@ -2252,7 +2482,13 @@ button.tema-op[aria-checked="true"]{border-color:var(--tecnm); box-shadow:inset 
       if (mqOscuro.addEventListener) { mqOscuro.addEventListener("change", alCambiar); } else if (mqOscuro.addListener) { mqOscuro.addListener(alCambiar); }
     }
   }
-
+window.addEventListener("beforeunload", function (e) {
+    if (lista.length > 0) {
+      var msj = "Tienes equipos en tu lista. ¿Seguro que quieres salir?";
+      e.returnValue = msj;
+      return msj;
+    }
+  });
   // ---------- Inicialización ----------
   iniciarApariencia();
   ddRegion = crearDD("region", "Selecciona tu tarifa", alElegirRegion);
