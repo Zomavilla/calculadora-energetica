@@ -502,8 +502,9 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
 .bloque-cfe .bc-casa{color:var(--tinta); font-weight:800}
 .donut-wrap{display:flex; justify-content:center; margin:6px 0 16px; overflow:visible}
 .donut-wrap[hidden]{display:none}
-.donut{display:block; width:100%; max-width:560px; margin:0 auto; overflow:visible}
-.donut svg{display:block; width:100%; height:auto; overflow:visible}
+.donut{display:block; width:100%; max-width:620px; margin:0 auto; overflow:visible}
+.donut > svg{display:block; width:100%; height:auto; overflow:visible}
+.donut svg.dclip{overflow:hidden}
 .donut text{font-family:inherit}
 .des-item .des-cab b::before{content:""; display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--c); margin-right:8px}
 .des-item .pista i{background:var(--c)}
@@ -704,11 +705,22 @@ button.tema-op[aria-checked="true"]{animation:pop-sel .4s var(--muelle)}
 .modal[open] .modal-icono{animation:pop .6s var(--muelle) .12s backwards}
 .modal[open] .modal-icono svg{animation:late 2.4s ease-in-out .8s infinite}
 .modal-salir[open] .modal-icono svg{animation:agita-icono .7s .3s}
-.donut path{transition:transform .3s var(--muelle), opacity .25s, filter .25s; cursor:pointer}
-.donut path:hover{transform:translate(var(--dx,0),var(--dy,0)); filter:brightness(1.1)}
-.donut:has(path:hover) path:not(:hover){opacity:.5}
+.donut path{transition:transform .3s var(--muelle), opacity .25s, filter .25s; cursor:pointer; outline:none}
+.donut path.sel{transform:translate(var(--dx,0),var(--dy,0)); filter:brightness(1.1)}
+.donut path:focus-visible{stroke-width:3.5}
+.donut .hay-sel path:not(.sel){opacity:.45}
+/* Etiquetas de la dona: línea guía, texto recortado y efecto marquee al activar el segmento */
+.lab{cursor:pointer; transition:opacity .25s}
+.lab polyline{fill:none; stroke:var(--gris); stroke-width:1; transition:stroke .2s, stroke-width .2s}
+.lab .largo{display:none}
+.lab.act polyline{stroke:var(--tinta); stroke-width:2}
+.lab.act .corto{display:none}
+.lab.act .largo{display:inline}
+.lab.act .mq{animation:marquee var(--mqd,3s) ease-in-out .35s infinite alternate}
+@keyframes marquee{0%,15%{transform:translateX(0)}85%,100%{transform:translateX(var(--mq,0px))}}
+.donut .hay-sel .lab:not(.act){opacity:.4}
 .donut-intro .barrido{animation:dona-barre 1s cubic-bezier(.4,0,.2,1) backwards}
-@keyframes dona-barre{from{stroke-dashoffset:420}}
+@keyframes dona-barre{from{stroke-dashoffset:var(--circ,420)}}
 .donut-intro polyline{stroke-dasharray:1; animation:linea-dibuja .5s ease-out .8s backwards}
 @keyframes linea-dibuja{from{stroke-dashoffset:1}}
 .donut-intro g text{animation:fundido-in .4s ease-out 1s backwards}
@@ -747,6 +759,14 @@ button.tema-op[aria-checked="true"]{animation:pop-sel .4s var(--muelle)}
 input,.dd-campo{transition:border-color .2s, box-shadow .25s}
 input:not(.in-watts):not(.nombre-edit):not(.it-slider):focus,.dd.abierto .dd-campo{box-shadow:0 0 0 4px color-mix(in srgb,var(--agua) 22%,transparent)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important; transition:none !important}}
+@media (prefers-reduced-motion:reduce){.lab.act .largo{display:none}.lab.act .corto{display:inline}}
+
+/* Píldora Aparato / Categoría y aviso emergente inferior */
+.pildora .opt.nodisp{opacity:.45; cursor:not-allowed}
+.pildora .opt.nodisp:hover{color:var(--gris)}
+.des-aps{margin-top:-4px}
+.toast{position:fixed; left:50%; width:max-content; bottom:calc(20px + env(safe-area-inset-bottom)); z-index:200; max-width:min(92vw,420px); padding:12px 18px; border-radius:14px; background:var(--tinta); color:var(--blanco); font-weight:700; font-size:.92rem; text-align:center; box-shadow:0 12px 32px rgba(0,0,0,.3); opacity:0; visibility:hidden; transform:translate(-50%,16px); pointer-events:none; transition:opacity .25s, transform .3s var(--muelle), visibility 0s .3s}
+.toast.on{opacity:1; visibility:visible; transform:translate(-50%,0); transition:opacity .25s, transform .3s var(--muelle)}
 </style>
 </head>
 <body>
@@ -941,7 +961,11 @@ input:not(.in-watts):not(.nombre-edit):not(.it-slider):focus,.dd.abierto .dd-cam
       <div class="barra-reparto" id="barra-casa" role="img" aria-label="Reparto del consumo mensual por bloque de la tarifa"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
       <ul class="bloques-cfe" id="bloques-cfe"></ul>
 
-      <h3 class="subtitulo">Cuánto consume cada aparato</h3>
+      <h3 class="subtitulo" id="donut-titulo">Cuánto consume cada aparato</h3>
+      <div class="pildora" id="pildora-vista" role="group" aria-label="Agrupar el consumo por aparato o por categoría" hidden>
+        <button type="button" class="opt activa" id="vista-aparato" aria-pressed="true" onclick="cambiarVista('aparato')">Por aparato</button>
+        <button type="button" class="opt" id="vista-categoria" aria-pressed="false" onclick="cambiarVista('categoria')">Por categoría</button>
+      </div>
       <div class="donut-wrap" id="donut-wrap" hidden>
         <div class="donut" id="donut"></div>
       </div>
@@ -1071,6 +1095,8 @@ input:not(.in-watts):not(.nombre-edit):not(.it-slider):focus,.dd.abierto .dd-cam
     </div>
   </div>
 </dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
  // Catálogo: categoría -> [aparato, Watts promedio, tipo (para los consejos), "palabras clave opcionales"]
@@ -1809,7 +1835,7 @@ var TIPS_CAT = {
   var lista = [], cont = 0;             // equipos de la casa
   var modo = "";                        // "dia" | "semana" (hay que elegirlo)
   var confirmada = false, resultado = null;
-  var periodo = "mes", pestana = "consumo";
+  var periodo = "mes", pestana = "consumo", vista = "aparato";   // vista: "aparato" | "categoria"
   var temporada = "verano", ddRegion;
 
   var RAPIDOS = ["Refrigerador", "Televisor", "Foco LED", "Aire acondicionado minisplit", "Ventilador de techo", "Lavadora", "Microondas", "Laptop estándar"];
@@ -2229,6 +2255,7 @@ var APARATOS = [];
       return { nombre: it.etq, aparato: it.nombre, cat: it.cat, tipo: it.tipo, watts: w, horasDia: horasDia, kwhDia: w * horasDia / 1000 };
     });
     periodo = "mes";
+    vista = "aparato";
     $("donut")._firma = "";
     irPestana("consumo");
     renderDashboard(true);
@@ -2238,14 +2265,22 @@ var APARATOS = [];
   // ---------- Dona SVG con Spider Labels (sin conic-gradient) ----------
   function dibujarDonaSpider(contenedor, datos, opc) {
     opc = opc || {};
+    contenedor._ultima = { datos: datos, opc: opc };
     var NS = "http://www.w3.org/2000/svg";
-    var R = 80, r = 52;      // radio exterior e interior
-    var PROY = 14;           // P1 -> P2 (radial)
-    var CODO = 22;           // P2 -> P3 (horizontal)
-    var SEP = 14;            // separación vertical mínima entre etiquetas
-    var AJ = 4, TOPE_Y = 122, LH = 11, MAXL = 17;   // LH: alto de línea; MAXL: caracteres por línea
     var total = datos.reduce(function (s, d) { return s + d.valor; }, 0);
     if (!(total > 0)) { contenedor.innerHTML = ""; return; }
+
+    // El SVG se dibuja a escala 1:1 con el ancho real del contenedor: el texto mide lo mismo en cualquier pantalla
+    var anchoReal = Math.round(contenedor.getBoundingClientRect().width);
+    contenedor._cw = anchoReal;
+    contenedor._oculto = !anchoReal;
+    var W = Math.max(260, Math.min(anchoReal || 340, 640));
+    var esc = (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16) / 16;
+    var fs = (W < 420 ? 12 : 13.5) * esc, fsp = fs - 1, LH = Math.round(fs * 1.3);
+    var R = Math.round(Math.max(46, Math.min(W * 0.165, 108))), r = Math.round(R * 0.64);
+    var PROY = W < 420 ? 8 : 10, CODO = W < 420 ? 12 : 16, GAP = 4, GAPV = 3;
+    var borde = R + PROY + CODO;                                   // dónde termina la línea guía y empieza el texto
+    var colW = Math.max(40, Math.floor(W / 2 - borde - GAP - 2));  // ancho disponible para cada etiqueta
 
     function el(tag, attrs, parent) {
       var n = document.createElementNS(NS, tag);
@@ -2255,35 +2290,53 @@ var APARATOS = [];
     }
     function polar(radio, ang) { return { x: radio * Math.cos(ang), y: radio * Math.sin(ang) }; }
     function f(n) { return n.toFixed(2); }
-    function cortar(t) { return t.length > MAXL ? t.slice(0, MAXL - 1) + "…" : t; }
-    // Parte el texto en líneas (máx. 2 para el nombre); el porcentaje va al final de la última o en línea propia
-    function envolver(nombre, pct) {
-      var pal = nombre.split(/\s+/), lin = [], act = "", i;
-      for (i = 0; i < pal.length; i++) {
-        var prueba = act ? act + " " + pal[i] : pal[i];
-        if (prueba.length <= MAXL) { act = prueba; }
-        else {
-          if (act) { lin.push(act); }
-          act = pal[i];
-        }
-      }
-      if (act) { lin.push(act); }
-      if (lin.length > 2) { lin = [lin[0], lin.slice(1).join(" ")]; }
-      lin = lin.map(cortar);
-      var ult = lin[lin.length - 1];
-      if ((ult + " " + pct).length <= MAXL + 7) { lin[lin.length - 1] = ult + " " + pct; } else { lin.push(pct); }
-      return lin;
-    }
 
     var svg = el("svg", {
-      viewBox: "-220 -130 440 260",
+      viewBox: (-W / 2) + " -130 " + W + " 260",
       role: "img",
       "aria-label": "Gráfico de dona del consumo: " + datos.map(function (d) { return d.nombre + " " + (d.valor / total * 100).toFixed(1) + "%"; }).join(", ")
     });
-    svg.style.cssText = "display:block;width:100%;height:auto;overflow:visible";
-    var gSeg = el("g", {}, svg), gLin = el("g", {}, svg), gTxt = el("g", {}, svg);
-    var mk = el("mask", { id: "dona-mascara", maskUnits: "userSpaceOnUse", x: -100, y: -100, width: 200, height: 200 }, el("defs", {}, svg));
-    el("circle", { "class": "barrido", r: 66, fill: "none", stroke: "#fff", "stroke-width": 44, "stroke-dasharray": "420 420", transform: "rotate(-90)" }, mk);
+    contenedor.innerHTML = "";
+    contenedor.appendChild(svg);   // se agrega primero para poder medir el texto
+
+    // Medición real del texto (con respaldo aproximado si el SVG no está visible)
+    var tm = el("text", { x: 0, y: 0 }, svg);
+    tm.style.visibility = "hidden";
+    function medir(t, size, peso) {
+      tm.style.fontSize = size + "px";
+      tm.style.fontWeight = peso;
+      tm.textContent = t;
+      var w = 0;
+      try { w = tm.getComputedTextLength(); } catch (err) {}
+      return w > 0 ? w : t.length * size * 0.56;
+    }
+    function recortar(t, maxW, size, peso) {
+      if (medir(t, size, peso) <= maxW) { return t; }
+      var lo = 0, hi = t.length;
+      while (lo < hi) {
+        var m = Math.ceil((lo + hi) / 2);
+        if (medir(t.slice(0, m).replace(/\s+$/, "") + "…", size, peso) <= maxW) { lo = m; } else { hi = m - 1; }
+      }
+      return t.slice(0, lo).replace(/\s+$/, "") + "…";
+    }
+    // Nombre en hasta 2 líneas (por palabras, según el ancho real); lo que sobre se recorta y se lee con el marquee
+    function lineasNombre(nombre) {
+      var pal = nombre.split(/\s+/), lin = [], act = "", i;
+      for (i = 0; i < pal.length; i++) {
+        var prueba = act ? act + " " + pal[i] : pal[i];
+        if (!act || medir(prueba, fs, 700) <= colW) { act = prueba; }
+        else { lin.push(act); act = pal[i]; }
+      }
+      if (act) { lin.push(act); }
+      if (lin.length > 2) { lin = [lin[0], lin.slice(1).join(" ")]; }
+      return lin;
+    }
+
+    var gSeg = el("g", {}, svg), gTxt = el("g", {}, svg);
+    var rm = (R + r) / 2, circ = 2 * Math.PI * rm, lim = R + 20;
+    var mk = el("mask", { id: "dona-mascara", maskUnits: "userSpaceOnUse", x: -lim, y: -lim, width: lim * 2, height: lim * 2 }, el("defs", {}, svg));
+    var barr = el("circle", { "class": "barrido", r: f(rm), fill: "none", stroke: "#fff", "stroke-width": (R - r) + 8, "stroke-dasharray": f(circ) + " " + f(circ), transform: "rotate(-90)" }, mk);
+    barr.style.setProperty("--circ", f(circ));
     gSeg.setAttribute("mask", "url(#dona-mascara)");
     if (opc.intro) { svg.setAttribute("class", "donut-intro"); }
     var etiquetas = [], ang = -Math.PI / 2;
@@ -2302,74 +2355,138 @@ var APARATOS = [];
         path = "M" + f(o0.x) + "," + f(o0.y) + " A" + R + "," + R + " 0 " + g + " 1 " + f(o1.x) + "," + f(o1.y) +
                " L" + f(i1.x) + "," + f(i1.y) + " A" + r + "," + r + " 0 " + g + " 0 " + f(i0.x) + "," + f(i0.y) + " Z";
       }
-      var seg = el("path", { d: path, "fill-rule": "evenodd" }, gSeg);
+      var seg = el("path", { d: path, "fill-rule": "evenodd", "class": "dseg", tabindex: 0, "aria-label": d.nombre + ": " + (frac * 100).toFixed(1) + " %" }, gSeg);
       seg.style.fill = d.color;
       seg.style.stroke = "var(--blanco, #fff)";
       seg.style.strokeWidth = "1.5";
       seg.style.setProperty("--dx", (Math.cos(mid) * 6).toFixed(1) + "px");
       seg.style.setProperty("--dy", (Math.sin(mid) * 6).toFixed(1) + "px");
-      var derecha = Math.cos(mid) >= 0, p1 = polar(R, mid), p2 = polar(R + PROY, mid);
-      etiquetas.push({ d: d, frac: frac, derecha: derecha, x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, x3: p2.x + (derecha ? CODO : -CODO), y3: p2.y });
+      var lado = Math.cos(mid) >= 0 ? 1 : -1, p1 = polar(R, mid), p2 = polar(R + PROY, mid);
+      etiquetas.push({ d: d, frac: frac, lado: lado, seg: seg, x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, yl: p2.y });
     });
 
+    // Contenido de cada etiqueta: nombre (1-2 líneas) + porcentaje
     etiquetas.forEach(function (e) {
-      e.lineas = envolver(e.d.nombre, "(" + (e.frac * 100).toFixed(2) + "%)");
-      e.h = e.lineas.length * LH + 3;
-    });
-    // Anti-solapamiento por hemisferio, según el alto real de cada etiqueta
-    [true, false].forEach(function (lado) {
-      var gr = etiquetas.filter(function (e) { return e.derecha === lado; }).sort(function (a, b) { return a.y2 - b.y2; });
-      var i;
-      for (i = 1; i < gr.length; i++) {
-        var min = (gr[i].h + gr[i - 1].h) / 2;
-        if (gr[i].y2 - gr[i - 1].y2 < min) { gr[i].y2 = gr[i - 1].y2 + min; }
-      }
-      if (gr.length && gr[gr.length - 1].y2 > TOPE_Y) { gr[gr.length - 1].y2 = TOPE_Y; }
-      for (i = gr.length - 2; i >= 0; i--) {
-        var min2 = (gr[i + 1].h + gr[i].h) / 2;
-        if (gr[i + 1].y2 - gr[i].y2 < min2) { gr[i].y2 = gr[i + 1].y2 - min2; }
-      }
-      gr.forEach(function (e) { e.y3 = e.y2; });
-    });
-
-    etiquetas.forEach(function (e) {
-      var pl = el("polyline", { points: f(e.x1) + "," + f(e.y1) + " " + f(e.x2) + "," + f(e.y2) + " " + f(e.x3) + "," + f(e.y3), fill: "none", pathLength: 1 }, gLin);
-      pl.style.stroke = "var(--gris, #777)";
-      pl.style.strokeWidth = "1";
-      var tx = e.x3 + (e.derecha ? AJ : -AJ);
-      var t = el("text", { x: f(tx), y: f(e.y3 - (e.lineas.length - 1) * LH / 2), "dominant-baseline": "middle" }, gTxt);
-      t.style.textAnchor = e.derecha ? "start" : "end";
-      t.style.fontSize = "10px";
-      t.style.fontWeight = "600";
-      t.style.fill = "var(--tinta, #111)";
-      e.lineas.forEach(function (ln, k) {
-        var ts = el("tspan", { x: f(tx), dy: k === 0 ? "0" : LH }, t);
-        ts.textContent = ln;
+      var pct = (e.frac * 100).toFixed(2) + " %" + (e.d.detalle ? " · " + e.d.detalle : "");
+      var lins = lineasNombre(e.d.nombre).map(function (t) { return { txt: t, size: fs, peso: 700, color: "var(--tinta, #111)" }; });
+      lins.push({ txt: pct, size: fsp, peso: 600, color: "var(--gris, #777)" });
+      lins.forEach(function (L) {
+        L.w = medir(L.txt, L.size, L.peso);
+        L.desb = L.w > colW + 0.5;
+        if (L.desb) { L.corto = recortar(L.txt, colW, L.size, L.peso); }
       });
+      e.lineas = lins;
+      e.h = lins.length * LH;
+    });
+
+    // Anti-solapamiento por lado: se empuja hacia abajo y luego se recentra respecto a los puntos de origen
+    [1, -1].forEach(function (s) {
+      var gr = etiquetas.filter(function (e) { return e.lado === s; }).sort(function (a, b) { return a.y2 - b.y2; });
+      var i, desp = 0;
+      for (i = 1; i < gr.length; i++) {
+        var min = (gr[i].h + gr[i - 1].h) / 2 + GAPV;
+        if (gr[i].yl - gr[i - 1].yl < min) { gr[i].yl = gr[i - 1].yl + min; }
+      }
+      gr.forEach(function (e) { desp += e.yl - e.y2; });
+      if (gr.length) { desp /= gr.length; gr.forEach(function (e) { e.yl -= desp; }); }
+    });
+
+    var minY = -(R + 16), maxY = R + 16, segs = [], labs = [];
+    etiquetas.forEach(function (e, idx) {
+      var s = e.lado, g = el("g", { "class": "lab" }, gTxt);
+      el("polyline", { points: f(e.x1) + "," + f(e.y1) + " " + f(e.x2) + "," + f(e.y2) + " " + f(s * borde) + "," + f(e.yl), pathLength: 1 }, g);
+      var punto = el("circle", { cx: f(e.x1), cy: f(e.y1), r: 2.4 }, g);
+      punto.style.fill = e.d.color;
+      punto.style.stroke = "var(--blanco, #fff)";
+      punto.style.strokeWidth = "1";
+      var y0 = e.yl - e.h / 2, bx = s > 0 ? borde + GAP : -(borde + GAP) - colW;
+      minY = Math.min(minY, y0 - 6);
+      maxY = Math.max(maxY, y0 + e.h + 6);
+      e.lineas.forEach(function (L, k) {
+        var box = el("svg", { x: f(bx), y: f(y0 + k * LH), width: colW, height: LH, "class": "dclip" }, g);
+        var anchor = (s < 0 && !L.desb) ? "end" : "start", tx = anchor === "end" ? colW : 0;
+        function texto(txt, cls, padre) {
+          var t = el("text", { x: tx, y: LH / 2, "dominant-baseline": "middle", "class": cls }, padre);
+          t.style.fontSize = L.size + "px";
+          t.style.fontWeight = L.peso;
+          t.style.fill = L.color;
+          t.style.textAnchor = anchor;
+          t.textContent = txt;
+          return t;
+        }
+        if (L.desb) {
+          var dist = L.w - colW + 8;
+          texto(L.corto, "corto", box);
+          var mq = el("g", { "class": "mq" }, box);
+          mq.style.setProperty("--mq", (-dist) + "px");
+          mq.style.setProperty("--mqd", (Math.max(2.6, dist / 24 + 1.8)).toFixed(1) + "s");
+          texto(L.txt, "largo", mq);
+        } else {
+          texto(L.txt, "", box);
+        }
+      });
+      e.lab = g;
+      segs.push(e.seg);
+      labs.push(g);
+    });
+    svg.removeChild(tm);
+
+    // Interacción: pasar el cursor, tocar o enfocar un segmento o su etiqueta lo resalta y activa el marquee
+    function limpiar() {
+      svg.classList.remove("hay-sel");
+      segs.forEach(function (x) { x.classList.remove("sel"); });
+      labs.forEach(function (x) { x.classList.remove("act"); });
+    }
+    function activar(i) {
+      limpiar();
+      svg.classList.add("hay-sel");
+      segs[i].classList.add("sel");
+      labs[i].classList.add("act");
+    }
+    segs.forEach(function (sg, i) {
+      [sg, labs[i]].forEach(function (nodo) {
+        nodo.addEventListener("pointerenter", function () { activar(i); });
+        nodo.addEventListener("pointerleave", function (ev) { if (ev.pointerType === "mouse") { limpiar(); } });   // con el dedo se mantiene hasta tocar otra cosa
+      });
+      sg.addEventListener("focus", function () { activar(i); });
+      sg.addEventListener("blur", limpiar);
     });
 
     if (opc.centroValor != null) {
+      var txtC = String(opc.centroValor);
+      var fc = Math.min(22 * esc, (r * 2 * 0.84) / (Math.max(txtC.length, 3) * 0.6));
       var v = el("text", { id: "donut-v", x: 0, y: -2, "text-anchor": "middle", "dominant-baseline": "middle" }, svg);
-      v.style.cssText = "font-size:22px;font-weight:800;fill:var(--tinta,#111);font-variant-numeric:tabular-nums";
+      v.style.cssText = "font-size:" + fc.toFixed(1) + "px;font-weight:800;fill:var(--tinta,#111);font-variant-numeric:tabular-nums";
       v.textContent = opc.centroValor;
       if (opc.centroTexto) {
-        var s2 = el("text", { x: 0, y: 16, "text-anchor": "middle" }, svg);
-        s2.style.cssText = "font-size:9px;font-weight:700;fill:var(--gris,#777)";
+        var s2 = el("text", { x: 0, y: fc * 0.5 + 8, "text-anchor": "middle" }, svg);
+        s2.style.cssText = "font-size:" + Math.min(10.5 * esc, r * 0.26).toFixed(1) + "px;font-weight:700;fill:var(--gris,#777)";
         s2.textContent = opc.centroTexto;
       }
     }
-    contenedor.innerHTML = "";
-    contenedor.appendChild(svg);
-    // Prevención de clipping: si algún texto se sale del viewBox, se amplía (simétrico) para que quepa
-    try {
-      var bb = svg.getBBox();
-      if (bb.width > 0) {
-        var mx = Math.max(220, Math.ceil(Math.max(-bb.x, bb.x + bb.width)) + 8);
-        var my = Math.max(130, Math.ceil(Math.max(-bb.y, bb.y + bb.height)) + 8);
-        svg.setAttribute("viewBox", (-mx) + " " + (-my) + " " + (mx * 2) + " " + (my * 2));
-      }
-    } catch (err) { /* sin medidas: se queda el viewBox base */ }
+    // El alto del SVG se ajusta al contenido: nunca se corta ni se amontona
+    svg.setAttribute("viewBox", (-W / 2) + " " + f(minY) + " " + W + " " + f(maxY - minY));
   }
+  // Un toque fuera de la dona quita el resaltado (en pantallas táctiles se mantiene hasta entonces)
+  document.addEventListener("pointerdown", function (ev) {
+    if (ev.target.closest && ev.target.closest("#donut .dseg, #donut .lab")) { return; }
+    var d = $("donut"), sv = d && d.firstChild;
+    if (sv && sv.classList) { sv.classList.remove("hay-sel"); d.querySelectorAll(".sel, .act").forEach(function (n) { n.classList.remove("sel", "act"); }); }
+  }, { passive: true });
+  // La dona se vuelve a dibujar al cambiar el ancho disponible (girar el teléfono, redimensionar la ventana)
+  (function () {
+    if (!window.ResizeObserver) { return; }
+    var d = document.getElementById("donut"), t;
+    new ResizeObserver(function () {
+      var u = d._ultima, w = Math.round(d.getBoundingClientRect().width);
+      if (!u || !w || Math.abs(w - (d._cw || 0)) <= 1) { return; }
+      clearTimeout(t);
+      t = setTimeout(function () {
+        var o = d._oculto ? u.opc : Object.assign({}, u.opc, { intro: false });   // si se dibujó oculta, aún no se ha visto el barrido
+        dibujarDonaSpider(d, u.datos, o);
+      }, 120);
+    }).observe(d);
+  })();
 
   // ---------- Pantalla 4: dashboard con pestañas ----------
   var PESTANAS = ["consumo", "guia", "ods"];
@@ -2385,6 +2502,41 @@ var APARATOS = [];
     contenedor.scrollTop = 0;
   }
   function cambiarPeriodo(k) { periodo = k; renderDashboard(true); }
+  function categoriasUsadas(items) {
+    var m = {};
+    items.forEach(function (it) { m[it.cat] = 1; });
+    return Object.keys(m);
+  }
+  // Suma por categoría: consumo, número de aparatos y cuáles son
+  function agruparCategorias(items) {
+    var m = {}, o = [];
+    items.forEach(function (it) {
+      var g = m[it.cat];
+      if (!g) { g = m[it.cat] = { nombre: it.cat, kwhDia: 0, n: 0, watts: 0, aps: {} }; o.push(g); }
+      g.kwhDia += it.kwhDia;
+      g.n++;
+      g.watts += it.watts;
+      g.aps[it.aparato] = (g.aps[it.aparato] || 0) + 1;
+    });
+    return o.sort(function (a, b) { return b.kwhDia - a.kwhDia; });
+  }
+  var temporizadorAviso;
+  function avisar(msg) {
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("on");
+    clearTimeout(temporizadorAviso);
+    temporizadorAviso = setTimeout(function () { t.classList.remove("on"); }, 3800);
+  }
+  function cambiarVista(v) {
+    if (v === "categoria" && resultado && categoriasUsadas(resultado).length < 2) {
+      avisar("Solo hay una categoría en tu lista, no hay nada que agrupar.");
+      return;
+    }
+    if (v === vista) { return; }
+    vista = v;
+    renderDashboard(true);
+  }
 function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarContador(); renderDashboard(true); }
 
   // Región y temporada: Veracruz (puerto) por defecto y verano según la fecha de hoy
@@ -2477,17 +2629,32 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
       ul.appendChild(li);
     }
 
+    // Píldora Aparato / Categoría: «Por categoría» no está disponible si solo hay una categoría
+    var multiples = c.items.length >= 2, ncat = categoriasUsadas(c.items).length;
+    if (vista === "categoria" && ncat < 2) { vista = "aparato"; }
+    $("pildora-vista").hidden = !multiples;
+    $("vista-categoria").classList.toggle("nodisp", ncat < 2);
+    $("vista-categoria").setAttribute("aria-disabled", ncat < 2 ? "true" : "false");
+    ["aparato", "categoria"].forEach(function (k) {
+      var bv = $("vista-" + k);
+      bv.classList.toggle("activa", k === vista);
+      bv.setAttribute("aria-pressed", k === vista ? "true" : "false");
+    });
+    var porCat = vista === "categoria";
+    $("donut-titulo").textContent = porCat ? "Cuánto consume cada categoría" : "Cuánto consume cada aparato";
+    var grupos = porCat ? agruparCategorias(c.items) : c.items;
+
     // Dona (solo con 2 o más aparatos) y desglose
-    var dw = $("donut-wrap"), multiples = c.items.length >= 2;
+    var dw = $("donut-wrap");
     dw.hidden = !multiples;
     if (multiples) {
       var datosDona = [], resto = 0, prevV = $("donut-v") ? $("donut-v")._val : undefined;
-      c.items.forEach(function (it, i) {
-        if (i < PALETA.length) { datosDona.push({ nombre: it.nombre, valor: it.kwhDia, color: PALETA[i] }); }
-        else { resto += it.kwhDia; }
+      grupos.forEach(function (g, i) {
+        if (i < PALETA.length) { datosDona.push({ nombre: g.nombre, valor: g.kwhDia, color: PALETA[i], detalle: porCat ? g.n + (g.n === 1 ? " aparato" : " aparatos") : "" }); }
+        else { resto += g.kwhDia; }
       });
       if (resto > 0) { datosDona.push({ nombre: "Otros", valor: resto, color: COLOR_RESTO }); }
-      var firma = datosDona.map(function (d) { return d.nombre + d.valor.toFixed(4); }).join("|"), intro = $("donut")._firma !== firma;
+      var firma = vista + "|" + datosDona.map(function (d) { return d.nombre + d.valor.toFixed(4); }).join("|"), intro = $("donut")._firma !== firma;
       $("donut")._firma = firma;   // el barrido solo se repite si cambian los datos, no al cambiar de periodo
       dibujarDonaSpider($("donut"), datosDona, { centroValor: fmt(c.totalDia * fac), centroTexto: "kWh " + ETQ_PERIODO[periodo], intro: intro });
       var vEl = $("donut-v");
@@ -2500,17 +2667,22 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
     });
     var lst = $("desglose"), acu = 0;
     lst.innerHTML = "";
-    c.items.forEach(function (it, i) {
+    grupos.forEach(function (it, i) {
       acu += it.kwhDia;
       var pct = c.totalDia > 0 ? it.kwhDia / c.totalDia * 100 : 0;
       var d = document.createElement("li");
       d.className = "des-item";
       d.style.setProperty("--c", colorDe(i));
-      d.innerHTML = '<div class="des-cab"><b></b><span class="des-val"></span></div><div class="des-meta"></div>' +
+      d.innerHTML = '<div class="des-cab"><b></b><span class="des-val"></span></div><div class="des-meta"></div>' + (porCat ? '<div class="des-meta des-aps"></div>' : "") +
         '<div class="pista"><i></i></div><div class="des-pie"><span class="des-pct"></span><span class="des-acum"></span></div>';
       d.querySelector("b").textContent = it.nombre;
       d.querySelector(".des-val").textContent = fmt(it.kwhDia * fac) + " kWh";
-      d.querySelector(".des-meta").textContent = hrs(it.watts) + " W · " + (it.horasDia > 0 ? hm(it.horasDia) + " al día (" + hm(it.horasDia * 7) + " a la semana)" : "sin uso");
+      if (porCat) {
+        d.querySelector(".des-meta").textContent = it.n + (it.n === 1 ? " aparato" : " aparatos") + " · " + hrs(it.watts) + " W sumados";
+        d.querySelector(".des-aps").textContent = Object.keys(it.aps).map(function (k) { return k + (it.aps[k] > 1 ? " (×" + it.aps[k] + ")" : ""); }).join(", ");
+      } else {
+        d.querySelector(".des-meta").textContent = hrs(it.watts) + " W · " + (it.horasDia > 0 ? hm(it.horasDia) + " al día (" + hm(it.horasDia * 7) + " a la semana)" : "sin uso");
+      }
       d.querySelector("i").style.width = pct + "%";
       d.querySelector(".des-pct").textContent = fmt(pct) + " % del total";
       d.querySelector(".des-acum").textContent = "Acumulado: " + fmt(acu * fac) + " kWh";
@@ -2645,6 +2817,8 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
     confirmada = false;
     resultado = null;
     periodo = "mes";
+    vista = "aparato";
+    $("toast").classList.remove("on");
     $("lista-tarjetas").innerHTML = "";
     $("lista-tiempo").innerHTML = "";
     $("buscar").value = "";
