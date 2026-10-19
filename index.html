@@ -266,9 +266,8 @@ footer{flex:none; text-align:center; font-size:.75rem; color:var(--gris); paddin
 .panel summary:focus-visible{outline:3px solid var(--agua); outline-offset:-3px}
 .panel summary .ico{background:var(--cielo)}
 .panel[open] > summary .ico{background:var(--blanco)}
-.panel-cuerpo{padding:8px 16px 18px; animation:aparecer .25s ease-out}
+.panel-cuerpo{padding:8px 16px 18px;}
 .panel-cuerpo label{margin-top:16px}
-@keyframes aparecer{from{opacity:0; transform:translateY(-6px)}to{opacity:1; transform:none}}
 .comparar{display:grid; gap:10px; margin:14px 0 4px}
 .fila{display:grid; grid-template-columns:92px 1fr 74px; align-items:center; gap:10px; font-size:.88rem}
 .fila > span{color:var(--gris); font-weight:700}
@@ -320,9 +319,10 @@ button.agregar:hover{background:var(--menta)}
 .it-cab{display:flex; justify-content:space-between; align-items:baseline; gap:12px}
 .it-w{color:var(--gris); font-weight:700; font-size:.85rem; white-space:nowrap}
 input[type=range].it-slider{-webkit-appearance:none; appearance:none; display:block; width:100%; height:8px; min-height:0; padding:0; margin:16px 0 12px; border:0; border-radius:4px; cursor:pointer;
-  background:linear-gradient(to right, var(--hoja) var(--pct,0%), var(--linea) var(--pct,0%)); touch-action: pan-y;}
-.it-slider::-webkit-slider-thumb{-webkit-appearance:none; width:26px; height:26px; border-radius:50%; background:var(--hoja); border:3px solid var(--blanco); box-shadow:0 1px 5px rgba(0,0,0,.35)}
-.it-slider::-moz-range-thumb{width:20px; height:20px; border-radius:50%; background:var(--hoja); border:3px solid var(--blanco)}
+  background:linear-gradient(to right, var(--hoja) var(--pct,0%), var(--linea) var(--pct,0%));
+  pointer-events: none; touch-action: pan-y;}
+.it-slider::-webkit-slider-thumb{-webkit-appearance:none; width:26px; height:26px; border-radius:50%; background:var(--hoja); border:3px solid var(--blanco); box-shadow:0 1px 5px rgba(0,0,0,.35); pointer-events: auto;}
+.it-slider::-moz-range-thumb{width:20px; height:20px; border-radius:50%; background:var(--hoja); border:3px solid var(--blanco); pointer-events: auto;}
 .it-slider:disabled{cursor:not-allowed}
 .it-pie{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
 .it-etq{font-weight:800; color:var(--hoja)}
@@ -445,9 +445,55 @@ button.atras .txt{position:absolute; width:1px; height:1px; overflow:hidden; cli
 /* Mi lista de equipos */
 .buscador{position:relative; margin:16px 0 14px}
 .lupa{position:absolute; left:18px; top:32px; transform:translateY(-50%); width:24px; height:24px; color:var(--hoja); pointer-events:none}
-input.buscar-grande{height:64px; padding:0 18px 0 56px; font-size:1.08rem; border-radius:18px; box-shadow:0 6px 20px rgba(13,43,42,.07)}
-.resultados-busqueda{position:absolute; left:0; right:0; top:calc(100% + 8px); z-index:30; list-style:none; background:var(--blanco); border:2px solid var(--linea); border-radius:16px; padding:6px; max-height:340px; overflow-y:auto; box-shadow:0 16px 40px rgba(13,43,42,.22)}
-.resultados-busqueda[hidden]{display:none}
+input.buscar-grande{height:64px; padding:0 68px 0 56px; font-size:1.08rem; border-radius:18px; box-shadow:0 6px 20px rgba(13,43,42,.07)}
+.buscador.abierto input.buscar-grande{border-color:var(--agua)}
+
+/* Flecha: botón cuadrado de 48×48 px (sobre el mínimo táctil de 44) con 8 px de aire alrededor.
+   min-width:0 es obligatorio: en pantallas ≥768 px una regla global button{min-width:200px} lo estiraba.
+   Va anclado con top/bottom (sin transform), así el :active global de button ya no lo hace saltar. */
+.desplegar-lista{position:absolute; top:8px; right:8px; bottom:8px; z-index:2; width:48px; min-width:0; min-height:0; padding:0; border:0; border-radius:14px; background:color-mix(in srgb,var(--hoja) 9%,var(--blanco)); color:var(--hoja); display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; -webkit-touch-callout:none; transition:background-color .2s, color .2s}
+@media (hover:hover){.desplegar-lista:hover{background:color-mix(in srgb,var(--hoja) 16%,var(--blanco))}}
+.buscador.abierto .desplegar-lista{background:color-mix(in srgb,var(--hoja) 16%,var(--blanco))}
+.desplegar-lista:active:not(:disabled){transform:none; background:color-mix(in srgb,var(--hoja) 26%,var(--blanco))}
+.desplegar-lista svg{width:24px; height:24px; transform-origin:50% 50%; transition:transform .35s cubic-bezier(.4,0,.2,1); will-change:transform; backface-visibility:hidden}
+.buscador.abierto .desplegar-lista svg{transform:rotate(180deg)}
+
+/* Lista: cerrada = colapsada (max-height 0) + transparente; abierta = crece hasta su alto real (--alto lo calcula el JS) */
+.resultados-busqueda{position:absolute; left:0; right:0; top:calc(100% + 8px); z-index:30; list-style:none; background:var(--blanco); border:2px solid var(--linea); border-radius:16px; padding:6px; box-shadow:0 16px 40px rgba(13,43,42,.22); overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+  max-height:0; overflow-y:hidden; opacity:0; visibility:hidden; pointer-events:none; transform:translateY(-10px) scale(.98); transform-origin:top center;
+  transition:max-height .32s var(--suave), opacity .2s ease, transform .28s var(--suave), visibility 0s linear .32s}
+.buscador.abierto .resultados-busqueda{max-height:var(--alto,340px); overflow-y:auto; opacity:1; visibility:visible; pointer-events:auto; transform:none;
+  transition:max-height .32s var(--suave), opacity .22s ease, transform .3s var(--suave), visibility 0s}
+
+/* Scrollbar con el diseño de la app, en TODO lo que tenga scroll: la página (main), los modales, el buscador y los menús.
+   Usa los colores del tema activo (claro y oscuro). Vertical y horizontal. */
+*::-webkit-scrollbar{width:12px; height:12px}
+*::-webkit-scrollbar-track{border:3px solid transparent; border-radius:999px; background-color:color-mix(in srgb,var(--linea) 40%,transparent); background-clip:padding-box}
+*::-webkit-scrollbar-track:vertical{margin:8px 0}
+*::-webkit-scrollbar-track:horizontal{margin:0 8px}
+*::-webkit-scrollbar-thumb{border:3px solid transparent; border-radius:999px; background-color:color-mix(in srgb,var(--hoja) 55%,transparent); background-clip:padding-box; transition:background-color .2s}
+*::-webkit-scrollbar-thumb:vertical{min-height:44px}
+*::-webkit-scrollbar-thumb:horizontal{min-width:44px}
+*::-webkit-scrollbar-thumb:hover{background-color:var(--hoja)}
+*::-webkit-scrollbar-thumb:active{background-color:var(--hoja-hover)}
+*::-webkit-scrollbar-corner{background:transparent}
+/* Chrome 121+ ignora ::-webkit-scrollbar si se define scrollbar-color, por eso las propiedades estándar solo se usan en Firefox */
+@supports not selector(::-webkit-scrollbar){*{scrollbar-width:thin; scrollbar-color:color-mix(in srgb,var(--hoja) 55%,transparent) transparent}}
+/* Scrollbar SUPERPUESTA: se dibuja encima del contenido y no le quita ancho. El JS oculta la nativa en los contenedores con data-sb
+   (si el JS fallara, queda la nativa con el estilo de arriba). */
+[data-sb]{scrollbar-width:none}
+[data-sb]::-webkit-scrollbar{display:none}
+.sb-pista{position:absolute; z-index:60; width:12px; pointer-events:none; transition:opacity .2s, visibility 0s}
+.sb-pulgar{position:absolute; top:0; right:3px; width:6px; border-radius:999px; background:color-mix(in srgb,var(--hoja) 50%,transparent); pointer-events:auto; touch-action:none; cursor:default; will-change:transform; transition:background-color .2s, width .15s var(--suave)}
+.sb-pulgar::before{content:""; position:absolute; top:0; bottom:0; left:-8px; right:-3px} /* zona de agarre más ancha que la barra visible */
+.sb-pulgar:hover,.sb-pista.sb-activa .sb-pulgar{background:color-mix(in srgb,var(--hoja) 80%,transparent)}
+.sb-pulgar:hover,.sb-pulgar.arrastrando{width:10px}
+.sb-pulgar.arrastrando{background:var(--hoja)}
+/* En los modales la barra entra y sale con la misma animación que la tarjeta (antes aparecía fija y al 100 % mientras la tarjeta aún subía) */
+.modal[open] .sb-pista{animation:subir-in .28s cubic-bezier(.2,.8,.2,1)}
+.modal.cerrando .sb-pista{animation:fundido-out .2s ease-in forwards}
+/* Las listas desplegables ocultan su barra junto con ellas */
+.buscador:not(.abierto) .sb-pista,.dd:not(.abierto) .sb-pista{opacity:0; visibility:hidden; transition:opacity .2s, visibility 0s linear .32s}
 .rb-grupo{padding:10px 12px 4px; font-size:.78rem; font-weight:800; color:var(--hoja)}
 .rb-op{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:11px 12px; border-radius:10px; cursor:pointer; font-size:.97rem}
 .rb-op.activo,.rb-op:hover{background:var(--cielo)}
@@ -674,11 +720,14 @@ button.tema-op[aria-checked="true"]{animation:pop-sel .4s var(--muelle)}
 .pista i{animation:llena .8s var(--suave) backwards; animation-delay:calc(min(var(--i,0),10)*55ms + .15s)}
 .it-slider::-webkit-slider-thumb{transition:transform .2s var(--muelle), box-shadow .2s}
 .it-slider:not(:disabled):hover::-webkit-slider-thumb{transform:scale(1.15)}
-.it-slider:not(:disabled):active::-webkit-slider-thumb{transform:scale(1.3); box-shadow:0 0 0 9px color-mix(in srgb,var(--hoja) 22%,transparent)}
+.it-slider:not(:disabled):active::-webkit-slider-thumb,
+.it-slider.arrastrando::-webkit-slider-thumb{transform:scale(1.3); box-shadow:0 0 0 9px color-mix(in srgb,var(--hoja) 22%,transparent)}
 .it-slider::-moz-range-thumb{transition:transform .2s var(--muelle), box-shadow .2s}
-.it-slider:not(:disabled):active::-moz-range-thumb{transform:scale(1.3); box-shadow:0 0 0 9px color-mix(in srgb,var(--hoja) 22%,transparent)}
+.it-slider:not(:disabled):active::-moz-range-thumb,
+.it-slider.arrastrando::-moz-range-thumb{transform:scale(1.3); box-shadow:0 0 0 9px color-mix(in srgb,var(--hoja) 22%,transparent)}
 .item-tiempo{transition:background .25s, transform .25s var(--muelle)}
-.item-tiempo:has(.it-slider:active){background:var(--menta); transform:scale(1.015)}
+.item-tiempo:has(.it-slider:active),
+.item-tiempo:has(.it-slider.arrastrando){background:var(--menta); transform:scale(1.015)}
 .cf-costo.tick{animation:tick .3s var(--muelle); transform-origin:left center}
 @keyframes tick{40%{transform:scale(1.08)}}
 
@@ -752,7 +801,13 @@ button.tema-op[aria-checked="true"]{animation:pop-sel .4s var(--muelle)}
 @keyframes tarjeta-entra{from{opacity:0; transform:translateY(-12px) scale(.94)}}
 .estado.rojo:not([hidden]){animation:agita .6s .3s}
 .error:not([hidden]),.invalido{animation:agita .4s}
-.resultados-busqueda:not([hidden]){animation:aparecer .2s ease-out}
+/* Opciones: entrada escalonada solo al abrir, barra de acento, retroalimentación al tocar */
+.resultados-busqueda.entrando .rb-op,.resultados-busqueda.entrando .rb-grupo{animation:entra-lado .35s var(--suave) backwards; animation-delay:calc(var(--i,0)*28ms + .06s)}
+.rb-op{position:relative; transition:background-color .15s, color .15s, transform .15s var(--suave)}
+.rb-op::before{content:""; position:absolute; left:0; top:50%; width:3px; height:0; border-radius:3px; background:var(--hoja); transform:translateY(-50%); transition:height .2s var(--suave)}
+.rb-op.activo::before{height:60%}
+@media (hover:hover){.rb-op:hover::before{height:60%}}
+.rb-op:active{transform:scale(.985)}
 .rb-n{transition:transform .2s var(--muelle)}
 .rb-op:hover .rb-n{transform:translateX(4px)}
 input,.dd-campo{transition:border-color .2s, box-shadow .25s}
@@ -766,6 +821,96 @@ input:not(.in-watts):not(.nombre-edit):not(.it-slider):focus,.dd.abierto .dd-cam
 .des-aps{margin-top:-4px}
 .toast{position:fixed; left:50%; width:max-content; bottom:calc(20px + env(safe-area-inset-bottom)); z-index:200; max-width:min(92vw,420px); padding:12px 18px; border-radius:14px; background:var(--tinta); color:var(--blanco); font-weight:700; font-size:.92rem; text-align:center; box-shadow:0 12px 32px rgba(0,0,0,.3); opacity:0; visibility:hidden; transform:translate(-50%,16px); pointer-events:none; transition:opacity .25s, transform .3s var(--muelle), visibility 0s .3s}
 .toast.on{opacity:1; visibility:visible; transform:translate(-50%,0); transition:opacity .25s, transform .3s var(--muelle)}
+
+/* Globo «Prueba otros temas»: sale al abrir la web (inicio), apunta al botón ⓘ y cambia por los colores de los 4 temas */
+.aviso-temas{position:fixed; top:0; left:0; z-index:150; width:min(240px,calc(100vw - 24px)); opacity:0; visibility:hidden; pointer-events:none; transform:translateY(-10px) scale(.9); transform-origin:var(--flecha-x,85%) 0; transition:opacity .25s, transform .4s var(--muelle), visibility 0s .4s}
+.aviso-temas.on{opacity:1; visibility:visible; pointer-events:auto; transform:none; transition:opacity .25s, transform .4s var(--muelle)}
+.aviso-cuerpo{position:relative; padding:12px 14px; border-radius:18px; color:#fff; background-color:#0f7a4f; box-shadow:0 14px 34px rgba(0,0,0,.3)}
+.aviso-cuerpo::before{content:""; position:absolute; top:-7px; left:calc(var(--flecha-x,85%) - 8px); width:16px; height:16px; background:inherit; border-radius:4px 0 0 0; transform:rotate(45deg)}
+.aviso-cab{display:flex; align-items:center; gap:8px; font-weight:800; font-size:1rem; line-height:1.2}
+.aviso-cab svg{width:22px; height:22px; flex:none}
+.aviso-temas p{margin:6px 0 10px; font-size:.82rem; line-height:1.4; color:rgba(255,255,255,.96)}
+.aviso-temas p svg{width:15px; height:15px; vertical-align:-3px}
+.aviso-pie{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.aviso-puntos{display:flex; gap:6px}
+.aviso-puntos i{width:14px; height:14px; border-radius:50%; border:2px solid rgba(255,255,255,.9)}
+.aviso-puntos i:nth-child(1){background:#3ecf8e}
+.aviso-puntos i:nth-child(2){background:#38b6ff}
+.aviso-puntos i:nth-child(3){background:#fb923c}
+.aviso-puntos i:nth-child(4){background:#b794f6}
+.aviso-temas .aviso-ok{min-width:0; min-height:0; padding:9px 20px; border-radius:999px; background:#fff; color:#0f7a4f; font-size:.9rem; font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,.22)}
+.aviso-temas .aviso-ok:hover{background:#fff}
+.aviso-temas .aviso-ok:focus-visible{outline:3px solid #fff; outline-offset:2px}
+/* Animaciones: el fondo, el botón, los puntitos y el botón ⓘ recorren los temas (verde, océano, atardecer, violeta) al mismo ritmo */
+.aviso-temas.anim .aviso-cuerpo{animation:aviso-colores 6s linear infinite, aviso-flota 2.6s ease-in-out infinite}
+.aviso-temas.anim .aviso-cab svg{animation:late 1.6s ease-in-out infinite}
+.aviso-temas.anim .aviso-ok{animation:aviso-texto 6s linear infinite}
+.aviso-temas.anim .aviso-puntos i{animation:aviso-punto 6s linear infinite}
+.aviso-temas.anim .aviso-puntos i:nth-child(2){animation-delay:1.5s}
+.aviso-temas.anim .aviso-puntos i:nth-child(3){animation-delay:3s}
+.aviso-temas.anim .aviso-puntos i:nth-child(4){animation-delay:4.5s}
+.info.llama{position:relative; overflow:visible; animation:aviso-texto 6s linear infinite}
+.info.llama::after{content:""; position:absolute; inset:0; border-radius:50%; border:3px solid currentColor; pointer-events:none; animation:aviso-onda 1.5s ease-out infinite}
+@keyframes aviso-colores{0%,15%{background-color:#0f7a4f}25%,40%{background-color:#0a6ea8}50%,65%{background-color:#b2450a}75%,90%{background-color:#6d3fc4}100%{background-color:#0f7a4f}}
+@keyframes aviso-texto{0%,15%{color:#0f7a4f}25%,40%{color:#0a6ea8}50%,65%{color:#b2450a}75%,90%{color:#6d3fc4}100%{color:#0f7a4f}}
+@keyframes aviso-flota{50%{transform:translateY(-4px)}}
+@keyframes aviso-punto{0%,20%{transform:scale(1.45); box-shadow:0 0 0 3px rgba(255,255,255,.45)}30%,100%{transform:none; box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+@keyframes aviso-onda{from{transform:scale(1); opacity:.9}to{transform:scale(1.6); opacity:0}}
+
+/* ===== Animaciones v2: táctil, desplegables, listas, modales y SVG (pensado para teléfono) ===== */
+button,summary,.dd-campo,.chip,.pildora .opt,.rb-op,.dd-lista li{touch-action:manipulation}
+main{overscroll-behavior-y:contain}
+/* Pantallas: viaje corto con curva suave (antes cruzaban el 100 % del ancho) */
+@keyframes slide-in{from{transform:translate3d(44px,0,0) scale(.985); opacity:0}55%{opacity:1}to{transform:none; opacity:1}}
+@keyframes slide-back{from{transform:translate3d(-44px,0,0) scale(.985); opacity:0}55%{opacity:1}to{transform:none; opacity:1}}
+.pantalla.activa{animation-duration:.45s; animation-timing-function:cubic-bezier(.22,1,.36,1)}
+/* Táctil: sin efectos «hover» pegados; respuesta inmediata al presionar */
+@media (hover:none){
+  .acciones button:not(.sec):not(:disabled):hover,.acciones button.sec:hover,.chip:hover,button.tema-op:hover{transform:none; box-shadow:none}
+  .acciones button:not(.sec):not(:disabled):hover::after{transform:translateX(-120%)}
+  .iconos li:hover .ico,.pasos li:hover .num,.metas li:hover .meta-n,.panel summary:hover .ico{transform:none}
+  .acciones button:not(.sec):not(:disabled):active,.acciones button.sec:active{transform:scale(.96)}
+}
+.chip,.pildora .opt,button.tema-op{transition:transform .2s var(--muelle), background-color .2s, color .2s, border-color .2s}
+.chip:active,button.tema-op:active{transform:scale(.93)}
+.pildora .opt:active{transform:scale(.94)}
+button:active:not(:disabled) svg{transform:scale(.86)}
+.info:active svg{transform:rotate(20deg) scale(.88)}
+/* Paneles desplegables: la altura la anima el JS; aquí el chevron, el ícono y el toque */
+.panel summary{position:relative; overflow:hidden; transition:background-color .25s}
+.panel summary:active{background:var(--cielo)}
+.panel summary::after{transition:transform .45s var(--muelle), margin .3s var(--suave)}
+.panel summary .ico{transition:background-color .25s, transform .3s var(--muelle)}
+.panel.cerrando > summary{background:transparent}
+.panel.cerrando > summary::after{transform:rotate(45deg); margin-top:-4px}
+.panel.cerrando > summary .ico{background:var(--cielo)}
+.panel[open] > summary .ico{animation:late .5s var(--muelle)}
+/* Lista desplegable: abre con rebote, la flecha gira con resorte y cada opción responde al dedo */
+.dd-lista{transform:translateY(-10px) scale(.95); transition:opacity .2s, transform .4s var(--muelle), visibility 0s .2s; overscroll-behavior:contain}
+.dd.abierto .dd-lista{transition:opacity .2s, transform .4s var(--muelle)}
+.dd-campo::after{transition:transform .4s var(--muelle)}
+.dd-campo{transition:border-color .2s, box-shadow .25s, transform .2s var(--muelle)}
+.dd-campo:active{transform:scale(.985)}
+.dd-lista li{position:relative; overflow:hidden; transition:background-color .15s, transform .2s var(--muelle)}
+.dd-lista li:active{transform:scale(.97); background:var(--cielo)}
+/* Ventanas: entran con resorte y el fondo se desenfoca */
+.modal::backdrop{backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px)}
+.modal[open] .modal-card{animation:hoja-sube .5s var(--muelle)}
+.modal.cerrando .modal-card{animation:hoja-baja .22s ease-in forwards}
+@keyframes hoja-sube{from{opacity:0; transform:translateY(36px) scale(.94)}}
+@keyframes hoja-baja{to{opacity:0; transform:translateY(18px) scale(.97)}}
+/* SVG: los íconos se dibujan trazo a trazo y el sol responde al toque */
+.ico svg [pathLength]{stroke-dasharray:1; stroke-dashoffset:0}
+.pantalla.activa .ico svg [pathLength]{animation:trazo .7s var(--suave) calc(var(--i,0)*90ms + .45s) backwards}
+.panel[open] > summary .ico svg [pathLength]{animation:trazo .6s var(--suave) .12s backwards}
+@keyframes trazo{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.sol{cursor:pointer; transition:transform .45s var(--muelle)}
+.sol:active{transform:scale(.93) rotate(-5deg)}
+.sol:active .lg-rayo{animation:zap .7s ease-in-out}
+.sol:active .sol-orbita{animation-duration:2.5s}
+/* Aparecer al hacer scroll (solo si se mueve el contenido) */
+.rv{opacity:0; transform:translateY(22px)}
+.rv.ve{opacity:1; transform:none; transition:opacity .55s ease-out, transform .6s cubic-bezier(.22,1,.36,1)}
 </style>
 </head>
 <body>
@@ -848,8 +993,13 @@ input:not(.in-watts):not(.nombre-edit):not(.it-slider):focus,.dd.abierto .dd-cam
     <p class="lead">Busca un aparato y se agrega al instante. Si tienes dos iguales, agrégalos dos veces.</p>
     <div class="buscador" role="search">
       <svg class="lupa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input type="text" id="buscar" class="buscar-grande" placeholder="Busca un aparato: refrigerador, ventilador…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="resultados-busqueda" aria-label="Buscar un aparato">
-      <ul class="resultados-busqueda" id="resultados-busqueda" role="listbox" hidden></ul>
+      <input type="text" id="buscar" class="buscar-grande" placeholder="Busca un aparato: refrigerador, ventilador…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="resultados-busqueda" aria-label="Buscar un aparato">
+      
+      <button type="button" id="btn-desplegar" class="desplegar-lista" aria-label="Ver todos los aparatos" aria-haspopup="listbox" aria-expanded="false" aria-controls="resultados-busqueda">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+
+      <ul class="resultados-busqueda" id="resultados-busqueda" role="listbox"></ul>
     </div>
 
     <div class="vacio" id="estado-vacio">
@@ -1095,6 +1245,17 @@ input:not(.in-watts):not(.nombre-edit):not(.it-slider):focus,.dd.abierto .dd-cam
   </div>
 </dialog>
 
+<div class="aviso-temas" id="aviso-temas" role="dialog" aria-labelledby="t-aviso" aria-describedby="d-aviso">
+  <div class="aviso-cuerpo">
+    <div class="aviso-cab" id="t-aviso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg><span>¡Prueba otros temas!</span></div>
+    <p id="d-aviso">Toca el botón <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v5"/><path d="M12 7.5h.01" stroke-width="2.6"/></svg> de arriba, entra a «Temas y apariencia» y elige tus colores.</p>
+    <div class="aviso-pie">
+      <span class="aviso-puntos" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <button type="button" class="aviso-ok" id="aviso-ok">Aceptar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -1122,7 +1283,7 @@ var CATALOGO = {
   "Electrodomésticos": [
     ["Aspiradora", 1000, "aspiradora"],
     ["Batidora", 300, "cocina_peq"],
-    ["Cafetera eléctrica", 800, "cafetera"],
+    ["Cafetera", 800, "cafetera"],
     ["Campana de cocina", 150, "campana"],
     ["Congelador", 200, "refri"],
     ["Dispensador de agua", 100, "dispensador"],
@@ -1597,6 +1758,7 @@ var TIPS_CAT = {
 
   function mostrarPantalla(numero, atras, desdeHistorial) {
     cerrarTodos();
+    if (numero !== 1) { cerrarAviso(); }
     pantallas.forEach(function (p, i) {
       p.classList.remove("activa", "atras");
       if (i === numero - 1) {
@@ -1837,7 +1999,7 @@ var TIPS_CAT = {
   var periodo = "mes", pestana = "consumo", vista = "aparato";   // vista: "aparato" | "categoria"
   var temporada = "verano", ddRegion;
 
-  var RAPIDOS = ["Refrigerador", "Televisor", "Foco LED", "Aire acondicionado minisplit", "Ventilador de techo", "Lavadora", "Microondas", "Laptop estándar"];
+  var RAPIDOS = ["Refrigerador", "Foco LED", "Aire acondicionado minisplit inverter", "Lavadora",  "Laptop estándar", "Aire acondicionado minisplit","Ventilador de pedestal", "Televisor",  "Microondas", "Cafetera"];
   var LIMITE_DAC = { "1": 250, "1A": 300, "1B": 400, "1C": 850, "1D": 1000, "1E": 2000, "1F": 2500 };   // kWh al mes (promedio de 12 meses)
   var FACTOR_PERIODO = { dia: 1, semana: 7, mes: 30, bim: 60 };
   var ETQ_PERIODO = { dia: "(día)", semana: "(semana)", mes: "(mes)", bim: "(2 meses)" };
@@ -1882,11 +2044,25 @@ var APARATOS = [];
   });
 
   // ---------- Pantalla 2: buscador y tarjetas ----------
-  var busq = { ops: [], idx: -1 };
+  var busq = { ops: [], idx: -1, ignorarBlur: false };
 
+  function busqAbierta() { return $("buscar").parentNode.classList.contains("abierto"); }
+
+  // Oculta el teclado del móvil sin cerrar la lista. El readonly temporal evita que algunos Android lo dejen abierto.
+  function ocultarTeclado() {
+    var inp = $("buscar");
+    if (document.activeElement !== inp) { return; }
+    busq.ignorarBlur = true; // este blur lo provocamos nosotros: no debe cerrar la lista
+    inp.setAttribute("readonly", "readonly");
+    inp.blur();
+    busq.ignorarBlur = false;
+    setTimeout(function () { inp.removeAttribute("readonly"); }, 120);
+  }
   function cerrarBusqueda() {
-    $("resultados-busqueda").hidden = true;
-    $("buscar").setAttribute("aria-expanded", "false");
+    var inp = $("buscar");
+    inp.parentNode.classList.remove("abierto"); // la CSS gira la flecha y desliza la lista hacia arriba
+    inp.setAttribute("aria-expanded", "false");
+    $("btn-desplegar").setAttribute("aria-expanded", "false");
     busq.idx = -1;
   }
   function marcarOpcion(i) {
@@ -1895,8 +2071,15 @@ var APARATOS = [];
     busq.idx = i;
     if (els[i]) { els[i].scrollIntoView({ block: "nearest" }); }
   }
-  function pintarBusqueda() {
+  function pintarBusqueda(forzarTodo) {
     var inp = $("buscar"), texto = inp.value.trim(), q = normalizar(texto), ul = $("resultados-busqueda");
+    
+    // Si la barra está vacía y no presionaron el botón explícitamente, cerramos la lista
+    if (!q && !forzarTodo) {
+      cerrarBusqueda();
+      return;
+    }
+    
     var toks = q ? q.split(/\s+/) : [], ultima = "";
     ul.innerHTML = "";
     busq.ops = [];
@@ -1935,8 +2118,15 @@ var APARATOS = [];
       var o = opcion('<span class="rb-n"></span>', function () { elegirOtro(texto); }, "rb-otro");
       o.querySelector(".rb-n").textContent = texto ? "+ Agregar «" + texto + "» como otro aparato" : "+ Otro aparato (escribe su nombre)";
     }
-    ul.hidden = false;
+    Array.prototype.forEach.call(ul.children, function (el, k) { el.style.setProperty("--i", Math.min(k, 10)); });
+    var abriendo = !busqAbierta();
+    ul.classList.toggle("entrando", abriendo); // el efecto escalonado solo al abrir, no en cada tecla
+    ul.scrollTop = 0;
+    // Alto real del contenido (+4 px de borde) con tope de 340 px: la caja anima hasta su tamaño exacto, también al filtrar
+    ul.style.setProperty("--alto", Math.min(ul.scrollHeight + 4, 340) + "px");
+    inp.parentNode.classList.add("abierto");
     inp.setAttribute("aria-expanded", "true");
+    $("btn-desplegar").setAttribute("aria-expanded", "true");
     busq.idx = -1;
   }
   function elegirAparato(a) {
@@ -1953,16 +2143,37 @@ var APARATOS = [];
     it.el.querySelector(".in-watts").focus();
   }
   function iniciarBusqueda() {
-    var inp = $("buscar"), ul = $("resultados-busqueda");
-    inp.addEventListener("input", pintarBusqueda);
-    inp.addEventListener("focus", pintarBusqueda);
-    inp.addEventListener("blur", cerrarBusqueda);
+    var inp = $("buscar"), ul = $("resultados-busqueda"), btn = $("btn-desplegar"), wrap = inp.parentNode;
+
+    // Barra de texto: teclado normal. La lista solo se muestra si hay texto escrito
+    inp.addEventListener("input", function () { pintarBusqueda(false); });
+    inp.addEventListener("focus", function () { pintarBusqueda(false); });
+    inp.addEventListener("blur", function () { if (!busq.ignorarBlur) { cerrarBusqueda(); } });
+
+    // Tocar o arrastrar la lista no le quita el foco a la barra; al arrastrar con el dedo se oculta el teclado
     ul.addEventListener("mousedown", function (e) { e.preventDefault(); });
+    ul.addEventListener("touchmove", ocultarTeclado, { passive: true });
+
+    // Botón de flecha: no roba el foco al presionar y siempre oculta el teclado
+    btn.addEventListener("mousedown", function (e) { e.preventDefault(); });
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      ocultarTeclado();
+      if (busqAbierta()) { cerrarBusqueda(); return; }
+      inp.value = "";
+      pintarBusqueda(true);
+    });
+
+    // Tocar fuera del buscador cierra la lista (necesario cuando se abrió con la flecha y la barra no tiene foco)
+    document.addEventListener("pointerdown", function (e) {
+      if (busqAbierta() && !wrap.contains(e.target)) { cerrarBusqueda(); }
+    });
+
     inp.addEventListener("keydown", function (e) {
       var n = busq.ops.length;
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault();
-        if (ul.hidden) { pintarBusqueda(); n = busq.ops.length; }
+        if (!busqAbierta()) { pintarBusqueda(true); n = busq.ops.length; } // Abrir con teclado hacia abajo
         if (n) { marcarOpcion((busq.idx + (e.key === "ArrowDown" ? 1 : -1) + n) % n); }
       } else if (e.key === "Enter") {
         e.preventDefault();
@@ -2005,14 +2216,27 @@ var APARATOS = [];
     inW.value = it.watts;
     inW.addEventListener("input", function () { it.watts = inW.value; limpiarTarjeta(it); });
     inW.addEventListener("focus", function() { this.select(); });
-    if (it.otro) {
+   if (it.otro) {
       var inN = info.querySelector(".nombre-edit");
       inN.value = it.nombre;
+      
       inN.addEventListener("input", function () { 
         var val = inN.value.trim();
         it.nombre = val ? val.charAt(0).toUpperCase() + val.slice(1) : "Otro aparato"; 
         etiquetarLista(); 
       });
+
+      // --- NUEVO: Autoseleccionar a prueba de móviles ---
+      function autoSeleccionar() {
+        if (inN.value.trim().toLowerCase() === "otro aparato") {
+          // setSelectionRange es 100% confiable en teléfonos para forzar la selección
+          inN.setSelectionRange(0, inN.value.length);
+        }
+      }
+      
+      // Cubrimos tanto la navegación con teclado/PC (focus) como el toque en pantalla (click)
+      inN.addEventListener("focus", autoSeleccionar);
+      inN.addEventListener("click", autoSeleccionar);
     }
     li.querySelector(".copiar").addEventListener("click", function () { copiarAparato(it); });
     li.querySelector(".papelera").addEventListener("click", function () { quitarAparato(it); });
@@ -2140,7 +2364,17 @@ var APARATOS = [];
       it.et = li.querySelector(".it-etq");
       it.er = li.querySelector(".it-error");
       it.sl.setAttribute("aria-label", "Tiempo de uso de " + it.etq);
-      it.sl.addEventListener("input", function () { it.minutos = Number(it.sl.value); it.manualMal = false; pintarTiempo(it, "slider"); });
+      it.sl.addEventListener("input", function () { 
+        it.minutos = Number(it.sl.value); it.manualMal = false; pintarTiempo(it, "slider"); 
+      });
+      
+      // Control de iluminación al arrastrar
+      it.sl.addEventListener("touchstart", function () { 
+        if (!it.sl.disabled) it.sl.classList.add("arrastrando"); 
+      }, { passive: true });
+      
+      it.sl.addEventListener("touchend", function () { it.sl.classList.remove("arrastrando"); });
+      it.sl.addEventListener("touchcancel", function () { it.sl.classList.remove("arrastrando"); });
       it.inH.addEventListener("input", function () { leerManual(it); });
       it.inH.addEventListener("focus", function() { this.select(); });
       it.inM.addEventListener("input", function () { leerManual(it); });
@@ -2948,10 +3182,10 @@ window.addEventListener("beforeunload", function (e) {
     setTimeout(function () { if (s.parentNode) { s.remove(); } }, 900);
   }
   function botonOnda(e) {
-    var b = e.target.closest && e.target.closest("button");
+    var b = e.target.closest && e.target.closest("button, .panel summary, .dd-lista li");
     return (!REDUCIR && b && !b.disabled && !b.classList.contains("switch")) ? b : null;
   }
-  document.addEventListener("pointerdown", function (e) { var b = botonOnda(e); if (b && e.button === 0) { onda(b, e.clientX, e.clientY); } }, { passive: true });
+  document.addEventListener("pointerdown", function (e) { var b = botonOnda(e); if (b && e.button === 0) { onda(b, e.clientX, e.clientY); if (e.pointerType === "touch" && navigator.vibrate) { try { navigator.vibrate(6); } catch (err) {} } } }, { passive: true });
   document.addEventListener("click", function (e) {
     var b = botonOnda(e);
     if (b && e.detail === 0) { var r = b.getBoundingClientRect(); onda(b, r.left + r.width / 2, r.top + r.height / 2); }   // activado con teclado
@@ -2980,6 +3214,164 @@ window.addEventListener("beforeunload", function (e) {
       colocar(p);
     });
   })();
+  // ---------- Paneles <details>: altura fluida e interrumpible (un toque a mitad de animación invierte desde donde va) ----------
+  (function () {
+    if (!Element.prototype.animate) { return; }
+    var DUR = 420, ESC = "cubic-bezier(.22,1,.36,1)";
+    function alternar(det) {
+      var sum = det.querySelector("summary"), cuerpo = det.querySelector(".panel-cuerpo");
+      var abrir = !det.open || det.classList.contains("cerrando");
+      var ini = det.getBoundingClientRect().height;
+      (det._anims || []).forEach(function (a) { a.onfinish = null; a.cancel(); });
+      det.open = true;                                      // abierto para poder medir
+      det.classList.toggle("cerrando", !abrir);
+      var fin = abrir ? det.getBoundingClientRect().height : sum.offsetHeight + (det.offsetHeight - det.clientHeight);
+      var h = det.animate([{ height: ini + "px" }, { height: fin + "px" }], { duration: DUR, easing: ESC, fill: "forwards" });
+      var c = cuerpo.animate(abrir
+        ? [{ opacity: 0, transform: "translateY(-10px)" }, { opacity: 1, transform: "none" }]
+        : [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-6px)" }],
+        { duration: abrir ? DUR : DUR * 0.55, delay: abrir ? 70 : 0, easing: ESC, fill: "both" });
+      det._anims = [h, c];
+      h.onfinish = function () {
+        if (!abrir) { det.open = false; det.classList.remove("cerrando"); }
+        h.cancel(); c.cancel(); det._anims = null;
+        if (abrir) { det.scrollIntoView({ block: "nearest", behavior: "smooth" }); }   // si quedó cortado abajo, lo sube
+      };
+    }
+    document.addEventListener("click", function (e) {
+      var sum = e.target.closest && e.target.closest("details.panel > summary");
+      if (!sum || REDUCIR || !sum.parentNode.querySelector(".panel-cuerpo")) { return; }
+      e.preventDefault();
+      alternar(sum.parentNode);
+    });
+  })();
+  // ---------- Scrollbar superpuesta: va encima del contenido y no le quita ancho ----------
+  function scrollSuperpuesto(el) {
+    if (!el || !el.parentNode || el.hasAttribute("data-sb")) { return; }
+    var M = 8, W = 12; // margen arriba/abajo y ancho de la pista
+    var pista = document.createElement("div"), pulgar = document.createElement("div");
+    var pendiente = 0, hasta = 0, bucle = false, tActiva = 0, arrastre = null;
+    pista.className = "sb-pista";
+    pista.hidden = true;
+    pista.setAttribute("aria-hidden", "true");
+    pulgar.className = "sb-pulgar";
+    pista.appendChild(pulgar);
+    el.parentNode.insertBefore(pista, el.nextSibling);
+    el.setAttribute("data-sb", "");
+
+    function actualizar() {
+      pendiente = 0;
+      var alto = el.clientHeight, total = el.scrollHeight;
+      // Si el elemento anima su max-height hacia --alto (lista del buscador), se mide contra ese alto final
+      var fin = parseFloat(el.style.getPropertyValue("--alto"));
+      var altoFin = fin ? fin - (el.offsetHeight - alto) : alto;
+      if (alto < 40 || total - altoFin < 2) { pista.hidden = true; return; }
+      pista.hidden = false;
+      var sobra = total - alto, largo = alto - 2 * M;
+      var hP = Math.min(largo, Math.max(44, largo * alto / total));
+      var y = sobra > 0 ? (largo - hP) * (el.scrollTop / sobra) : 0;
+      pista.style.left = (el.offsetLeft + el.clientLeft + el.clientWidth - W) + "px";
+      pista.style.top = (el.offsetTop + el.clientTop) + "px";
+      pista.style.height = alto + "px";
+      pulgar.style.height = hP + "px";
+      pulgar.style.transform = "translateY(" + (M + Math.max(0, Math.min(largo - hP, y))) + "px)";
+    }
+    function programar() { if (!pendiente) { pendiente = requestAnimationFrame(actualizar); } }
+    // Actualiza en cada fotograma mientras haya animaciones que cambien el alto del contenido
+    function seguir(ms) {
+      hasta = Math.max(hasta, performance.now() + ms);
+      if (bucle) { return; }
+      bucle = true;
+      requestAnimationFrame(function paso() {
+        actualizar();
+        if (performance.now() < hasta) { requestAnimationFrame(paso); } else { bucle = false; }
+      });
+    }
+
+    el.addEventListener("scroll", function () {
+      programar();
+      pista.classList.add("sb-activa");
+      clearTimeout(tActiva);
+      tActiva = setTimeout(function () { pista.classList.remove("sb-activa"); }, 800);
+    }, { passive: true });
+    el.addEventListener("transitionrun", function (e) {
+      if (/height|padding|margin/.test(e.propertyName)) { seguir(700); }
+    });
+    window.addEventListener("resize", programar);
+    window.addEventListener("load", programar);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(programar); }
+    if (window.ResizeObserver) { new ResizeObserver(function () { seguir(120); }).observe(el); }
+    if (window.MutationObserver) {
+      new MutationObserver(function () { seguir(450); })
+        .observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden", "open"] });
+    }
+
+    // Arrastrar la barra (mouse, dedo o lápiz)
+    function soltar() { arrastre = null; pulgar.classList.remove("arrastrando"); }
+    pulgar.addEventListener("pointerdown", function (e) {
+      e.preventDefault(); // no le quita el foco a la barra de búsqueda
+      pulgar.setPointerCapture(e.pointerId);
+      arrastre = { y: e.clientY, top: el.scrollTop };
+      pulgar.classList.add("arrastrando");
+    });
+    pulgar.addEventListener("pointermove", function (e) {
+      if (!arrastre) { return; }
+      var alto = el.clientHeight, libre = alto - 2 * M - pulgar.offsetHeight;
+      if (libre > 0) { el.scrollTop = arrastre.top + (e.clientY - arrastre.y) * (el.scrollHeight - alto) / libre; }
+    });
+    pulgar.addEventListener("pointerup", soltar);
+    pulgar.addEventListener("pointercancel", soltar);
+    pulgar.addEventListener("lostpointercapture", soltar);
+    seguir(600);
+  }
+  function iniciarScrollSuperpuesto() {
+    Array.prototype.forEach.call(document.querySelectorAll("main, .modal-card, .dd-lista, .resultados-busqueda"), function (el) { scrollSuperpuesto(el); });
+  }
+
+  // ---------- Globo «Prueba otros temas» (cada vez que se abre la web, en el inicio) ----------
+  var aviso = document.getElementById("aviso-temas");
+  var btnInfo = document.querySelector("header.barra .info");
+  var avisoTimer = 0;
+
+  // Lo coloca justo debajo del botón ⓘ, con la flecha apuntándole
+  function colocarAviso() {
+    var r = btnInfo.getBoundingClientRect();
+    var vw = document.documentElement.clientWidth;
+    var ancho = aviso.offsetWidth;
+    var izq = Math.max(12, Math.min(r.right - ancho + 8, vw - ancho - 12));
+    var flecha = Math.max(24, Math.min(r.left + r.width / 2 - izq, ancho - 24));
+    aviso.style.left = izq + "px";
+    aviso.style.top = Math.round(r.bottom + 12) + "px";
+    aviso.style.setProperty("--flecha-x", flecha + "px");
+  }
+  function mostrarAviso() {
+    if (pantallaActual !== 1 || aviso.classList.contains("on")) { return; }
+    clearTimeout(avisoTimer);
+    colocarAviso();
+    aviso.classList.add("anim", "on");
+    btnInfo.classList.add("llama");
+  }
+  function cerrarAviso() {
+    clearTimeout(avisoTimer);
+    if (!aviso.classList.contains("on")) { return; }
+    aviso.classList.remove("on");
+    btnInfo.classList.remove("llama");
+    avisoTimer = setTimeout(function () { aviso.classList.remove("anim"); }, 450);   // deja terminar el fundido antes de parar los colores
+  }
+  $("aviso-ok").addEventListener("click", cerrarAviso);
+  btnInfo.addEventListener("click", cerrarAviso);                       // si toca el ⓘ, ya vio el aviso
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { cerrarAviso(); } });
+  window.addEventListener("resize", function () { if (aviso.classList.contains("on")) { colocarAviso(); } });
+  window.addEventListener("pageshow", function (e) { if (e.persisted) { setTimeout(mostrarAviso, 300); } });   // al volver con «Atrás» desde otra página
+
+  // ---------- SVG que se dibujan y bloques que aparecen al hacer scroll ----------
+  document.querySelectorAll(".ico svg path, .ico svg circle, .ico svg line, .ico svg polyline, .ico svg rect, .ico svg ellipse").forEach(function (f) { f.setAttribute("pathLength", "1"); });
+  if (!REDUCIR && "IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("ve"); io.unobserve(en.target); } });
+    }, { threshold: 0.08, rootMargin: "0px 0px -6% 0px" });
+    document.querySelectorAll("main .inicio-info > *, main .panel").forEach(function (el) { el.classList.add("rv"); io.observe(el); });
+  }
 
   // ---------- Inicialización ----------
   iniciarApariencia();
@@ -2988,9 +3380,11 @@ window.addEventListener("beforeunload", function (e) {
   ddRegion.elegir(0);
   construirChips();
   iniciarBusqueda();
+  iniciarScrollSuperpuesto();
   actualizarLista();
   try { history.replaceState({ pantalla: 1, pos: 0 }, "", ""); } catch (err) {}
   mostrarPantalla(1, false, true);
+  setTimeout(mostrarAviso, REDUCIR ? 0 : 900);   // sale cada vez que se entra a la web
 
   // PWA: el service worker solo se registra en http(s) (no al abrir el archivo directamente)
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
