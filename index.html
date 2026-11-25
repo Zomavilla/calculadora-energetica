@@ -238,6 +238,7 @@ footer{flex:none; text-align:center; font-size:.75rem; color:var(--gris); paddin
 .barra-reparto i{display:block; height:100%; transition:width .3s}
 .barra-reparto .b1{background:var(--verde)}
 .barra-reparto .b2{background:var(--amarillo)}
+.barra-reparto .b-alto{background:#e68135}
 .barra-reparto .b3{background:var(--rojo)}
 .leyenda{list-style:none; display:grid; gap:8px; margin-top:12px; font-size:.92rem}
 .leyenda li{display:flex; align-items:flex-start; gap:10px}
@@ -378,14 +379,7 @@ input:disabled{opacity:.6; cursor:not-allowed}
   .progreso span{width:40px}
   main{display:flex; flex-direction:column; padding:5vh 5vw}
   .pantalla{flex:none; width:100%; max-width:960px; margin:0 auto; padding:48px 56px; border-radius:24px}
-  #pantalla1,#pantalla2{max-width:1060px; padding:56px 64px}
-  #pantalla1 .acciones{flex-direction:row; justify-content:flex-start}
-  #pantalla1.activa{display:grid; grid-template-columns:1fr 260px; column-gap:56px; align-items:start}
-  #pantalla1 > *{grid-column:1}
-  #pantalla1 .sol{grid-column:2; grid-row:1 / span 5; align-self:center; justify-self:center; width:240px; height:240px; margin:0}
-  #pantalla1 .ods{justify-self:start}
-  #pantalla1 .inicio-info{grid-column:1 / -1}
-  #pantalla1 .paneles-ods{grid-column:1 / -1; margin-top:24px}
+  #pantalla2{max-width:1060px; padding:56px 64px}
   .consumos.tres{grid-template-columns:repeat(3,1fr)}
   .consumos.tres .tile:first-child{grid-column:auto}
   .consumos.tres .tile b{font-size:1.3rem}
@@ -444,26 +438,38 @@ button.atras .txt{position:absolute; width:1px; height:1px; overflow:hidden; cli
 
 /* Mi lista de equipos */
 .buscador{position:relative; margin:16px 0 14px}
-.lupa{position:absolute; left:18px; top:32px; transform:translateY(-50%); width:24px; height:24px; color:var(--hoja); pointer-events:none}
-input.buscar-grande{height:64px; padding:0 68px 0 56px; font-size:1.08rem; border-radius:18px; box-shadow:0 6px 20px rgba(13,43,42,.07)}
+.buscador-entrada{position:relative}
+.lupa{position:absolute; left:16px; top:28px; transform:translateY(-50%); width:21px; height:21px; color:var(--hoja); pointer-events:none}
+input.buscar-grande{height:56px; padding:0 117px 0 47px; font-size:1rem; border-radius:14px}
 .buscador.abierto input.buscar-grande{border-color:var(--agua)}
-
-/* Flecha: botón cuadrado de 48×48 px (sobre el mínimo táctil de 44) con 8 px de aire alrededor.
-   min-width:0 es obligatorio: en pantallas ≥768 px una regla global button{min-width:200px} lo estiraba.
-   Va anclado con top/bottom (sin transform), así el :active global de button ya no lo hace saltar. */
-.desplegar-lista{position:absolute; top:8px; right:8px; bottom:8px; z-index:2; width:48px; min-width:0; min-height:0; padding:0; border:0; border-radius:14px; background:color-mix(in srgb,var(--hoja) 9%,var(--blanco)); color:var(--hoja); display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; -webkit-touch-callout:none; transition:background-color .2s, color .2s}
+.desplegar-lista{position:absolute; top:6px; right:6px; bottom:6px; min-width:44px; min-height:0; padding:0 12px; border:0; border-radius:9px; background:var(--menta); color:var(--hoja); display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; font-size:.85rem}
 @media (hover:hover){.desplegar-lista:hover{background:color-mix(in srgb,var(--hoja) 16%,var(--blanco))}}
 .buscador.abierto .desplegar-lista{background:color-mix(in srgb,var(--hoja) 16%,var(--blanco))}
 .desplegar-lista:active:not(:disabled){transform:none; background:color-mix(in srgb,var(--hoja) 26%,var(--blanco))}
-.desplegar-lista svg{width:24px; height:24px; transform-origin:50% 50%; transition:transform .35s cubic-bezier(.4,0,.2,1); will-change:transform; backface-visibility:hidden}
+.desplegar-lista svg{width:17px; height:17px; transition:transform .2s ease}
 .buscador.abierto .desplegar-lista svg{transform:rotate(180deg)}
-
-/* Lista: cerrada = colapsada (max-height 0) + transparente; abierta = crece hasta su alto real (--alto lo calcula el JS) */
-.resultados-busqueda{position:absolute; left:0; right:0; top:calc(100% + 8px); z-index:30; list-style:none; background:var(--blanco); border:2px solid var(--linea); border-radius:16px; padding:6px; box-shadow:0 16px 40px rgba(13,43,42,.22); overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
-  max-height:0; overflow-y:hidden; opacity:0; visibility:hidden; pointer-events:none; transform:translateY(-10px) scale(.98); transform-origin:top center;
-  transition:max-height .32s var(--suave), opacity .2s ease, transform .28s var(--suave), visibility 0s linear .32s}
-.buscador.abierto .resultados-busqueda{max-height:var(--alto,340px); overflow-y:auto; opacity:1; visibility:visible; pointer-events:auto; transform:none;
-  transition:max-height .32s var(--suave), opacity .22s ease, transform .3s var(--suave), visibility 0s}
+.catalogo-equipos{margin-top:8px; border:1px solid var(--linea); border-radius:14px; background:var(--blanco); overflow:hidden}
+.catalogo-equipos[hidden]{display:none}
+.rb-filtros{display:flex; flex-wrap:wrap; gap:6px; padding:10px; border-bottom:1px solid var(--linea); background:var(--cielo)}
+.rb-filtro{min-width:0; min-height:36px; padding:5px 11px; border:1px solid var(--linea); border-radius:999px; background:var(--blanco); color:var(--tinta); font-size:.8rem}
+.rb-filtro[aria-pressed="true"]{background:var(--hoja); color:var(--sobre-hoja); border-color:var(--hoja)}
+.rb-cantidad{margin-left:5px; padding:1px 5px; border-radius:6px; border:1px solid currentColor; font-size:.72rem; font-variant-numeric:tabular-nums}
+.rb-resumen{display:flex; justify-content:space-between; align-items:center; gap:6px 12px; flex-wrap:wrap; padding:4px 12px 0; min-height:42px}
+.rb-estado{font-size:.79rem; color:var(--gris)}
+.rb-limpiar{min-width:0; min-height:36px; padding:4px 8px; border:0; border-radius:7px; background:transparent; color:var(--hoja); font-size:.8rem}
+.rb-limpiar:hover{background:var(--menta); color:var(--tinta)}
+.rb-limpiar[hidden]{display:none}
+.rb-filtro:focus-visible,.rb-limpiar:focus-visible,.desplegar-lista:focus-visible{outline:2px solid var(--agua); outline-offset:1px}
+.resultados-busqueda{list-style:none; max-height:min(320px, 40dvh); overflow-y:auto; padding:0 6px 8px; overscroll-behavior:contain}
+@media (max-width:540px){
+  .desplegar-lista{padding-inline:8px; font-size:.8rem}
+  .rb-filtros{gap:5px; padding:10px}
+  .rb-filtro{min-height:38px; padding-inline:9px}
+}
+@media (max-width:360px){
+  input.buscar-grande{padding-right:63px}
+  .desplegar-lista span{display:none}
+}
 
 /* Scrollbar con el diseño de la app, en TODO lo que tenga scroll: la página (main), los modales, el buscador y los menús.
    Usa los colores del tema activo (claro y oscuro). Vertical y horizontal. */
@@ -493,12 +499,16 @@ input.buscar-grande{height:64px; padding:0 68px 0 56px; font-size:1.08rem; borde
 .modal[open] .sb-pista{animation:subir-in .28s cubic-bezier(.2,.8,.2,1)}
 .modal.cerrando .sb-pista{animation:fundido-out .2s ease-in forwards}
 /* Las listas desplegables ocultan su barra junto con ellas */
-.buscador:not(.abierto) .sb-pista,.dd:not(.abierto) .sb-pista{opacity:0; visibility:hidden; transition:opacity .2s, visibility 0s linear .32s}
-.rb-grupo{padding:10px 12px 4px; font-size:.78rem; font-weight:800; color:var(--hoja)}
-.rb-op{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:11px 12px; border-radius:10px; cursor:pointer; font-size:.97rem}
+.dd:not(.abierto) .sb-pista{opacity:0; visibility:hidden; transition:opacity .2s, visibility 0s linear .32s}
+.rb-grupo{padding:10px 12px 4px; font-size:.8rem; font-weight:800; color:var(--hoja)}
+.rb-op{display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:44px; padding:8px 12px; border-radius:8px; cursor:pointer; font-size:.92rem}
 .rb-op.activo,.rb-op:hover{background:var(--cielo)}
+.rb-n{min-width:0; overflow-wrap:anywhere}
 .rb-n small{display:block; color:var(--gris); font-size:.78rem; font-weight:600}
-.rb-w{flex:none; color:var(--gris); font-size:.8rem; font-weight:700}
+.rb-datos{display:flex; align-items:center; gap:8px; flex:none}
+.rb-w{padding:2px 6px; border-radius:7px; background:var(--menta); color:var(--gris); font-size:.78rem; font-weight:700; font-variant-numeric:tabular-nums}
+.rb-agregar{display:grid; place-items:center; width:23px; height:23px; border:1px solid var(--linea); border-radius:7px; color:var(--hoja); font-size:1rem; line-height:1}
+.rb-op.activo .rb-agregar,.rb-op:hover .rb-agregar{border-color:var(--hoja)}
 .rb-op.rb-otro{color:var(--hoja); font-weight:700}
 .vacio{text-align:center; padding:26px 16px 22px; border:2px dashed var(--linea); border-radius:18px; color:var(--gris)}
 .vacio[hidden]{display:none}
@@ -521,7 +531,6 @@ button.papelera:hover{background:transparent; color:var(--error)}
 .papelera svg{width:20px; height:20px}
 .tarjeta .error{grid-column:1 / -1; margin-top:0}
 .resumen-lista{margin:10px 2px 0; color:var(--gris); font-weight:700; font-size:.9rem}
-.panel.ayuda-lista{margin-top:18px}
 button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
 
 /* Tiempo de uso con costo en vivo */
@@ -564,6 +573,7 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
   button.atras .txt{position:static; width:auto; height:auto; clip:auto; overflow:visible}
   #pantalla4{max-width:1060px; padding:48px 64px}
   .bloques-cfe{grid-template-columns:repeat(3,1fr)}
+  .bloques-cfe.cuatro-bloques{grid-template-columns:repeat(2,minmax(0,1fr))}
   .resumen-dash{gap:36px}
   .contador-flotante .cf-costo{font-size:2rem}
 }
@@ -621,8 +631,6 @@ button.copiar:hover{background:transparent; color:var(--hoja)}
   .tarjeta-w{justify-self:start}
 }
 
-.fila-lista{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:10px}
-.fila-lista .resumen-lista{margin:0 2px}
 button.vaciar{min-width:0; min-height:0; padding:7px 14px; display:inline-flex; align-items:center; gap:6px; flex:none; font-size:.85rem; background:transparent; color:var(--error); border:2px solid var(--error); border-radius:999px}
 button.vaciar:hover{background:color-mix(in srgb, var(--error) 12%, transparent); color:var(--error)}
 button.vaciar[hidden]{display:none}
@@ -802,7 +810,6 @@ button.tema-op[aria-checked="true"]{animation:pop-sel .4s var(--muelle)}
 .estado.rojo:not([hidden]){animation:agita .6s .3s}
 .error:not([hidden]),.invalido{animation:agita .4s}
 /* Opciones: entrada escalonada solo al abrir, barra de acento, retroalimentación al tocar */
-.resultados-busqueda.entrando .rb-op,.resultados-busqueda.entrando .rb-grupo{animation:entra-lado .35s var(--suave) backwards; animation-delay:calc(var(--i,0)*28ms + .06s)}
 .rb-op{position:relative; transition:background-color .15s, color .15s, transform .15s var(--suave)}
 .rb-op::before{content:""; position:absolute; left:0; top:50%; width:3px; height:0; border-radius:3px; background:var(--hoja); transform:translateY(-50%); transition:height .2s var(--suave)}
 .rb-op.activo::before{height:60%}
@@ -822,40 +829,6 @@ input:not(.in-watts):not(.nombre-edit):not(.it-slider):focus,.dd.abierto .dd-cam
 .toast{position:fixed; left:50%; width:max-content; bottom:calc(20px + env(safe-area-inset-bottom)); z-index:200; max-width:min(92vw,420px); padding:12px 18px; border-radius:14px; background:var(--tinta); color:var(--blanco); font-weight:700; font-size:.92rem; text-align:center; box-shadow:0 12px 32px rgba(0,0,0,.3); opacity:0; visibility:hidden; transform:translate(-50%,16px); pointer-events:none; transition:opacity .25s, transform .3s var(--muelle), visibility 0s .3s}
 .toast.on{opacity:1; visibility:visible; transform:translate(-50%,0); transition:opacity .25s, transform .3s var(--muelle)}
 
-/* Globo «Prueba otros temas»: sale al abrir la web (inicio), apunta al botón ⓘ y cambia por los colores de los 4 temas */
-.aviso-temas{position:fixed; top:0; left:0; z-index:150; width:min(240px,calc(100vw - 24px)); opacity:0; visibility:hidden; pointer-events:none; transform:translateY(-10px) scale(.9); transform-origin:var(--flecha-x,85%) 0; transition:opacity .25s, transform .4s var(--muelle), visibility 0s .4s}
-.aviso-temas.on{opacity:1; visibility:visible; pointer-events:auto; transform:none; transition:opacity .25s, transform .4s var(--muelle)}
-.aviso-cuerpo{position:relative; padding:12px 14px; border-radius:18px; color:#fff; background-color:#0f7a4f; box-shadow:0 14px 34px rgba(0,0,0,.3)}
-.aviso-cuerpo::before{content:""; position:absolute; top:-7px; left:calc(var(--flecha-x,85%) - 8px); width:16px; height:16px; background:inherit; border-radius:4px 0 0 0; transform:rotate(45deg)}
-.aviso-cab{display:flex; align-items:center; gap:8px; font-weight:800; font-size:1rem; line-height:1.2}
-.aviso-cab svg{width:22px; height:22px; flex:none}
-.aviso-temas p{margin:6px 0 10px; font-size:.82rem; line-height:1.4; color:rgba(255,255,255,.96)}
-.aviso-temas p svg{width:15px; height:15px; vertical-align:-3px}
-.aviso-pie{display:flex; align-items:center; justify-content:space-between; gap:10px}
-.aviso-puntos{display:flex; gap:6px}
-.aviso-puntos i{width:14px; height:14px; border-radius:50%; border:2px solid rgba(255,255,255,.9)}
-.aviso-puntos i:nth-child(1){background:#3ecf8e}
-.aviso-puntos i:nth-child(2){background:#38b6ff}
-.aviso-puntos i:nth-child(3){background:#fb923c}
-.aviso-puntos i:nth-child(4){background:#b794f6}
-.aviso-temas .aviso-ok{min-width:0; min-height:0; padding:9px 20px; border-radius:999px; background:#fff; color:#0f7a4f; font-size:.9rem; font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,.22)}
-.aviso-temas .aviso-ok:hover{background:#fff}
-.aviso-temas .aviso-ok:focus-visible{outline:3px solid #fff; outline-offset:2px}
-/* Animaciones: el fondo, el botón, los puntitos y el botón ⓘ recorren los temas (verde, océano, atardecer, violeta) al mismo ritmo */
-.aviso-temas.anim .aviso-cuerpo{animation:aviso-colores 6s linear infinite, aviso-flota 2.6s ease-in-out infinite}
-.aviso-temas.anim .aviso-cab svg{animation:late 1.6s ease-in-out infinite}
-.aviso-temas.anim .aviso-ok{animation:aviso-texto 6s linear infinite}
-.aviso-temas.anim .aviso-puntos i{animation:aviso-punto 6s linear infinite}
-.aviso-temas.anim .aviso-puntos i:nth-child(2){animation-delay:1.5s}
-.aviso-temas.anim .aviso-puntos i:nth-child(3){animation-delay:3s}
-.aviso-temas.anim .aviso-puntos i:nth-child(4){animation-delay:4.5s}
-.info.llama{position:relative; overflow:visible; animation:aviso-texto 6s linear infinite}
-.info.llama::after{content:""; position:absolute; inset:0; border-radius:50%; border:3px solid currentColor; pointer-events:none; animation:aviso-onda 1.5s ease-out infinite}
-@keyframes aviso-colores{0%,15%{background-color:#0f7a4f}25%,40%{background-color:#0a6ea8}50%,65%{background-color:#b2450a}75%,90%{background-color:#6d3fc4}100%{background-color:#0f7a4f}}
-@keyframes aviso-texto{0%,15%{color:#0f7a4f}25%,40%{color:#0a6ea8}50%,65%{color:#b2450a}75%,90%{color:#6d3fc4}100%{color:#0f7a4f}}
-@keyframes aviso-flota{50%{transform:translateY(-4px)}}
-@keyframes aviso-punto{0%,20%{transform:scale(1.45); box-shadow:0 0 0 3px rgba(255,255,255,.45)}30%,100%{transform:none; box-shadow:0 0 0 0 rgba(255,255,255,0)}}
-@keyframes aviso-onda{from{transform:scale(1); opacity:.9}to{transform:scale(1.6); opacity:0}}
 
 /* ===== Animaciones v2: táctil, desplegables, listas, modales y SVG (pensado para teléfono) ===== */
 button,summary,.dd-campo,.chip,.pildora .opt,.rb-op,.dd-lista li{touch-action:manipulation}
@@ -912,6 +885,429 @@ button:active:not(:disabled) svg{transform:scale(.86)}
 .rv{opacity:0; transform:translateY(22px)}
 .rv.ve{opacity:1; transform:none; transition:opacity .55s ease-out, transform .6s cubic-bezier(.22,1,.36,1)}
 </style>
+<style>
+.reporte-boton {
+  background: #116447;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: .65rem .9rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 0 0 1rem;
+}
+#reporte-dialogo {
+  --reporte-fondo: #ffffff;
+  --reporte-area: #e8f0ec;
+  --reporte-tinta: #19352a;
+  --reporte-secundario: #4d685c;
+  --reporte-linea: #c8d9d0;
+  --reporte-acento: #126447;
+  --reporte-texto-acento: #ffffff;
+  color-scheme: light;
+  width: min(960px, calc(100% - 24px));
+  max-width: none;
+  max-height: 94dvh;
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--reporte-linea);
+  border-radius: 18px;
+  background: var(--reporte-fondo);
+  color: var(--reporte-tinta);
+  box-shadow: 0 24px 72px #061d1866;
+  overflow: hidden;
+}
+html[data-modo="oscuro"] #reporte-dialogo {
+  color-scheme: dark;
+  --reporte-fondo: #15251f;
+  --reporte-area: #1e332a;
+  --reporte-tinta: #f1faf5;
+  --reporte-secundario: #b4d0c2;
+  --reporte-linea: #3b5b4c;
+  --reporte-acento: #83d9af;
+  --reporte-texto-acento: #10291e;
+}
+#reporte-dialogo[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); }
+#reporte-dialogo::backdrop { background: #071d18b0; }
+.reporte-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--reporte-linea);
+}
+#reporte-titulo { margin: 0; color: var(--reporte-tinta); font-size: 1.125rem; }
+.reporte-cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 300px);
+  grid-template-areas: "vista opciones";
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.reporte-controles {
+  grid-area: opciones;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  padding: 24px 20px;
+  border-left: 1px solid var(--reporte-linea);
+  font-size: .875rem;
+}
+.reporte-campo { display: grid; gap: 6px; margin: 0; font-weight: 700; }
+.reporte-check { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--reporte-secundario); }
+.reporte-check input { width: 16px; height: 16px; accent-color: var(--reporte-acento); }
+#reporte-consejo {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--reporte-linea);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 400;
+  color: var(--reporte-tinta);
+  background: var(--reporte-fondo);
+}
+.reporte-acciones { display: grid; gap: 8px; margin-top: 6px; }
+#reporte-dialogo button {
+  min-width: 0;
+  min-height: 38px;
+  padding: 7px 12px;
+  border: 1px solid var(--reporte-linea);
+  border-radius: 8px;
+  background: var(--reporte-fondo);
+  color: var(--reporte-tinta);
+  font: inherit;
+  font-size: .875rem;
+  font-weight: 700;
+  white-space: normal;
+}
+#reporte-dialogo button:hover { background: var(--reporte-area); }
+#reporte-dialogo button:focus-visible,
+#reporte-consejo:focus-visible,
+.reporte-check input:focus-visible { outline: 2px solid var(--reporte-acento); outline-offset: 2px; }
+#reporte-dialogo #reporte-pdf {
+  background: var(--reporte-acento);
+  border-color: var(--reporte-acento);
+  color: var(--reporte-texto-acento);
+}
+#reporte-dialogo #reporte-pdf:hover { filter: brightness(.92); }
+#reporte-estado { color: var(--reporte-secundario); }
+#reporte-estado:empty { display: none; }
+.reporte-papel {
+  grid-area: vista;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 20px;
+  background: var(--reporte-area);
+}
+#reporte-vista {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(720px, calc(94dvh - 108px));
+  box-shadow: 0 3px 16px #092b1b30;
+}
+.reporte-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+@media (max-width: 660px) {
+  .reporte-cabecera { padding: 10px 14px; }
+  #reporte-titulo { font-size: 1rem; }
+  .reporte-cuerpo { grid-template-columns: minmax(0, 1fr); grid-template-areas: "opciones" "vista"; }
+  .reporte-controles { padding: 14px; border-left: 0; }
+  .reporte-acciones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .reporte-papel { padding: 12px; border-top: 1px solid var(--reporte-linea); }
+  #reporte-vista { width: 100%; max-height: none; }
+}
+
+</style>
+<style>
+#btn-ajustes { flex: none; }
+#btn-ajustes[aria-current="page"] { background: var(--menta); }
+.ajustes-etiqueta { display: none; }
+#progreso[hidden] { display: none; }
+.ajustes-grid { display: grid; gap: 16px; margin-top: 24px; }
+.ajustes-col { display: grid; align-content: start; gap: 16px; min-width: 0; }
+.ajuste-tarjeta {
+  padding: clamp(14px, 3vw, 22px);
+  border: 1px solid var(--linea);
+  background: var(--blanco);
+  border-radius: 16px;
+}
+.ajuste-tarjeta h3 { color: var(--tinta); font-size: 1.1rem; line-height: 1.3; }
+.ajuste-tarjeta p { margin-top: 5px; color: var(--gris); }
+.ajuste-tarjeta .creditos { margin: 14px 0 0; }
+.ajustes-apariencia .fila-switch { margin-top: 14px; }
+.ajustes-apariencia .tema-titulo { margin-top: 22px; }
+.ajuste-tarjeta .ajuste-accion {
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin-top: 14px;
+  padding: 8px 14px;
+  text-align: center;
+}
+.ajuste-tarjeta .ajuste-accion.sec {
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  color: var(--hoja);
+}
+.ajuste-tarjeta .ajuste-accion.sec:hover { background: var(--menta); }
+.ajuste-accion[hidden],
+#instalacion-manual[hidden] { display: none; }
+#instalacion-manual { margin-top: 12px; }
+#instalacion-manual summary { color: var(--hoja); cursor: pointer; font-weight: 700; }
+#instalacion-manual ul { display: grid; gap: 8px; padding: 10px 0 0 1.2rem; }
+#instalacion-manual li { color: var(--gris); }
+#instalacion-manual b { color: var(--tinta); }
+.ajustes-fuentes { margin: 0; }
+@media (min-width: 768px) {
+  #pantalla5 { max-width: 1060px; }
+  .ajustes-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+  #btn-ajustes { display: inline-flex; width: auto; height: auto; min-height: 40px; gap: 6px; padding: 5px 10px; }
+  .ajustes-etiqueta { display: inline; font-size: .86rem; }
+}
+</style>
+<style>
+#pantalla2 {
+  max-width: 1160px;
+  padding: clamp(12px, 2.4vw, 32px) 0;
+  border: 0;
+  background: transparent;
+}
+.equipos-cabecera { padding: 0 2px; margin-bottom: 20px; }
+.equipos-cabecera h2 { margin-bottom: 7px; font-size: clamp(1.7rem, 3vw, 2.45rem); }
+.equipos-cabecera p { max-width: 58ch; color: var(--gris); font-size: .95rem; }
+.equipos-layout { display: grid; gap: 16px; align-items: start; }
+.equipos-editor, .zona-local {
+  min-width: 0;
+  padding: clamp(15px, 2.15vw, 24px);
+  border: 1px solid var(--linea);
+  border-radius: 18px;
+  background: var(--blanco);
+}
+.equipos-editor h3, .equipos-config-cabecera h3 { font-size: 1.02rem; color: var(--tinta); }
+.equipos-agregar-cabecera { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.equipos-agregar-cabecera button {
+  min-width: 0;
+  min-height: 36px;
+  padding: 4px 9px;
+  background: var(--menta);
+  color: var(--hoja);
+  font-size: .82rem;
+}
+.equipos-agregar-cabecera button:hover { background: var(--cielo); }
+.equipos-editor .buscador { margin: 10px 0 12px; }
+.equipos-atajos { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 12px; }
+.equipos-atajos > span { color: var(--gris); font-size: .8rem; font-weight: 700; }
+.equipos-atajos .chips { gap: 6px; margin: 0; }
+.equipos-atajos .chip { min-height: 34px; padding: 4px 10px; border-width: 1px; font-size: .8rem; }
+.equipos-lista-cabecera, .equipos-pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.equipos-lista-cabecera { margin: 20px 0 10px; padding-top: 16px; border-top: 1px solid var(--linea); }
+.equipos-lista-cabecera .resumen-lista { margin: 2px 0 0; font-size: .82rem; font-weight: 600; }
+.equipos-editor .vacio { padding: 20px 12px; border-width: 1px; border-radius: 12px; background: var(--cielo); }
+.equipos-editor .vacio svg { width: 28px; height: 28px; margin: 0; }
+.equipos-editor .vacio p { margin-bottom: 0; }
+.equipos-editor .tarjeta { margin-bottom: 8px; border: 1px solid var(--linea); border-radius: 11px; background: var(--blanco); }
+.equipos-editor .t-info b { white-space: normal; overflow-wrap: anywhere; line-height: 1.25; }
+.equipos-editor .t-cat { margin-top: 3px; }
+.equipos-editor .in-watts {
+  border: 1px solid var(--linea);
+  border-radius: 8px;
+  background: var(--cielo);
+  font-variant-numeric: tabular-nums;
+}
+.equipos-editor .in-watts:focus { border-color: var(--agua); }
+.equipos-editor .in-watts.invalido { border-color: var(--error); }
+.equipos-pie { flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--linea); }
+.equipos-pie p { color: var(--tinta); font-size: .875rem; font-weight: 700; flex: 1 1 155px; }
+.equipos-pie p:empty { display: none; }
+#btn-siguiente-lista { min-width: 0; min-height: 46px; margin-left: auto; white-space: normal; padding: 10px 15px; }
+#btn-siguiente-lista span { margin-left: 6px; }
+.equipos-config-cabecera { display: flex; gap: 9px; align-items: center; }
+.equipos-config-cabecera svg { width: 21px; height: 21px; color: var(--hoja); }
+.local-cabecera {
+  display: grid;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 13px;
+  border: 1px solid var(--linea);
+  border-radius: 11px;
+  background: var(--menta);
+}
+.local-cabecera h4 { color: var(--tinta); font-size: .91rem; overflow-wrap: anywhere; }
+.local-cabecera p, .local-vacio, .local-fila small, .equipos-ayuda p { color: var(--gris); font-size: .85rem; }
+.zona-local button, #guardar-dialogo button, #pantalla2 .local-nueva {
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: .875rem;
+  border-radius: 9px;
+}
+#guardar-lista { text-align: center; border: 1px solid var(--linea); background: var(--blanco); }
+#guardar-lista:hover:not(:disabled) { border-color: var(--hoja); }
+.zona-local details { margin-top: 14px; }
+.zona-local summary { color: var(--hoja); cursor: pointer; font-weight: 700; font-size: .88rem; }
+#configuraciones-locales summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 1px solid var(--linea);
+  border-radius: 9px;
+}
+#configuraciones-locales summary::-webkit-details-marker { display: none; }
+#local-cantidad { padding: 0 7px; color: var(--tinta); background: var(--cielo); border-radius: 30px; font-size: .78rem; }
+.equipos-config-flecha { margin-left: auto; width: 8px; height: 8px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+#configuraciones-locales[open] .equipos-config-flecha { transform: rotate(225deg); }
+.local-guardadas { list-style: none; }
+.local-vacio { margin: 8px 0 2px; }
+.local-fila { display: grid; gap: 6px; border-top: 1px solid var(--linea); padding: 10px 0; }
+.local-fila:first-child { margin-top: 10px; }
+.local-fila b { display: block; overflow-wrap: anywhere; color: var(--tinta); }
+.local-borrador {
+  display: grid;
+  gap: 7px;
+}
+.local-borrador[hidden], .inicio-nota[hidden] { display: none; }
+.local-borrador small, .inicio-nota { color: var(--gris); font-size: .875rem; }
+.inicio-nota { margin: 8px 0 0; }
+.local-fila .local-fila-acciones { display: flex; gap: 6px; flex-wrap: wrap; }
+#pantalla2 .local-nueva { margin-top: 12px; }
+.equipos-ayuda p { margin-top: 7px; }
+.local-fila button.local-eliminar, #pantalla2 .local-nueva {
+  background: transparent;
+  color: var(--gris);
+  border: 1px solid var(--linea);
+}
+.local-fila button.local-eliminar:hover, #pantalla2 .local-nueva:hover { color: var(--tinta); background: var(--menta); }
+#pantalla2 .local-nueva[hidden], #guardar-copia[hidden] { display: none; }
+#guardar-dialogo, #restaurar-dialogo {
+  margin: auto;
+  width: min(440px, calc(100% - 32px));
+  padding: 20px;
+  border: 1px solid var(--linea);
+  border-radius: 16px;
+  background: var(--blanco);
+  color: var(--tinta);
+}
+#guardar-dialogo::backdrop, #restaurar-dialogo::backdrop { background: #081d19b0; }
+#guardar-dialogo h2, #restaurar-dialogo h2 { font-size: 1.2rem; }
+#guardar-dialogo p, #restaurar-dialogo p { color: var(--gris); font-size: .875rem; }
+#restaurar-dialogo button { min-width: 0; min-height: 40px; padding: 8px 12px; font-size: .875rem; }
+#guardar-dialogo label { margin: 12px 0 4px; }
+#guardar-nombre { padding: 9px 12px; color: var(--tinta); background: var(--cielo); width: 100%; border: 1px solid var(--linea); border-radius: 8px; font: inherit; }
+.guardar-acciones { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.guardar-acciones #guardar-principal { order: 1; }
+#pantalla4 .acciones { flex-wrap: wrap; }
+#guardar-error:empty { display: none; }
+#guardar-error { margin-top: 8px; }
+@media (min-width: 840px) {
+  .equipos-layout { grid-template-columns: minmax(0, 1fr) minmax(272px, 310px); gap: 20px; }
+}
+@media (max-width: 500px) {
+  #btn-siguiente-lista { width: 100%; }
+  .equipos-pie { gap: 8px; }
+  .equipos-editor .tarjeta { grid-template-columns: minmax(0, 1fr) 40px 40px; }
+  .equipos-editor .t-info { grid-column: 1 / -1; }
+  .equipos-editor .tarjeta-w { justify-self: start; }
+  .equipos-editor :is(.copiar, .papelera) { width: 40px; height: 40px; }
+}
+</style>
+<style>
+#pantalla1 { max-width: 1060px; padding: clamp(20px, 4.4vw, 46px); }
+.inicio-encabezado { display: grid; gap: 24px; align-items: center; }
+.inicio-principal { min-width: 0; }
+.inicio-principal .sol { width: 64px; height: 64px; margin: 0 0 16px; cursor: default; }
+.inicio-principal h1 { font-size: clamp(1.75rem, 3.6vw, 2.75rem); max-width: 22ch; }
+.inicio-principal .lead { font-size: .98rem; margin: 12px 0 18px; }
+.inicio-principal .acciones { gap: 10px; margin-top: 0; }
+.inicio-principal .acciones button { min-width: 0; min-height: 44px; }
+.inicio-principal .inicio-nota { max-width: 54ch; }
+.cfe-inicio {
+  min-width: 0;
+  padding: clamp(14px, 2.6vw, 22px);
+  border: 1px solid var(--linea);
+  border-radius: 16px;
+  background: var(--cielo);
+}
+.cfe-inicio h2 { margin: 0 0 8px; font-size: 1.1rem; }
+.cfe-inicio p { max-width: 52ch; font-size: .88rem; color: var(--gris); overflow-wrap: anywhere; }
+.cfe-inicio #cfe-periodo { font-weight: 700; color: var(--tinta); }
+.cfe-inicio #cfe-mensaje { margin-top: 5px; }
+.cfe-inicio #cfe-mensaje:empty { display: none; }
+.cfe-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 14px; }
+.cfe-acciones a, .fuentes a { color: var(--hoja); }
+.cfe-acciones a { font-weight: 700; font-size: .86rem; }
+.cfe-acciones button {
+  min-width: 0;
+  min-height: 40px;
+  padding: 6px 12px;
+  border: 1px solid var(--linea);
+  border-radius: 8px;
+  background: var(--blanco);
+  color: var(--hoja);
+  font-size: .86rem;
+}
+.cfe-acciones button:hover:not(:disabled) { background: var(--menta); }
+.cfe-acciones button[hidden] { display: none; }
+#pantalla1 .inicio-info { margin-top: 24px; }
+#pantalla1 .inicio-info .bloque { border: 1px solid var(--linea); background: var(--blanco); }
+.inicio-uso { display: grid; gap: 8px; margin-left: 1.15em; color: var(--gris); font-size: .91rem; }
+.inicio-uso li::marker { color: var(--hoja); font-weight: 700; }
+#pantalla5 { padding: clamp(20px, 4.4vw, 44px); }
+.ajustes-grid { margin-top: 18px; }
+.ajuste-tarjeta { min-width: 0; }
+.ajuste-tarjeta p { font-size: .9rem; }
+.ajuste-campo { display: grid; gap: 5px; margin: 0; }
+.ajuste-campo select {
+  width: 100%;
+  min-height: 44px;
+  min-width: 0;
+  padding: 6px 32px 6px 10px;
+  border: 1px solid var(--linea);
+  border-radius: 8px;
+  font: inherit;
+  color: var(--tinta);
+  background: var(--blanco);
+}
+.ajuste-campo select:focus-visible { outline: 2px solid var(--agua); outline-offset: 2px; }
+.ajuste-campo label { margin: 0; font-size: .87rem; }
+.ajuste-seccion + .ajuste-seccion { border-top: 1px solid var(--linea); margin-top: 16px; padding-top: 16px; }
+.ajuste-tarjeta .ajuste-campo, .ajuste-tarjeta .ajuste-acciones { margin-top: 10px; }
+.ajuste-acciones { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ajuste-tarjeta .ajuste-acciones .ajuste-accion { margin: 0; }
+.ajuste-accion-enlace {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.ajuste-accion-enlace[hidden], #archivo-configuraciones[hidden] { display: none; }
+#estado-respaldo:empty, #estado-moneda:empty, #estado-ubicacion:empty { display: none; }
+@media (min-width:768px) {
+  .inicio-encabezado { grid-template-columns: minmax(0, 1.5fr) minmax(230px, 1fr); gap: 28px; }
+  .inicio-principal .acciones { flex-flow: row wrap; justify-content: flex-start; }
+  #pantalla1 .inicio-info { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+}
+</style>
 </head>
 <body>
 <noscript>
@@ -936,10 +1332,11 @@ button:active:not(:disabled) svg{transform:scale(.86)}
     <div class="progreso" id="progreso" aria-hidden="true">
       <span></span><span></span><span></span><span></span>
     </div>
-    <button type="button" class="info" aria-label="Acerca de este proyecto" onclick="abrirModal()">
+    <button type="button" class="info" id="btn-ajustes" aria-label="Ajustes y acerca" onclick="abrirAjustes()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"/><path d="M12 11v5"/><path d="M12 7.5h.01" stroke-width="2.6"/>
+        <path d="M4 7h5m4 0h7M4 17h9m4 0h3"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/>
       </svg>
+      <span class="ajustes-etiqueta">Ajustes</span>
     </button>
   </div>
 </header>
@@ -947,91 +1344,133 @@ button:active:not(:disabled) svg{transform:scale(.86)}
 <main>
   <!-- Pantalla 1: Inicio -->
   <section id="pantalla1" class="pantalla activa" aria-labelledby="t1">
-    <svg class="sol" viewBox="0 0 96 96" aria-hidden="true">
-      <circle class="lg-aro" cx="48" cy="48" r="46"/>
-      <circle class="sol-orbita" cx="48" cy="48" r="36" fill="none" stroke="var(--brote)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 9"/>
-      <circle class="lg-fondo" cx="48" cy="48" r="26"/>
-      <path class="lg-rayo" d="M52 28 38 50h9l-2 18 15-23h-9z"/>
-    </svg>
-    <span class="ods">ODS 7 · Energía asequible y no contaminante</span>
-    <h1 id="t1">Calculadora y Gestor de Eficiencia Energética</h1>
-    <p class="lead">El Objetivo de Desarrollo Sostenible 7 busca que todas las personas tengan acceso a energía asequible, segura y limpia. Usar la energía con inteligencia reduce tu recibo de luz y también las emisiones que calientan el planeta.</p>
-    <p class="dato">Agrega los aparatos de tu casa y descubre cuánto consume cada uno, cuánto suma el total y cuánto cuesta.</p>
-
-    <div class="acciones">
-      <button type="button" onclick="comenzar()">Comenzar</button>
+    <div class="inicio-encabezado">
+      <div class="inicio-principal">
+        <svg class="sol" viewBox="0 0 96 96" aria-hidden="true">
+          <circle class="lg-aro" cx="48" cy="48" r="46"/>
+          <circle class="sol-orbita" cx="48" cy="48" r="36" fill="none" stroke="var(--brote)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 9"/>
+          <circle class="lg-fondo" cx="48" cy="48" r="26"/>
+          <path class="lg-rayo" d="M52 28 38 50h9l-2 18 15-23h-9z"/>
+        </svg>
+        <h1 id="t1" tabindex="-1">Calculadora y Gestor de Eficiencia Energética</h1>
+        <p class="lead">Agrega los aparatos de tu hogar para estimar su consumo eléctrico y saber cuánto podrías ahorrar.</p>
+        <div class="acciones">
+          <button type="button" id="inicio-comenzar" onclick="comenzar()">Comenzar</button>
+          <button type="button" class="sec" onclick="abrirConfiguraciones()">Mis configuraciones</button>
+        </div>
+        <p class="inicio-nota" id="inicio-nota" hidden>Comenzar borra el cálculo en curso. Las configuraciones guardadas con nombre se conservan.</p>
+      </div>
+      <section class="cfe-inicio" aria-labelledby="cfe-titulo">
+        <h2 id="cfe-titulo">Cuotas de CFE</h2>
+        <div role="status">
+          <p id="cfe-periodo">Cargando la tabla de cuotas…</p>
+          <p id="cfe-mensaje"></p>
+        </div>
+        <div class="cfe-acciones">
+          <a id="cfe-publicacion" href="https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Acuerdos/DescargaAcuerdo.aspx?anio=2026&amp;id=1114&amp;idCliente=1&amp;tipo=SHCP" target="_blank" rel="noopener noreferrer">Ver publicación de CFE</a>
+          <button type="button" id="cfe-actualizar" hidden>Actualizar cuotas</button>
+        </div>
+      </section>
     </div>
-
     <div class="inicio-info">
-      <div class="bloque">
-        <h2>Por qué usamos esta app</h2>
-        <ul class="iconos">
-          <li>
-            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span>
-            <div><b>Impacto ambiental</b><p>Generar electricidad todavía produce emisiones. Cada kWh que no gastas reduce tu huella de carbono.</p></div>
-          </li>
-          <li>
-            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.3C14 8.5 13.1 8 12 8c-1.4 0-2.5.7-2.5 1.8 0 2.6 5 1.3 5 3.9 0 1.1-1.1 1.9-2.5 1.9-1.2 0-2.2-.5-2.7-1.4M12 6.5V8m0 8v1.5"/></svg></span>
-            <div><b>Impacto económico</b><p>Saber qué equipos consumen más te ayuda a bajar tu recibo de luz sin renunciar a lo que usas.</p></div>
-          </li>
-        </ul>
-      </div>
-      <div class="bloque">
-        <h2>Cómo funciona</h2>
-        <ol class="pasos">
-          <li><span class="num">1</span><div><b>Agrega tus aparatos</b><p>Elige los aparatos de tu casa y ajusta sus Watts si los conoces.</p></div></li>
-          <li><span class="num">2</span><div><b>Ingresa su uso</b><p>Indica cuántas horas usas cada uno, por día o por semana.</p></div></li>
-          <li><span class="num">3</span><div><b>Descubre tu impacto</b><p>Mira cuánto consume cada aparato, el total de tu casa, su costo y cómo ahorrar.</p></div></li>
+      <section class="bloque" aria-labelledby="inicio-pasos">
+        <h2 id="inicio-pasos">Cómo funciona</h2>
+        <ol class="inicio-uso">
+          <li>Agrega tus aparatos y ajusta su potencia.</li>
+          <li>Indica cuándo y cuánto tiempo los usas.</li>
+          <li>Revisa el consumo, el costo y las recomendaciones.</li>
         </ol>
-      </div>
+      </section>
+      <section class="bloque" aria-labelledby="inicio-ods">
+        <h2 id="inicio-ods">Energía asequible y no contaminante</h2>
+        <p>Este proyecto apoya el ODS 7. Usar la energía con inteligencia ayuda a reducir tu recibo de luz y las emisiones asociadas al consumo eléctrico.</p>
+      </section>
     </div>
   </section>
 
-  <!-- Pantalla 2: Mi Lista de Equipos -->
+  <!-- Pantalla 2: Equipos del hogar -->
   <section id="pantalla2" class="pantalla" aria-labelledby="t2">
-    <h2 id="t2" tabindex="-1">Mi Lista de Equipos</h2>
-    <p class="lead">Busca un aparato y se agrega al instante. Si tienes dos iguales, agrégalos dos veces.</p>
-    <div class="buscador" role="search">
-      <svg class="lupa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input type="text" id="buscar" class="buscar-grande" placeholder="Busca un aparato: refrigerador, ventilador…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="resultados-busqueda" aria-label="Buscar un aparato">
-      
-      <button type="button" id="btn-desplegar" class="desplegar-lista" aria-label="Ver todos los aparatos" aria-haspopup="listbox" aria-expanded="false" aria-controls="resultados-busqueda">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
+    <header class="equipos-cabecera">
+      <h2 id="t2" tabindex="-1">Equipos del hogar</h2>
+      <p>Agrega tus aparatos y ajusta su potencia.</p>
+    </header>
 
-      <ul class="resultados-busqueda" id="resultados-busqueda" role="listbox"></ul>
-    </div>
+    <div class="equipos-layout">
+      <section class="equipos-editor" aria-labelledby="equipos-agregar">
+        <div class="equipos-agregar-cabecera">
+          <h3 id="equipos-agregar">Agregar equipos</h3>
+          <button type="button" id="btn-equipo-propio" onclick="elegirOtro('')">+ Equipo propio</button>
+        </div>
+        <div class="buscador" role="search">
+          <div class="buscador-entrada">
+            <svg class="lupa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" id="buscar" class="buscar-grande" placeholder="Nombre o potencia en W" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="resultados-busqueda" aria-label="Buscar un aparato por nombre o potencia en watts">
+            <button type="button" id="btn-desplegar" class="desplegar-lista" aria-label="Catálogo de aparatos" aria-expanded="false" aria-controls="catalogo-equipos">
+              <span>Catálogo</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
+          <div class="catalogo-equipos" id="catalogo-equipos" hidden>
+            <div class="rb-filtros" id="filtros-busqueda" role="group" aria-label="Categorías del catálogo"></div>
+            <div class="rb-resumen">
+              <p class="rb-estado" id="estado-busqueda" role="status"></p>
+              <button type="button" id="limpiar-busqueda" class="rb-limpiar" hidden>Limpiar búsqueda</button>
+            </div>
+            <ul class="resultados-busqueda" id="resultados-busqueda" role="listbox" aria-label="Aparatos del catálogo"></ul>
+          </div>
+        </div>
+        <div class="equipos-atajos">
+          <span>Agregar rápido</span>
+          <div class="chips" id="chips-rapidos"></div>
+        </div>
 
-    <div class="vacio" id="estado-vacio">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
-      <b>Aún no hay equipos en tu lista</b>
-      <p>Usa el buscador o toca uno de estos para empezar.</p>
-      <div class="chips" id="chips-rapidos"></div>
-    </div>
-    <ul class="tarjetas" id="lista-tarjetas"></ul>
-    <div class="fila-lista">
-      <p class="resumen-lista" id="contador-ap" aria-live="polite"></p>
-      <button type="button" class="vaciar" id="btn-vaciar" onclick="vaciarLista()" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-        Vaciar lista
-      </button>
-    </div>
+        <div class="equipos-lista-cabecera">
+          <div><h3>Mi lista</h3><p class="resumen-lista" id="contador-ap" aria-live="polite"></p></div>
+          <button type="button" class="vaciar" id="btn-vaciar" onclick="vaciarLista()" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6l1 14h12l1-14M10 11v6m4-6v6"/></svg>
+            Vaciar lista
+          </button>
+        </div>
+        <div class="vacio" id="estado-vacio">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>
+          <b>Tu lista está vacía</b>
+          <p>Busca un aparato o elige uno de los accesos rápidos.</p>
+        </div>
+        <ul class="tarjetas" id="lista-tarjetas"></ul>
+        <p class="error" id="error-casa" role="alert" hidden></p>
+        <div class="equipos-pie">
+          <p id="equipos-revision" role="status"></p>
+          <button type="button" id="btn-siguiente-lista" onclick="siguienteLista()" disabled>Configurar horarios <span aria-hidden="true">→</span></button>
+        </div>
+      </section>
 
-    <details class="panel ayuda-lista">
-      <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span><span>¿Cómo armar tu lista?</span></summary>
-      <div class="panel-cuerpo">
-        <ol class="pasos">
-          <li><span class="num">1</span><div><b>Agrega cada aparato</b><p>Búscalo por nombre. Si no aparece, escribe su nombre y elige «Agregar como otro aparato».</p></div></li>
-          <li><span class="num">2</span><div><b>Revisa sus Watts</b><p>Cada uno trae un promedio; edítalo en la tarjeta si conoces el dato real de la etiqueta (W = V × A).</p></div></li>
-          <li><span class="num">3</span><div><b>Aparatos repetidos</b><p>Dos aires acondicionados son dos tarjetas: cada uno puede tener horas distintas.</p></div></li>
-          <li><span class="num">4</span><div><b>El refrigerador</b><p>Está conectado todo el día, pero su compresor trabaja solo parte de él (unas 8 horas en promedio).</p></div></li>
-        </ol>
-      </div>
-    </details>
-
-    <p class="error" id="error-casa" role="alert" hidden></p>
-    <div class="acciones">
-      <button type="button" id="btn-siguiente-lista" onclick="siguienteLista()" disabled>Siguiente</button>
+      <aside class="zona-local" aria-labelledby="equipos-config-titulo">
+        <header class="equipos-config-cabecera">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 13h6"/></svg>
+          <h3 id="equipos-config-titulo">Configuraciones</h3>
+        </header>
+        <div class="local-cabecera">
+          <div>
+            <h4 id="local-titulo">Cálculo en curso</h4>
+            <p id="estado-local">Guardado automático en este navegador.</p>
+          </div>
+          <div class="local-borrador" id="local-borrador" hidden>
+            <small id="local-borrador-resumen"></small>
+            <button type="button" id="local-continuar" onclick="continuarCalculo()">Continuar mi cálculo</button>
+          </div>
+          <button type="button" class="sec" id="guardar-lista" onclick="abrirGuardarConfiguracion()" disabled>Guardar con nombre</button>
+        </div>
+        <details id="configuraciones-locales">
+          <summary><span>Guardadas</span><span id="local-cantidad"></span><span class="equipos-config-flecha" aria-hidden="true"></span></summary>
+          <p id="local-vacio" class="local-vacio">Cuando guardes con nombre, podrás cargar la configuración desde aquí.</p>
+          <ul id="lista-configuraciones" class="local-guardadas"></ul>
+        </details>
+        <button type="button" id="local-nueva" class="local-nueva" onclick="reiniciar()" hidden>Empezar de nuevo</button>
+        <details class="equipos-ayuda">
+          <summary>Cómo revisar la potencia</summary>
+          <p>Los watts del catálogo son valores típicos. Si conoces los de la etiqueta, edítalos en la lista. Duplica un equipo si tienes dos iguales y quieres registrar sus horarios por separado.</p>
+        </details>
+      </aside>
     </div>
   </section>
 
@@ -1054,6 +1493,7 @@ button:active:not(:disabled) svg{transform:scale(.86)}
     <p class="error" id="error-tiempos" role="alert" hidden></p>
     <div class="acciones">
       <button type="button" onclick="calcular()">Ver resultados</button>
+      <button type="button" class="sec" onclick="abrirGuardarConfiguracion()">Guardar configuración</button>
     </div>
   </section>
 
@@ -1061,6 +1501,7 @@ button:active:not(:disabled) svg{transform:scale(.86)}
   <section id="pantalla4" class="pantalla" aria-labelledby="t4">
     <h2 id="t4" tabindex="-1">Dashboard de resultados</h2>
     <p class="contexto" id="contexto-casa"></p>
+    <button type="button" class="reporte-boton" id="abrir-reporte">Generar recibo de recomendaciones</button>
     <div class="pildora pestanas" id="pestanas" role="tablist" aria-label="Secciones de resultados">
       <button type="button" class="opt activa" role="tab" id="tab-consumo" aria-selected="true" aria-controls="panel-consumo" onclick="irPestana('consumo')">Tu Consumo</button>
       <button type="button" class="opt" role="tab" id="tab-guia" aria-selected="false" tabindex="-1" aria-controls="panel-guia" onclick="irPestana('guia')">Guía de Recomendaciones</button>
@@ -1107,8 +1548,10 @@ button:active:not(:disabled) svg{transform:scale(.86)}
           <p class="ayuda" id="ayuda-temporada"></p>
         </div>
       </div>
-      <div class="barra-reparto" id="barra-casa" role="img" aria-label="Reparto del consumo mensual por bloque de la tarifa"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+      <p class="ayuda" id="periodo-cuotas"></p>
+      <div class="barra-reparto" id="barra-casa" role="img" aria-label="Reparto del consumo mensual por bloque de la tarifa"></div>
       <ul class="bloques-cfe" id="bloques-cfe"></ul>
+      <p class="ayuda" id="cfe-minimo" hidden>El costo estima el cargo mínimo de 25 kWh al mes a cuota básica. El desglose muestra los kWh que capturaste.</p>
 
       <h3 class="subtitulo" id="donut-titulo">Cuánto consume cada aparato</h3>
       <div class="pildora" id="pildora-vista" role="group" aria-label="Agrupar el consumo por aparato o por categoría" hidden>
@@ -1165,99 +1608,596 @@ button:active:not(:disabled) svg{transform:scale(.86)}
       <p class="nota-legal">Fuente: Tracking SDG 7: The Energy Progress Report 2025 (IEA, IRENA, UNSD, Banco Mundial y OMS). En la COP28 (2023) los países acordaron triplicar la capacidad renovable y duplicar el ritmo de mejora de la eficiencia energética para 2030.</p>
     </div>
 
-    <p class="nota-legal">Estimación con las tarifas domésticas de CFE de octubre de 2026 (energía más IVA, sin DAP). Se supone el mismo uso todos los días y que el consumo mensual se repite en el bimestre. Compara con los kWh de tu recibo.</p>
+    <p class="nota-legal" id="nota-cuotas"></p>
     <div class="acciones">
       <button type="button" onclick="mostrarPantalla(3, true)">Ajustar tiempos de uso</button>
       <button type="button" class="sec" onclick="reiniciar()">Nueva estimación</button>
+      <button type="button" class="sec" onclick="abrirGuardarConfiguracion()">Guardar configuración</button>
     </div>
   </section>
 
-  <footer>Proyecto Eficiencia V1.7 · ODS 7 de la Agenda 2030</footer>
+  <section id="pantalla5" class="pantalla" aria-labelledby="t-acerca">
+    <h2 id="t-acerca" tabindex="-1">Ajustes y acerca</h2>
+    <div class="ajustes-grid">
+      <div class="ajustes-col">
+        <section class="ajuste-tarjeta ajustes-apariencia" aria-labelledby="t-apariencia">
+          <h3 id="t-apariencia">Apariencia</h3>
+          <div class="fila-switch">
+            <div><b>Modo oscuro automático</b><p id="estado-modo">Sigue el modo de tu teléfono o computadora.</p></div>
+            <button type="button" class="switch" id="sw-auto" role="switch" aria-checked="true" aria-label="Modo oscuro automático" onclick="alternarAuto()"><span class="knob"></span></button>
+          </div>
+          <div class="pildora" id="pildora-manual" role="group" aria-label="Modo de color" hidden>
+            <button type="button" class="opt" id="man-claro" aria-pressed="false" onclick="elegirModoManual('claro')">Claro</button>
+            <button type="button" class="opt" id="man-oscuro" aria-pressed="false" onclick="elegirModoManual('oscuro')">Oscuro</button>
+          </div>
+          <p class="tema-titulo">Tema de color</p>
+          <div class="temas" role="radiogroup" aria-label="Tema de color">
+            <button type="button" class="tema-op" role="radio" data-tema="verde" aria-checked="true" onclick="elegirTema('verde')"><span class="muestra"><i></i><i></i><i></i></span><span>Verde ODS</span></button>
+            <button type="button" class="tema-op" role="radio" data-tema="oceano" aria-checked="false" onclick="elegirTema('oceano')"><span class="muestra"><i></i><i></i><i></i></span><span>Océano</span></button>
+            <button type="button" class="tema-op" role="radio" data-tema="atardecer" aria-checked="false" onclick="elegirTema('atardecer')"><span class="muestra"><i></i><i></i><i></i></span><span>Atardecer</span></button>
+            <button type="button" class="tema-op" role="radio" data-tema="violeta" aria-checked="false" onclick="elegirTema('violeta')"><span class="muestra"><i></i><i></i><i></i></span><span>Violeta</span></button>
+          </div>
+        </section>
+        <section class="ajuste-tarjeta" aria-labelledby="t-datos-locales">
+          <div class="ajuste-seccion">
+            <h3 id="t-datos-locales">Configuraciones locales</h3>
+            <p>Tus aparatos y horarios se guardan en este navegador.</p>
+            <div class="ajuste-acciones">
+              <button type="button" class="ajuste-accion sec" onclick="abrirConfiguraciones()">Mis configuraciones</button>
+            </div>
+          </div>
+          <div class="ajuste-seccion">
+            <h3>Respaldo</h3>
+            <p>Descarga una copia de tus configuraciones para recuperarlas en otro dispositivo o navegador.</p>
+            <div class="ajuste-acciones">
+              <button type="button" class="ajuste-accion sec" id="exportar-configuraciones">Exportar configuraciones</button>
+              <button type="button" class="ajuste-accion sec" id="importar-configuraciones">Restaurar respaldo</button>
+              <input type="file" id="archivo-configuraciones" accept=".html,.json,text/html,application/json" hidden>
+            </div>
+            <p id="estado-respaldo" role="status"></p>
+          </div>
+        </section>
+      </div>
+      <div class="ajustes-col">
+        <section class="ajuste-tarjeta" aria-labelledby="t-cuotas-ajustes">
+          <div class="ajuste-seccion">
+            <h3 id="t-cuotas-ajustes">Tarifa del hogar</h3>
+            <div class="ajuste-campo">
+              <label for="ajustes-tarifa">Tarifa de tu recibo de CFE</label>
+              <select id="ajustes-tarifa"></select>
+            </div>
+            <p>Si lo solicitas, usamos tu ubicación para sugerir una tarifa. Confirma la tarifa con tu recibo.</p>
+            <div class="ajuste-acciones">
+              <button type="button" class="ajuste-accion sec" id="detectar-tarifa">Sugerir por ubicación</button>
+              <button type="button" class="ajuste-accion" id="aplicar-tarifa-sugerida" hidden>Usar la tarifa sugerida</button>
+            </div>
+            <p id="estado-ubicacion" role="status"></p>
+          </div>
+          <div class="ajuste-seccion">
+            <h3>Moneda</h3>
+            <div class="ajuste-campo">
+              <label for="moneda-app">Moneda para mostrar los costos</label>
+              <select id="moneda-app">
+                <option value="MXN">Peso mexicano (MXN)</option>
+                <option value="USD">Dólar estadounidense (USD)</option>
+              </select>
+            </div>
+            <p id="estado-moneda" role="status"></p>
+          </div>
+        </section>
+        <section class="ajuste-tarjeta" aria-labelledby="t-instalar">
+          <h3 id="t-instalar">Instalar la app</h3>
+          <p id="estado-instalacion" role="status">Puedes abrir la calculadora desde un icono en tu pantalla de inicio o escritorio.</p>
+          <button type="button" class="ajuste-accion" id="instalar-app" hidden>Instalar app</button>
+          <a class="ajuste-accion ajuste-accion-enlace sec" id="instalacion-sitio" href="https://zomavilla.github.io/calculadora-energetica/" target="_blank" rel="noopener noreferrer" hidden>Abrir sitio para instalar</a>
+          <details id="instalacion-manual">
+            <summary>Cómo instalar desde el navegador</summary>
+            <ul>
+              <li><b>iPhone y iPad.</b> En Safari, toca Compartir y luego Agregar a inicio. Si aparece «Abrir como app web», actívalo.</li>
+              <li><b>Android.</b> En Chrome, abre el menú y elige Instalar app o Instalar y crear acceso directo.</li>
+              <li><b>Computadora.</b> Usa el botón de instalación de la barra de direcciones o busca la opción para instalar el sitio como aplicación en el menú del navegador.</li>
+            </ul>
+          </details>
+        </section>
+        <section class="ajuste-tarjeta" aria-labelledby="t-proyecto">
+          <h3 id="t-proyecto">Acerca de Proyecto Eficiencia</h3>
+          <p>Calculadora y Gestor de Eficiencia Energética para promover el ODS 7, Energía Asequible y No Contaminante.</p>
+          <dl class="creditos">
+            <div class="credito">
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+              <div><dt>Desarrolladores</dt><dd>Rafael López Zomavilla</dd><dd>Alonso de Jesús Orduña Mora</dd></div>
+            </div>
+            <div class="credito">
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 10-10-5L2 10l10 5 10-5Z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+              <div><dt>Institución</dt><dd>Instituto Tecnológico de Veracruz</dd></div>
+            </div>
+          </dl>
+        </section>
+        <details class="panel ajustes-fuentes">
+          <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span><span>Fuentes y supuestos</span></summary>
+          <div class="panel-cuerpo">
+            <ul class="fuentes">
+              <li><b>Cuotas domésticas:</b> tabla de referencia de noviembre de 2026 basada en los cuadros de Hacienda del <a href="https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Acuerdos/DescargaAcuerdo.aspx?anio=2026&amp;id=1114&amp;idCliente=1&amp;tipo=SHCP" target="_blank" rel="noopener">oficio 349-B-1-070</a>. IVA estimado de 16 %.</li>
+              <li><b>Bloques y mínimo mensual:</b> <a href="https://sidof.segob.gob.mx/notas/docFuente/5506179" target="_blank" rel="noopener">Acuerdo de tarifas domésticas</a>. Confirma tu tarifa y la temporada en tu recibo.</li>
+              <li><b>Emisiones:</b> cerca de 0.44 kg de CO₂ por kWh, valor aproximado de la red eléctrica de México.</li>
+              <li><b>Paneles solares:</b> se supone un panel de 550 W, unas 5 horas de sol pico al día y 80 % de rendimiento del sistema.</li>
+              <li><b>Aparatos eficientes:</b> los porcentajes de ahorro son valores típicos de referencia. El ahorro real depende del modelo, del uso y de tu tarifa.</li>
+              <li><b>ODS 7:</b> metas de las Naciones Unidas y datos de Tracking SDG 7 (2025), de IEA, IRENA, UNSD, Banco Mundial y OMS.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <footer>Proyecto Eficiencia V1.15 · ODS 7 de la Agenda 2030</footer>
 </main>
-</div>
 
-<dialog class="modal" id="modal-acerca" aria-labelledby="t-acerca">
-  <div class="modal-card">
-    <span class="modal-icono" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
-    </span>
-    <h2 id="t-acerca">Acerca de este proyecto</h2>
-    <p>Calculadora y Gestor de Eficiencia Energética creada para promover el ODS 7 (Energía Asequible y No Contaminante).</p>
-    <dl class="creditos">
-      <div class="credito">
-        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-        <div><dt>Desarrolladores</dt><dd>Rafael López Zomavilla</dd><dd>Alonso de Jesús Orduña Mora</dd></div>
-      </div>
-      <div class="credito">
-        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 10-10-5L2 10l10 5 10-5Z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
-        <div><dt>Institución</dt><dd>Instituto Tecnológico de Veracruz</dd></div>
-      </div>
-    </dl>
-    <details class="panel">
-      <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span><span>Temas y apariencia</span></summary>
-      <div class="panel-cuerpo">
-        <div class="fila-switch">
-          <div><b>Modo oscuro automático</b><p id="estado-modo">Sigue el modo de tu teléfono o computadora.</p></div>
-          <button type="button" class="switch" id="sw-auto" role="switch" aria-checked="true" aria-label="Modo oscuro automático" onclick="alternarAuto()"><span class="knob"></span></button>
-        </div>
-        <div class="pildora" id="pildora-manual" role="group" aria-label="Modo de color" hidden>
-          <button type="button" class="opt" id="man-claro" aria-pressed="false" onclick="elegirModoManual('claro')">Claro</button>
-          <button type="button" class="opt" id="man-oscuro" aria-pressed="false" onclick="elegirModoManual('oscuro')">Oscuro</button>
-        </div>
-        <p class="tema-titulo">Tema de color</p>
-        <div class="temas" role="radiogroup" aria-label="Tema de color">
-          <button type="button" class="tema-op" role="radio" data-tema="verde" aria-checked="true" onclick="elegirTema('verde')"><span class="muestra"><i></i><i></i><i></i></span><span>Verde ODS</span></button>
-          <button type="button" class="tema-op" role="radio" data-tema="oceano" aria-checked="false" onclick="elegirTema('oceano')"><span class="muestra"><i></i><i></i><i></i></span><span>Océano</span></button>
-          <button type="button" class="tema-op" role="radio" data-tema="atardecer" aria-checked="false" onclick="elegirTema('atardecer')"><span class="muestra"><i></i><i></i><i></i></span><span>Atardecer</span></button>
-          <button type="button" class="tema-op" role="radio" data-tema="violeta" aria-checked="false" onclick="elegirTema('violeta')"><span class="muestra"><i></i><i></i><i></i></span><span>Violeta</span></button>
-        </div>
-      </div>
-    </details>
-    <details class="panel">
-      <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span><span>Fuentes y supuestos</span></summary>
-      <div class="panel-cuerpo">
-        <ul class="fuentes">
-          <li><b>Precios:</b> tarifas domésticas de CFE de octubre de 2026 (básico $1.140, intermedio $1.385 y excedente $4.054 por kWh) más IVA de 16 %. Cambian cada mes.</li>
-          <li><b>Tarifa y verano:</b> para el puerto de Veracruz se estima la tarifa 1C con verano de mayo a octubre. Los límites de cada bloque son valores de referencia: confírmalos en tu recibo.</li>
-          <li><b>Emisiones:</b> cerca de 0.44 kg de CO₂ por kWh, valor aproximado de la red eléctrica de México.</li>
-          <li><b>Paneles solares:</b> se supone un panel de 550 W, unas 5 horas de sol pico al día y 80 % de rendimiento del sistema.</li>
-          <li><b>Aparatos eficientes:</b> los porcentajes de ahorro son valores típicos de referencia. El ahorro real depende del modelo, del uso y de tu tarifa.</li>
-          <li><b>ODS 7:</b> metas de las Naciones Unidas y datos de Tracking SDG 7 (2025), de IEA, IRENA, UNSD, Banco Mundial y OMS.</li>
-        </ul>
-      </div>
-    </details>
-    <button type="button" class="cerrar" onclick="cerrarModal()">Cerrar</button>
-    <p class="modal-pie">Proyecto Eficiencia V1.7 · Agenda 2030</p>
+<dialog id="reporte-dialogo" aria-labelledby="reporte-titulo">
+  <div class="reporte-cabecera">
+    <h2 id="reporte-titulo">Recibo de recomendaciones</h2>
+    <form method="dialog"><button type="submit" autofocus>Cerrar</button></form>
   </div>
-</dialog>
-
-<dialog class="modal modal-salir" id="modal-salir" aria-labelledby="t-salir" aria-describedby="d-salir">
-  <div class="modal-card">
-    <span class="modal-icono" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-    </span>
-    <h2 id="t-salir">¿Salir y perder tu lista?</h2>
-    <p id="d-salir">Tienes <b id="salir-n">equipos</b> en tu lista. Si vuelves al inicio, se borrarán los equipos y los tiempos de uso que ya capturaste.</p>
-    <div class="modal-acciones">
-      <button type="button" class="cerrar" id="salir-seguir" autofocus onclick="cerrarModalSalir()">Seguir editando</button>
-      <button type="button" class="salir-borrar" onclick="confirmarSalida()">Salir y borrar</button>
+  <div class="reporte-cuerpo">
+    <div class="reporte-controles">
+      <label class="reporte-campo" for="reporte-consejo">Recomendación principal
+        <select id="reporte-consejo"></select>
+      </label>
+      <label class="reporte-check"><input type="checkbox" id="reporte-precios" checked> Incluir costo estimado</label>
+      <div class="reporte-acciones">
+        <button type="button" id="reporte-pdf">Descargar PDF</button>
+        <button type="button" id="reporte-png">Guardar PNG</button>
+      </div>
+      <p id="reporte-estado" role="status"></p>
+    </div>
+    <p id="reporte-descripcion" class="reporte-lectores"></p>
+    <div class="reporte-papel">
+      <img id="reporte-vista" width="794" height="1123" alt="Vista previa del recibo" aria-describedby="reporte-descripcion">
     </div>
   </div>
 </dialog>
 
-<div class="aviso-temas" id="aviso-temas" role="dialog" aria-labelledby="t-aviso" aria-describedby="d-aviso">
-  <div class="aviso-cuerpo">
-    <div class="aviso-cab" id="t-aviso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg><span>¡Prueba otros temas!</span></div>
-    <p id="d-aviso">Toca el botón <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v5"/><path d="M12 7.5h.01" stroke-width="2.6"/></svg> de arriba, entra a «Temas y apariencia» y elige tus colores.</p>
-    <div class="aviso-pie">
-      <span class="aviso-puntos" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-      <button type="button" class="aviso-ok" id="aviso-ok">Aceptar</button>
-    </div>
-  </div>
 </div>
+
+<dialog id="guardar-dialogo" aria-labelledby="guardar-titulo">
+  <form id="guardar-form">
+    <h2 id="guardar-titulo">Guardar configuración</h2>
+    <p>Guarda los equipos, sus horarios y la tarifa en este dispositivo.</p>
+    <label for="guardar-nombre">Nombre de la configuración</label>
+    <input id="guardar-nombre" type="text" maxlength="60" required placeholder="Por ejemplo, Mi casa" autofocus>
+    <p id="guardar-error" role="alert"></p>
+    <div class="guardar-acciones">
+      <button type="button" class="sec" onclick="document.getElementById('guardar-dialogo').close()">Cancelar</button>
+      <button type="submit" id="guardar-principal" value="nueva">Guardar</button>
+      <button type="submit" class="sec" id="guardar-copia" value="nueva" hidden>Guardar copia</button>
+    </div>
+  </form>
+</dialog>
+
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<dialog id="restaurar-dialogo" aria-labelledby="restaurar-titulo" aria-describedby="restaurar-resumen">
+  <form method="dialog">
+    <h2 id="restaurar-titulo">Restaurar configuraciones</h2>
+    <p id="restaurar-resumen"></p>
+    <div class="guardar-acciones">
+      <button type="submit" class="sec" autofocus>Cancelar</button>
+      <button type="button" id="restaurar-confirmar">Restaurar</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+"use strict";
+
+function iniciarDatosCFE(incluidos, aplicar) {
+  const clave = "eficiencia-cuotas-cfe";
+  const grupos = { fuera: 3, verano1AB: 3, verano1CD: 4, verano1E: 4, verano1F: 4 };
+  const meses = new Intl.DateTimeFormat("es-MX", { month: "long", year: "numeric", timeZone: "UTC" });
+  const calendario = new Intl.DateTimeFormat("en", { year: "numeric", month: "2-digit", timeZone: "America/Mexico_City" });
+  const nodoPeriodo = document.getElementById("cfe-periodo");
+  const nodoMensaje = document.getElementById("cfe-mensaje");
+  const enlace = document.getElementById("cfe-publicacion");
+  const boton = document.getElementById("cfe-actualizar");
+  const enWeb = /^https?:$/.test(location.protocol);
+  const publicacionNoviembre = enlace.href;
+  const portalCFE = "https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Casa.aspx";
+  let activa = validar(incluidos);
+  let origen = "tabla incluida";
+  let consultando = false;
+
+  function periodoActual() {
+    const partes = calendario.formatToParts(new Date());
+    return partes.find(p => p.type === "year").value + "-" + partes.find(p => p.type === "month").value;
+  }
+
+  function validar(tabla) {
+    if (!tabla || typeof tabla.periodo !== "string" || !/^\d{4}-(0[1-9]|1[0-2])$/.test(tabla.periodo) || !tabla.cuotas) { return null; }
+    const cuotas = {};
+    for (const [grupo, cantidad] of Object.entries(grupos)) {
+      const valores = tabla.cuotas[grupo];
+      if (!Array.isArray(valores) || valores.length !== cantidad || !valores.every(n => Number.isFinite(n) && n > 0 && n <= 100)) { return null; }
+      cuotas[grupo] = valores.slice();
+    }
+    return { periodo: tabla.periodo, cuotas: cuotas };
+  }
+
+  function leerGuardada() {
+    try { return validar(JSON.parse(localStorage.getItem(clave))); }
+    catch (err) { return null; }
+  }
+
+  function pintar(mensaje) {
+    const hoy = periodoActual();
+    if (activa) {
+      const fecha = meses.format(new Date(activa.periodo + "-01T12:00:00Z"));
+      nodoPeriodo.textContent = "Cuotas de " + fecha + " · " + origen;
+      enlace.href = activa.periodo === "2026-11" ? publicacionNoviembre : portalCFE;
+      enlace.textContent = activa.periodo === "2026-11" ? "Ver publicación de CFE" : "Consultar cuotas en CFE";
+    } else {
+      nodoPeriodo.textContent = "No hay una tabla aplicable a la fecha del dispositivo.";
+    }
+    const avisoPeriodo = !activa || activa.periodo === hoy ? ""
+      : activa.periodo < hoy ? "Cuotas de un mes anterior." : "La tabla incluida es posterior a la fecha del dispositivo.";
+    nodoMensaje.textContent = [avisoPeriodo, mensaje].filter(Boolean).join(" ");
+  }
+
+  function adoptar(tabla, nuevoOrigen) {
+    const hoy = periodoActual();
+    if (!tabla) { return "La tabla recibida no tiene el formato de Proyecto Eficiencia."; }
+    if (tabla.periodo > hoy) { return "Las cuotas recibidas son de un mes posterior. Se conserva la tabla activa."; }
+    const guardada = leerGuardada();
+    if (guardada && guardada.periodo <= hoy && (!activa || guardada.periodo > activa.periodo)) {
+      activa = guardada;
+      origen = "tabla guardada";
+      aplicar(activa);
+    }
+    if (activa && tabla.periodo < activa.periodo) { return "Las cuotas recibidas son anteriores a las que ya tienes."; }
+    activa = tabla;
+    origen = nuevoOrigen;
+    aplicar(activa);
+    try { localStorage.setItem(clave, JSON.stringify(activa)); }
+    catch (err) { return "Esta tabla se conserva durante la sesión."; }
+    return "";
+  }
+
+  async function sincronizar() {
+    if (consultando) { return; }
+    if (navigator.onLine === false) { pintar("Sin conexión. Puedes seguir con la tabla local."); return; }
+    consultando = true;
+    boton.disabled = true;
+    pintar("Consultando la tabla publicada por Proyecto Eficiencia a partir de las cuotas de CFE…");
+    const control = new AbortController();
+    const limite = setTimeout(() => control.abort(), 8000);
+    try {
+      const respuesta = await fetch("./tarifas-cfe.json", { cache: "no-store", redirect: "error", signal: control.signal });
+      if (!respuesta.ok) { throw new Error("Respuesta de cuotas no disponible"); }
+      pintar(adoptar(validar(await respuesta.json()), "tabla sincronizada con Proyecto Eficiencia"));
+    } catch (err) {
+      pintar("No se pudo consultar la tabla del proyecto. Puedes seguir con la tabla local.");
+    } finally {
+      clearTimeout(limite);
+      consultando = false;
+      boton.disabled = false;
+    }
+  }
+
+  const guardada = leerGuardada();
+  const hoy = periodoActual();
+  if (guardada && guardada.periodo <= hoy && (!activa || activa.periodo > hoy || guardada.periodo >= activa.periodo)) {
+    activa = guardada;
+    origen = "tabla guardada";
+  }
+  if (activa) { aplicar(activa); }
+  boton.hidden = !enWeb;
+  if (enWeb) {
+    boton.addEventListener("click", sincronizar);
+    window.addEventListener("online", sincronizar);
+    window.addEventListener("offline", () => pintar("Sin conexión. Puedes seguir con la tabla local."));
+    sincronizar();
+  } else {
+    pintar("Puedes usar estas cuotas sin conexión.");
+  }
+}
+</script>
+<script>
+"use strict";
+
+function dibujarReporte(c, consejo, incluirCosto) {
+  const lienzo = document.createElement("canvas");
+  lienzo.width = 1588;
+  lienzo.height = 2246;
+  const ctx = lienzo.getContext("2d");
+  ctx.scale(2, 2);
+  const tinta = "#18352d";
+  const verde = "#10553f";
+  const suave = "#48655b";
+  const lineaSuave = "#cfdfd6";
+  const menta = "#eaf4ee";
+  const colores = ["#24815c", "#2f779e", "#b27519", "#7d639c"];
+  const numero = new Intl.NumberFormat("es-MX", { maximumFractionDigits: 2 });
+  const moneda = new Intl.NumberFormat("es-MX", { style: "currency", currency: c.moneda, currencyDisplay: "symbol" });
+  const fecha = new Date().toLocaleDateString("es-MX", { dateStyle: "long" });
+  const nivel = 2 - c.nivelBloque;
+  const bloque = ["Excedente", "Intermedio", "Básico"][nivel];
+  const varios = c.items.length > 1;
+  const filas = c.items.slice(0, 3).map(function (equipo) {
+    return { nombre: equipo.nombre, kwh: equipo.kwhDia * c.diasBimestre };
+  });
+  if (c.items.length > 3) {
+    const resto = c.items.slice(3).reduce(function (suma, equipo) { return suma + equipo.kwhDia * c.diasBimestre; }, 0);
+    filas.push({ nombre: "Otros equipos (" + (c.items.length - 3) + ")", kwh: resto });
+  }
+
+  function caja(x, y, ancho, alto, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, ancho, alto);
+  }
+
+  function texto(valor, x, y, tam, color, negrita, ancho) {
+    ctx.font = (negrita ? "700 " : "400 ") + tam + "px 'Segoe UI', Arial, sans-serif";
+    if (ancho && ctx.measureText(valor).width > ancho) {
+      const letras = Array.from(valor);
+      while (letras.length && ctx.measureText(letras.join("") + "…").width > ancho) { letras.pop(); }
+      valor = letras.join("") + "…";
+    }
+    ctx.fillStyle = color;
+    ctx.fillText(valor, x, y);
+  }
+
+  function parrafo(valor, x, y, ancho, tam, color, maxLineas, negrita) {
+    let linea = "";
+    const lineas = [];
+    ctx.font = (negrita ? "700 " : "400 ") + tam + "px 'Segoe UI', Arial, sans-serif";
+    valor.split(/\s+/).forEach(function (palabra) {
+      const candidata = linea ? linea + " " + palabra : palabra;
+      if (linea && ctx.measureText(candidata).width > ancho) {
+        lineas.push(linea);
+        linea = palabra;
+      } else {
+        linea = candidata;
+      }
+    });
+    lineas.push(linea);
+    lineas.slice(0, maxLineas).forEach(function (renglon, i) {
+      texto(renglon + (i === maxLineas - 1 && lineas.length > maxLineas ? "…" : ""), x, y + i * (tam + 5), tam, color, negrita, ancho);
+    });
+    return Math.min(lineas.length, maxLineas);
+  }
+
+  function circulo(x, y, radio, color) {
+    ctx.beginPath();
+    ctx.arc(x, y, radio, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+
+  caja(0, 0, 794, 1123, "#ffffff");
+  caja(0, 0, 794, 12, verde);
+  circulo(63, 62, 19, verde);
+  ctx.beginPath();
+  ctx.moveTo(65, 49);
+  ctx.lineTo(55, 64);
+  ctx.lineTo(62, 64);
+  ctx.lineTo(60, 75);
+  ctx.lineTo(71, 59);
+  ctx.lineTo(64, 59);
+  ctx.closePath();
+  ctx.fillStyle = "#a4e8c7";
+  ctx.fill();
+  texto("PROYECTO EFICIENCIA", 94, 67, 14, verde, true);
+  ctx.textAlign = "right";
+  texto(fecha, 750, 61, 14, tinta, true);
+  texto("Bimestre estimado · " + c.diasBimestre + " días", 750, 83, 13, suave);
+  ctx.textAlign = "left";
+  texto("Recibo de recomendaciones", 44, 134, 30, tinta, true);
+  caja(44, 155, 706, 1, lineaSuave);
+
+  caja(44, 179, 706, 143, menta);
+  texto("CONSUMO ESTIMADO", 63, 218, 13, verde, true);
+  texto(numero.format(c.kwhBimestre) + " kWh", 63, 269, 37, tinta, true, 239);
+  texto("En dos meses", 64, 293, 14, suave);
+  if (incluirCosto) {
+    caja(319, 203, 1, 94, lineaSuave);
+    texto("COSTO ESTIMADO", 339, 218, 13, verde, true);
+    texto(moneda.format(c.costoBimestre / c.divisorMoneda), 339, 265, 25, tinta, true, 182);
+    texto(c.moneda + " con IVA", 339, 291, 14, suave);
+  }
+  const separador = incluirCosto ? 534 : 411;
+  caja(separador, 203, 1, 94, lineaSuave);
+  caja(separador + 19, 212, 30, 77, tinta);
+  ["#ff6e62", "#ffd451", "#59d79a"].forEach(function (color, i) {
+    circulo(separador + 34, 229 + i * 22, 7, i === nivel ? color : "#526a61");
+  });
+  const bloqueX = separador + 62;
+  texto("BLOQUE DE COBRO", bloqueX, 223, 12, verde, true);
+  texto(bloque, bloqueX, 255, 21, tinta, true);
+  parrafo(c.tarifaTxt, bloqueX, 277, 736 - bloqueX, 12, suave, 2);
+
+  texto(varios ? "Consumo por equipo" : "Consumo de tu aparato", 44, 374, 23, tinta, true);
+  texto(c.items.length + (varios ? " aparatos registrados" : " aparato registrado"), 44, 400, 14, suave);
+  const tablaX = varios ? 258 : 44;
+  caja(tablaX, 429, 750 - tablaX, 35, verde);
+  texto("Equipo", tablaX + 14, 451, 13, "#ffffff", true);
+  ctx.textAlign = "right";
+  texto("kWh / " + c.diasBimestre + " días", 653, 451, 13, "#ffffff", true);
+  texto("Parte", 735, 451, 13, "#ffffff", true);
+  ctx.textAlign = "left";
+  filas.forEach(function (fila, i) {
+    const y = 464 + i * 43;
+    caja(tablaX, y, 750 - tablaX, 42, i % 2 ? "#ffffff" : "#f2f7f4");
+    if (varios) { circulo(tablaX + 16, y + 21, 4.5, colores[i]); }
+    const nombreX = tablaX + (varios ? 28 : 14);
+    const anchoNombre = 555 - nombreX;
+    ctx.font = "700 14px 'Segoe UI', Arial, sans-serif";
+    if (ctx.measureText(fila.nombre).width <= anchoNombre) {
+      texto(fila.nombre, nombreX, y + 26, 14, tinta, true, anchoNombre);
+    } else {
+      parrafo(fila.nombre, nombreX, y + 16, anchoNombre, 14, tinta, 2, true);
+    }
+    ctx.textAlign = "right";
+    texto(numero.format(fila.kwh), 653, y + 26, 14, tinta, false, 90);
+    texto(c.kwhBimestre ? Math.round(fila.kwh / c.kwhBimestre * 100) + " %" : "0 %", 735, y + 26, 14, suave);
+    ctx.textAlign = "left";
+  });
+  caja(tablaX, 464 + filas.length * 43, 750 - tablaX, 1, lineaSuave);
+
+  if (varios) {
+    const centroX = 138;
+    const centroY = 532;
+    const radio = 75;
+    circulo(centroX, centroY, radio, menta);
+    let angulo = -Math.PI / 2;
+    filas.forEach(function (fila, i) {
+      if (!fila.kwh || !c.kwhBimestre) { return; }
+      const fin = angulo + fila.kwh / c.kwhBimestre * 2 * Math.PI;
+      ctx.beginPath();
+      ctx.moveTo(centroX, centroY);
+      ctx.arc(centroX, centroY, radio, angulo, fin);
+      ctx.fillStyle = colores[i];
+      ctx.fill();
+      angulo = fin;
+    });
+    circulo(centroX, centroY, 53, "#ffffff");
+    ctx.textAlign = "center";
+    texto(numero.format(c.kwhBimestre), centroX, centroY + 1, 20, tinta, true, 94);
+    texto("kWh totales", centroX, centroY + 22, 12, suave);
+    ctx.textAlign = "left";
+  }
+
+  const seccion = varios ? 669 : 564;
+  caja(44, seccion, 706, 161, menta);
+  caja(44, seccion, 5, 161, colores[0]);
+  texto("TU ACCIÓN PARA ESTE BIMESTRE", 64, seccion + 30, 13, verde, true);
+  const lineasTitulo = parrafo(consejo[0], 64, seccion + 59, 663, 20, tinta, 2, true);
+  parrafo(consejo[1], 64, seccion + 62 + lineasTitulo * 25, 663, 15, tinta, lineasTitulo === 1 ? 4 : 3);
+
+  const seguimiento = varios ? 862 : 809;
+  texto("Cómo revisar tu avance", 44, seguimiento, 20, tinta, true);
+  caja(44, seguimiento + 19, 706, 108, "#f4f7f5");
+  texto("PROMEDIO DIARIO ESTIMADO", 64, seguimiento + 51, 12, verde, true);
+  texto(numero.format(c.totalDia) + " kWh/día", 64, seguimiento + 88, 24, tinta, true, 224);
+  caja(306, seguimiento + 36, 1, 72, lineaSuave);
+  parrafo("Divide los kWh del siguiente recibo entre sus días facturados y compara ese promedio con el de tu recibo anterior.", 324, seguimiento + 61, 398, 14, suave, 3);
+
+  caja(44, 1022, 706, 1, lineaSuave);
+  texto("Proyecto Eficiencia · Documento informativo", 44, 1046, 13, verde, true);
+  parrafo(incluirCosto
+    ? "Dos meses iguales con cuotas de " + c.periodoCuotas + ", IVA y mínimo de 25 kWh por mes. " +
+      (c.fechaCambio ? "Conversión BCE del " + c.fechaCambio + "." : "El recibo puede incluir otros cargos.")
+    : "El consumo se estima con los datos capturados para un bimestre de " + c.diasBimestre + " días.", 44, 1070, 706, 13, suave, 2);
+  return { lienzo: lienzo, bloque: bloque, filas: filas };
+}
+
+async function crearPdfReporte(lienzo) {
+  const foto = await new Promise(function (resolve) { lienzo.toBlob(resolve, "image/jpeg", .96); });
+  if (!foto) { throw new Error("No se pudo exportar el reporte"); }
+
+  // PDF de una página A4. La imagen ocupa exactamente el área de la hoja.
+  const ancho = 595.28;
+  const alto = 841.89;
+  const dibujo = "q\n" + ancho + " 0 0 " + alto + " 0 0 cm\n/Reporte Do\nQ\n";
+  const codificador = new TextEncoder();
+  const partes = [];
+  const posiciones = [];
+  let total = 0;
+
+  function agregar(parte) {
+    const datos = typeof parte === "string" ? codificador.encode(parte) : parte;
+    partes.push(datos);
+    total += datos.byteLength ?? datos.size;
+  }
+  function objeto(numero, ...contenido) {
+    posiciones.push(total);
+    agregar(numero + " 0 obj\n");
+    contenido.forEach(agregar);
+    agregar("\nendobj\n");
+  }
+
+  agregar("%PDF-1.4\n");
+  agregar(new Uint8Array([37, 226, 227, 207, 211, 10]));
+  objeto(1, "<< /Type /Catalog /Pages 2 0 R >>");
+  objeto(2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+  objeto(3, "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + ancho + " " + alto +
+    "] /Resources << /XObject << /Reporte 4 0 R >> >> /Contents 5 0 R >>");
+  objeto(4, "<< /Type /XObject /Subtype /Image /Width " + lienzo.width + " /Height " + lienzo.height +
+    " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + foto.size + " >>\nstream\n",
+    foto, "\nendstream");
+  objeto(5, "<< /Length " + dibujo.length + " >>\nstream\n", dibujo, "endstream");
+  const indice = total;
+  agregar("xref\n0 6\n0000000000 65535 f \n");
+  posiciones.forEach(function (posicion) { agregar(String(posicion).padStart(10, "0") + " 00000 n \n"); });
+  agregar("trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" + indice + "\n%%EOF\n");
+  return new Blob(partes, { type: "application/pdf" });
+}
+
+function prepararReporte(obtenerDatos) {
+  const dialogo = document.getElementById("reporte-dialogo");
+  const consejo = document.getElementById("reporte-consejo");
+  const precios = document.getElementById("reporte-precios");
+  const imagen = document.getElementById("reporte-vista");
+  const botonPdf = document.getElementById("reporte-pdf");
+  const estado = document.getElementById("reporte-estado");
+  const descripcion = document.getElementById("reporte-descripcion");
+  let datos;
+  let lienzo;
+
+  function actualizar() {
+    const elegido = datos.consejos[Number(consejo.value)];
+    const reporte = dibujarReporte(datos, elegido, precios.checked);
+    lienzo = reporte.lienzo;
+    imagen.src = lienzo.toDataURL("image/png");
+    descripcion.textContent = datos.kwhBimestre.toLocaleString("es-MX", { maximumFractionDigits: 2 }) +
+      " kWh estimados en un bimestre de " + datos.diasBimestre + " días. Bloque " +
+      reporte.bloque + ". " + (precios.checked ? "Costo estimado: " + (datos.costoBimestre / datos.divisorMoneda).toFixed(2) + " " + datos.moneda + ". " : "") +
+      reporte.filas.map(function (fila) { return fila.nombre + ": " + fila.kwh.toFixed(2) + " kWh"; }).join(". ") +
+      ". " + elegido[0] + ". " + elegido[1];
+    estado.textContent = "";
+  }
+
+  document.getElementById("abrir-reporte").addEventListener("click", function () {
+    datos = obtenerDatos();
+    if (!datos) { return; }
+    consejo.replaceChildren();
+    datos.consejos.forEach(function (opcion, i) { consejo.add(new Option(opcion[0], i)); });
+    actualizar();
+    dialogo.showModal();
+    dialogo.querySelector(".reporte-cuerpo").scrollTop = 0;
+  });
+  consejo.addEventListener("change", actualizar);
+  precios.addEventListener("change", actualizar);
+
+  function descargar(url, extension) {
+    const enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = "proyecto-eficiencia-recomendaciones." + extension;
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+  }
+
+  document.getElementById("reporte-png").addEventListener("click", function () {
+    descargar(imagen.src, "png");
+  });
+
+  botonPdf.addEventListener("click", async function () {
+    botonPdf.disabled = true;
+    try {
+      const archivo = await crearPdfReporte(lienzo);
+      const url = URL.createObjectURL(archivo);
+      descargar(url, "pdf");
+      setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+      estado.textContent = "";
+    } catch (error) {
+      estado.textContent = "No se pudo generar el PDF. Inténtalo de nuevo o guarda la captura PNG.";
+    } finally {
+      botonPdf.disabled = false;
+    }
+  });
+}
+
+</script>
 <script>
  // Catálogo: categoría -> [aparato, Watts promedio, tipo (para los consejos), "palabras clave opcionales"]
 var CATALOGO = {
@@ -1270,7 +2210,7 @@ var CATALOGO = {
     ["Enfriador evaporativo", 200, "evaporativo"],
     ["Humidificador", 30, "ventilador", "vaporizador"],
     ["Purificador de aire", 40, "ventilador", "filtro hepa"],
-    ["Ventilador de pedestal", 55, "ventilador", "Ventilador-de-pedestal-grande-de-la-sala-de-la-tia-del-cuñado-del-que-tiene-3-hijos-en-sonara-con-la-gringa-llamada-juana-que-parece-cubana-del-5to-piso-de-la-noche"],
+    ["Ventilador de pedestal", 55, "ventilador", "abanico de pie piso"],
     ["Ventilador de techo", 75, "ventilador"]
   ],
   "Cuidado personal": [
@@ -1755,10 +2695,11 @@ var TIPS_CAT = {
   // ---------- Navegación ----------
   var pantallaActual = 1;
   var pila = [1], pos = 0;   // pantalla de cada entrada del historial y posición actual
+  var origenAjustes = 1;
 
   function mostrarPantalla(numero, atras, desdeHistorial) {
     cerrarTodos();
-    if (numero !== 1) { cerrarAviso(); }
+    if (numero === 5 && pantallaActual !== 5) { origenAjustes = pantallaActual; }
     pantallas.forEach(function (p, i) {
       p.classList.remove("activa", "atras");
       if (i === numero - 1) {
@@ -1766,7 +2707,7 @@ var TIPS_CAT = {
         if (atras) { p.classList.add("atras"); }
       }
     });
-    var paso = numero;
+    var paso = numero === 5 ? origenAjustes : numero;
     puntos.forEach(function (punto, i) {
       punto.className = i < paso - 1 ? "hecho" : (i === paso - 1 ? "actual" : "");
     });
@@ -1795,6 +2736,9 @@ var TIPS_CAT = {
     }
     pantallaActual = numero;
     $("btn-atras").hidden = (numero === 1);
+    $("progreso").hidden = (numero === 5);
+    if (numero === 5) { $("btn-ajustes").setAttribute("aria-current", "page"); }
+    else { $("btn-ajustes").removeAttribute("aria-current"); }
   }
 
   // Una pantalla solo se abre desde el historial si ya hay datos que mostrar
@@ -1809,13 +2753,7 @@ var TIPS_CAT = {
     var st = e.state;
     if (!st || !st.pantalla) { return; }
     var antes = pos;
-    if (typeof st.pos === "number") { pos = st.pos; pila[pos] = st.modal ? 0 : st.pantalla; }
-    if (st.modal) {                           // "Adelante" hacia la entrada del modal
-      if (!modal.open) { abrirModal(true); }
-      return;
-    }
-    if (modal.open) { cerrarModal(true); }    // "Atrás" con el modal abierto: solo se cierra el modal
-    if (modalSalir.open) { cerrarModalSalir(); }
+    if (typeof st.pos === "number") { pos = st.pos; pila[pos] = st.pantalla; }
     var n = st.pantalla;
     while (n > 1 && !pantallaPermitida(n)) { n--; }
     if (n !== st.pantalla) { try { history.replaceState({ pantalla: n, pos: pos }, "", ""); pila[pos] = n; } catch (err) {} }
@@ -1823,17 +2761,28 @@ var TIPS_CAT = {
     mostrarPantalla(n, pos < antes, true);
   });
 
-  var PRECIOS = { basico: 1.140, intermedio: 1.385, excedente: 4.054, iva: 1.16 };   // pesos por kWh, sin IVA
-  // kWh por mes de cada bloque: [básico, intermedio]; lo que pase de eso es excedente
+  // Cuotas mensuales en MXN/kWh antes de IVA. SHCP, oficio 349-B-1-070, columna noviembre 2026.
+  var CFE_INCLUIDOS = { periodo: "2026-11", cuotas: {
+    fuera: [1.144, 1.389, 4.067],
+    verano1AB: [1.022, 1.187, 4.067],
+    verano1CD: [1.022, 1.187, 1.525, 4.067],
+    verano1E: [0.857, 1.057, 1.372, 4.067],
+    verano1F: [0.857, 1.057, 2.574, 4.067]
+  } };
+  var datosCFE = CFE_INCLUIDOS;
+  var FACTOR_IVA = 1.16;
+  var MINIMO_CFE = 25;
+  // Cantidad de kWh de cada bloque finito. El excedente cubre lo que queda.
   var BLOQUES = {
     "1":  { verano: [75, 65],   fuera: [75, 65] },
     "1A": { verano: [100, 50],  fuera: [75, 75] },
     "1B": { verano: [125, 100], fuera: [75, 100] },
-    "1C": { verano: [150, 300], fuera: [75, 100] },
-    "1D": { verano: [175, 225], fuera: [75, 125] },
-    "1E": { verano: [300, 450], fuera: [75, 125] },
-    "1F": { verano: [300, 900], fuera: [75, 125] }
+    "1C": { verano: [150, 150, 150], fuera: [75, 100] },
+    "1D": { verano: [175, 225, 200], fuera: [75, 125] },
+    "1E": { verano: [300, 450, 150], fuera: [75, 125] },
+    "1F": { verano: [300, 900, 1300], fuera: [75, 125] }
   };
+  var GRUPO_VERANO_CFE = { "1A": "verano1AB", "1B": "verano1AB", "1C": "verano1CD", "1D": "verano1CD", "1E": "verano1E", "1F": "verano1F" };
   var KG_CO2_POR_KWH = 0.44;   // valor aproximado de la red eléctrica de México
   var MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
   var REGIONES = [
@@ -1847,7 +2796,173 @@ var TIPS_CAT = {
     { valor: "1E", texto: "Tarifa 1E · verano de 32 °C", tarifa: "1E" },
     { valor: "1F", texto: "Tarifa 1F · verano de 33 °C", tarifa: "1F" }
   ];
-  function dinero(n) { return n.toLocaleString("es-MX", { style: "currency", currency: "MXN" }); }
+  var CLAVE_MONEDA = "eficiencia-moneda";
+  var CLAVE_CAMBIO = "eficiencia-tipo-cambio";
+  // Referencia publicada por el BCE para el 25 de noviembre de 2026: MXN/EUR ÷ USD/EUR.
+  var CAMBIO_INCLUIDO = { date: "2026-11-25", base: "USD", quote: "MXN", rate: 21.5422 / 1.0935 };
+  var CLAVE_TARIFA_PREFERIDA = "eficiencia-tarifa-preferida";
+  var monedaPreferida = "MXN", tipoCambio = null, consultandoCambio = false;
+  var tarifaPreferida = "", tarifaSugerida = null;
+  var MONEDAS_FORMATOS = {};
+
+  function monedaVisible() { return monedaPreferida === "USD" && tipoCambio ? "USD" : "MXN"; }
+  function divisorMoneda() { return monedaVisible() === "USD" ? tipoCambio.rate : 1; }
+
+  function dinero(n, precision) {
+    var moneda = monedaVisible(), decimales = precision === 3 ? 3 : 2;
+    var clave = moneda + decimales;
+    if (!MONEDAS_FORMATOS[clave]) {
+      MONEDAS_FORMATOS[clave] = new Intl.NumberFormat("es-MX", {
+        style: "currency", currency: moneda, currencyDisplay: moneda === "USD" ? "code" : "symbol",
+        minimumFractionDigits: decimales, maximumFractionDigits: decimales
+      });
+    }
+    return MONEDAS_FORMATOS[clave].format(n / divisorMoneda());
+  }
+
+  function fechaTipoCambio(tabla) {
+    return new Intl.DateTimeFormat("es-MX", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(tabla.date + "T12:00:00Z"));
+  }
+
+  function cambioValido(dato) {
+    return dato && dato.base === "USD" && dato.quote === "MXN" && Number.isFinite(dato.rate) &&
+      dato.rate >= 1 && dato.rate <= 100 && typeof dato.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dato.date) &&
+      Number.isFinite(Date.parse(dato.date)) && dato.date <= new Date().toISOString().slice(0, 10);
+  }
+
+  function pintarMoneda(mensaje) {
+    $("moneda-app").value = monedaPreferida;
+    var estado = $("estado-moneda");
+    if (monedaPreferida === "MXN") { estado.textContent = "Los costos se muestran en pesos mexicanos."; return; }
+    var referencia = tipoCambio
+      ? "1 USD ≈ " + tipoCambio.rate.toLocaleString("es-MX", { maximumFractionDigits: 4 }) + " MXN · " + fechaTipoCambio(tipoCambio) + " (BCE)."
+      : "Por ahora los costos se muestran en MXN hasta obtener un tipo de cambio.";
+    estado.textContent = [referencia, mensaje].filter(Boolean).join(" ");
+  }
+
+  function aplicarMoneda(mensaje) {
+    pintarMoneda(mensaje);
+    actualizarContador();
+    renderDashboard(false);
+  }
+
+  async function actualizarTipoCambio() {
+    if (monedaPreferida !== "USD" || consultandoCambio) { return; }
+    if (navigator.onLine === false) { pintarMoneda("Sin conexión."); return; }
+    consultandoCambio = true;
+    pintarMoneda("Buscando el tipo de cambio…");
+    var control = new AbortController();
+    var limite = setTimeout(function () { control.abort(); }, 8000);
+    try {
+      var respuesta = await fetch("https://api.frankfurter.dev/v2/rate/USD/MXN?providers=ecb",
+        { cache: "no-store", credentials: "omit", signal: control.signal });
+      if (!respuesta.ok) { throw new Error("Cotización no disponible"); }
+      var cotizacion = await respuesta.json();
+      if (!cambioValido(cotizacion) || (tipoCambio && cotizacion.date < tipoCambio.date)) {
+        throw new Error("Cotización inválida");
+      }
+      tipoCambio = cotizacion;
+      escribirGuardado(CLAVE_CAMBIO, tipoCambio);
+      aplicarMoneda();
+    } catch (err) {
+      pintarMoneda("No se pudo consultar la cotización.");
+    } finally {
+      clearTimeout(limite);
+      consultandoCambio = false;
+    }
+  }
+
+  function buscarRegion(valor) {
+    return REGIONES.find(function (region) { return region.valor === valor; });
+  }
+
+  function pintarTarifaPreferida() { $("ajustes-tarifa").value = ddRegion.valor(); }
+
+  function confirmarTarifaPreferida(valor) {
+    if (!buscarRegion(valor)) { return; }
+    tarifaPreferida = valor;
+    escribirGuardado(CLAVE_TARIFA_PREFERIDA, valor);
+    if (ddRegion.valor() !== valor) {
+      ddRegion.fijar(valor);
+      alElegirRegion();
+    } else {
+      pintarTarifaPreferida();
+    }
+  }
+
+  // Cobertura deliberadamente local. La ubicación permite orientar, el recibo confirma.
+  var LOCALIDADES_CFE = [
+    { nombre: "Ciudad de México", lat: 19.4326, lon: -99.1332, radio: 7, tarifa: "1" },
+    { nombre: "Veracruz / Boca del Río", lat: 19.1574, lon: -96.1242, radio: 8, tarifa: "ver" },
+    { nombre: "Mexicali", lat: 32.626, lon: -115.454, radio: 6, tarifa: "1F", norte: 32.653 },
+    { nombre: "Villahermosa", lat: 17.989, lon: -92.933, radio: 8, tarifa: "1F" }
+  ];
+
+  function detectarTarifa() {
+    var aviso = $("estado-ubicacion"), boton = $("detectar-tarifa"), aplicar = $("aplicar-tarifa-sugerida");
+    tarifaSugerida = null;
+    aplicar.hidden = true;
+    if (!window.isSecureContext || !navigator.geolocation) {
+      aviso.textContent = "La ubicación no está disponible aquí. Selecciona la tarifa de tu recibo.";
+      return;
+    }
+    boton.disabled = true;
+    aviso.textContent = "Buscando tu ubicación aproximada…";
+    navigator.geolocation.getCurrentPosition(function (posicion) {
+      boton.disabled = false;
+      var datos = posicion.coords;
+      var radianes = Math.PI / 180;
+      var localidad = LOCALIDADES_CFE.find(function (lugar) {
+        var norte = (datos.latitude - lugar.lat) * 111.2;
+        var este = (datos.longitude - lugar.lon) * 111.2 * Math.cos(lugar.lat * radianes);
+        return (!lugar.norte || datos.latitude + datos.accuracy / 111200 <= lugar.norte) &&
+          Math.hypot(norte, este) + datos.accuracy / 1000 <= lugar.radio;
+      });
+      if (!localidad) {
+        aviso.textContent = "Aún no tenemos cobertura fiable para esta ubicación. Selecciona la tarifa de tu recibo.";
+        return;
+      }
+      tarifaSugerida = localidad.tarifa;
+      aviso.textContent = "Cerca de " + localidad.nombre + ". El recibo podría usar la tarifa " +
+        buscarRegion(localidad.tarifa).tarifa + ". Confírmala antes de aplicarla.";
+      aplicar.hidden = false;
+    }, function () {
+      boton.disabled = false;
+      aviso.textContent = "No se pudo obtener la ubicación. Puedes elegir la tarifa de tu recibo.";
+    }, { enableHighAccuracy: false, timeout: 9000, maximumAge: 120000 });
+  }
+
+  function iniciarPreferencias() {
+    monedaPreferida = leerGuardado(CLAVE_MONEDA, "MXN") === "USD" ? "USD" : "MXN";
+    var guardado = leerGuardado(CLAVE_CAMBIO, null);
+    tipoCambio = cambioValido(guardado) && guardado.date >= CAMBIO_INCLUIDO.date ? guardado
+      : cambioValido(CAMBIO_INCLUIDO) ? CAMBIO_INCLUIDO : null;
+    $("moneda-app").addEventListener("change", function (e) {
+      monedaPreferida = e.target.value === "USD" ? "USD" : "MXN";
+      escribirGuardado(CLAVE_MONEDA, monedaPreferida);
+      aplicarMoneda();
+      actualizarTipoCambio();
+    });
+    window.addEventListener("online", actualizarTipoCambio);
+    window.addEventListener("offline", function () { pintarMoneda("Sin conexión."); });
+    REGIONES.forEach(function (region) { $("ajustes-tarifa").add(new Option(region.texto, region.valor)); });
+    $("ajustes-tarifa").addEventListener("change", function (e) {
+      confirmarTarifaPreferida(e.target.value);
+      tarifaSugerida = null;
+      $("aplicar-tarifa-sugerida").hidden = true;
+      $("estado-ubicacion").textContent = "Tarifa guardada para este cálculo y los siguientes.";
+    });
+    $("detectar-tarifa").addEventListener("click", detectarTarifa);
+    $("aplicar-tarifa-sugerida").addEventListener("click", function () {
+      confirmarTarifaPreferida(tarifaSugerida);
+      tarifaSugerida = null;
+      $("aplicar-tarifa-sugerida").hidden = true;
+      $("estado-ubicacion").textContent = "Tarifa aplicada. Algunas localidades tienen convenios que debes verificar en tu recibo.";
+    });
+    aplicarMoneda();
+    pintarTarifaPreferida();
+    actualizarTipoCambio();
+  }
 
   function regionActual() {
     var v = ddRegion.valor() || "ver";
@@ -1855,22 +2970,35 @@ var TIPS_CAT = {
     return REGIONES[0];
   }
 
-  // kWh de este aparato que caen en cada bloque, según lo que el hogar ya consume
-  function reparto(kwhMes, base, tarifa, verano) {
-    var b = BLOQUES[tarifa][verano ? "verano" : "fuera"];
-    var l1 = b[0], l2 = b[0] + b[1], fin = base + kwhMes;
-    function tramo(desde, hasta) { return Math.max(0, Math.min(fin, hasta) - Math.max(base, desde)); }
-    return [tramo(0, l1), tramo(l1, l2), tramo(l2, Infinity)];
+  function periodoCuotasCFE() {
+    var partes = datosCFE.periodo.split("-");
+    return MESES[Number(partes[1]) - 1] + " de " + partes[0];
   }
-  // Pesos al mes, con IVA
-  function costoMes(kwhMes, base, tarifa, verano) {
-    var r = reparto(kwhMes, base, tarifa, verano);
-    return (r[0] * PRECIOS.basico + r[1] * PRECIOS.intermedio + r[2] * PRECIOS.excedente) * PRECIOS.iva;
+
+  function reparto(kwhMes, tarifa, verano) {
+    var temporadaCalida = verano && tarifa !== "1";
+    var limites = BLOQUES[tarifa][temporadaCalida ? "verano" : "fuera"];
+    var cuotas = datosCFE.cuotas[temporadaCalida ? GRUPO_VERANO_CFE[tarifa] : "fuera"];
+    var nombres = limites.length === 3
+      ? ["Básico", "Intermedio bajo", "Intermedio alto", "Excedente"]
+      : ["Básico", "Intermedio", "Excedente"];
+    var desde = 0;
+    return cuotas.map(function (cuota, i) {
+      var hasta = i < limites.length ? desde + limites[i] : Infinity;
+      var tramo = { nombre: nombres[i], cuota: cuota, desde: desde, hasta: hasta, kwh: Math.max(0, Math.min(kwhMes, hasta) - desde) };
+      desde = hasta;
+      return tramo;
+    });
+  }
+
+  function costoMes(kwhMes, tarifa, verano) {
+    return reparto(Math.max(MINIMO_CFE, kwhMes), tarifa, verano).reduce(function (suma, tramo) {
+      return suma + tramo.kwh * tramo.cuota;
+    }, 0) * FACTOR_IVA;
   }
 
   function veranoHoy(reg) {
-    var m = new Date().getMonth() + 1, ini = reg.inicio || 5;
-    return m >= ini && m <= ini + 5;
+    return !!reg.inicio && (new Date().getMonth() + 13 - reg.inicio) % 12 < 6;
   }
   // Por tipo de aparato: alternativa típica, ahorro de energía típico (0 a 1) y por qué se ahorra
   var EFICIENTE = {
@@ -1955,40 +3083,66 @@ var TIPS_CAT = {
     return n + (n === 1 ? " panel" : " paneles");
   }
 
-  // ---------- Modal "Acerca de" ----------
-  var modal = document.getElementById("modal-acerca");
-  var cerrandoModal = false;
+  // ---------- Pantalla de ajustes e instalación ----------
+  function abrirAjustes() {
+    if (pantallaActual !== 5) { mostrarPantalla(5); }
+  }
+  function volverDeAjustes() {
+    var destino = origenAjustes;
+    while (destino > 1 && !pantallaPermitida(destino)) { destino--; }
+    mostrarPantalla(destino, true);
+  }
 
-  function abrirModal(desdeHistorial) {
-    cerrandoModal = false;
-    modal.classList.remove("cerrando");
-    if (!modal.open) { modal.showModal(); }
-    if (desdeHistorial !== true) {
-      try {
-        pila = pila.slice(0, pos + 1);
-        pila.push(0);
-        pos = pila.length - 1;
-        history.pushState({ pantalla: pantallaActual, modal: true, pos: pos }, "", "");
-      } catch (err) {}
+  var instalacionPendiente = null;
+  var modoInstalado = window.matchMedia("(display-mode: standalone)");
+  var instalada = modoInstalado.matches || navigator.standalone === true;
+  var botonInstalar = $("instalar-app");
+  var estadoInstalacion = $("estado-instalacion");
+  var instruccionesInstalacion = $("instalacion-manual");
+  var sitioInstalacion = $("instalacion-sitio");
+
+  function actualizarInstalacion() {
+    botonInstalar.hidden = !instalacionPendiente || instalada;
+    instruccionesInstalacion.hidden = instalada || location.protocol === "file:" || !window.isSecureContext;
+    sitioInstalacion.hidden = instalada || !instruccionesInstalacion.hidden;
+    if (instalada) {
+      estadoInstalacion.textContent = "La app ya está instalada. Puedes abrirla desde el icono de Eficiencia.";
+    } else if (instruccionesInstalacion.hidden) {
+      estadoInstalacion.textContent = "Abre el sitio de Proyecto Eficiencia y elige instalar desde tu navegador.";
+    } else if (instalacionPendiente) {
+      estadoInstalacion.textContent = "Instala Eficiencia para abrirla desde tu pantalla de inicio o escritorio y acceder sin conexión.";
+    } else {
+      estadoInstalacion.textContent = "Si tu navegador ofrece la instalación, puedes añadir Eficiencia a tu pantalla de inicio o escritorio.";
     }
   }
-  function cerrarModal(desdeHistorial) {
-    if (!modal.open || cerrandoModal) { return; }
-    cerrandoModal = true;
-    modal.classList.add("cerrando");
-    // Si se cierra desde la interfaz, también se retira su entrada del historial
-    if (desdeHistorial !== true && history.state && history.state.modal) {
-      try { pos = Math.max(0, pos - 1); history.back(); } catch (err) {}
+
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    instalacionPendiente = e;
+    actualizarInstalacion();
+  });
+  window.addEventListener("appinstalled", function () {
+    instalada = true;
+    instalacionPendiente = null;
+    actualizarInstalacion();
+  });
+  botonInstalar.addEventListener("click", async function () {
+    if (!instalacionPendiente) { return; }
+    var solicitud = instalacionPendiente;
+    botonInstalar.disabled = true;
+    try {
+      await solicitud.prompt();
+      var eleccion = await solicitud.userChoice;
+      instalada = instalada || eleccion.outcome === "accepted";
+    } catch (err) {
+      // Si el navegador cancela la solicitud, quedan disponibles los pasos manuales.
+    } finally {
+      if (instalacionPendiente === solicitud) { instalacionPendiente = null; }
+      botonInstalar.disabled = false;
+      actualizarInstalacion();
     }
-    var ms = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 200;
-    setTimeout(function () {
-      modal.close();
-      modal.classList.remove("cerrando");
-      cerrandoModal = false;
-    }, ms);
-  }
-  modal.addEventListener("cancel", function (e) { e.preventDefault(); cerrarModal(); });   // tecla Escape
-  modal.addEventListener("click", function (e) { if (e.target === modal) { cerrarModal(); } });   // clic en el fondo oscuro
+  });
+  actualizarInstalacion();
 
   // =====================================================================
   //  Flujo único: 1 Inicio -> 2 Mi Lista de Equipos -> 3 Tiempo de uso -> 4 Dashboard
@@ -1998,8 +3152,183 @@ var TIPS_CAT = {
   var confirmada = false, resultado = null;
   var periodo = "mes", pestana = "consumo", vista = "aparato";   // vista: "aparato" | "categoria"
   var temporada = "verano", ddRegion;
+  var CLAVE_BORRADOR = "eficiencia-borrador";
+  var CLAVE_CONFIGURACIONES = "eficiencia-configuraciones";
+  var perfilAbierto = "";
+  var configuraciones = [];
+  var almacenamientoDisponible = true;
+  var mostrandoContinuidad = false;
 
-  var RAPIDOS = ["Refrigerador", "Foco LED", "Aire acondicionado minisplit inverter", "Lavadora",  "Laptop estándar", "Aire acondicionado minisplit","Ventilador de pedestal", "Televisor",  "Microondas", "Cafetera"];
+  function leerGuardado(clave, respaldo) {
+    var valor;
+    try { valor = localStorage.getItem(clave); }
+    catch (err) { almacenamientoDisponible = false; return respaldo; }
+    try { return JSON.parse(valor) || respaldo; }
+    catch (err) { return respaldo; }
+  }
+
+  function escribirGuardado(clave, valor) {
+    try { localStorage.setItem(clave, JSON.stringify(valor)); return true; }
+    catch (err) { return false; }
+  }
+
+  function tomarConfiguracion() {
+    return {
+      modo: modo, region: ddRegion.valor(), temporada: temporada,
+      equipos: lista.map(function (it) {
+        return {
+          nombre: it.nombre, cat: it.cat, tipo: it.tipo, watts: it.watts,
+          sugerido: it.sugerido, otro: it.otro, minutos: it.minutos
+        };
+      })
+    };
+  }
+
+  function configuracionValida(datos) {
+    return datos && Array.isArray(datos.equipos) && datos.equipos.every(function (it) {
+      return it && typeof it.nombre === "string" && typeof it.watts === "string";
+    });
+  }
+
+  function leerConfiguraciones() {
+    var datos = leerGuardado(CLAVE_CONFIGURACIONES, []);
+    return Array.isArray(datos) ? datos.filter(function (perfil) {
+      return perfil && typeof perfil.id === "string" && typeof perfil.nombre === "string" && configuracionValida(perfil.datos);
+    }) : [];
+  }
+
+  function perfilActual() {
+    return configuraciones.find(function (perfil) { return perfil.id === perfilAbierto; });
+  }
+
+  function resumenConfiguracion(equipos, uso) {
+    var frecuencia = uso === "semana" ? " · Horas por semana" : uso === "dia" ? " · Horas por día" : "";
+    return equipos + (equipos === 1 ? " equipo" : " equipos") + frecuencia;
+  }
+
+  function actualizarZonaLocal() {
+    var perfil = perfilActual();
+    $("inicio-nota").hidden = !lista.length;
+    $("local-borrador").hidden = !lista.length || !mostrandoContinuidad;
+    $("local-borrador-resumen").textContent = resumenConfiguracion(lista.length, modo);
+    $("guardar-lista").disabled = !lista.length;
+    $("local-nueva").hidden = !lista.length;
+    $("local-titulo").textContent = perfil ? perfil.nombre : "Cálculo en curso";
+    $("estado-local").textContent = almacenamientoDisponible
+      ? "Guardado automático en este navegador."
+      : "Este navegador no pudo guardar el cálculo. Puedes seguir editándolo mientras esta pestaña siga abierta.";
+  }
+
+  function guardarBorrador() {
+    almacenamientoDisponible = escribirGuardado(CLAVE_BORRADOR, { perfil: perfilAbierto, datos: tomarConfiguracion() });
+    actualizarZonaLocal();
+  }
+
+  function mostrarConfiguraciones() {
+    var ul = $("lista-configuraciones");
+    ul.replaceChildren();
+    $("local-cantidad").textContent = configuraciones.length;
+    $("local-vacio").hidden = configuraciones.length > 0;
+    var fecha = new Intl.DateTimeFormat("es-MX", { dateStyle: "medium" });
+    configuraciones.forEach(function (perfil) {
+      var li = document.createElement("li");
+      li.className = "local-fila";
+      li.innerHTML = '<div><b></b><small></small></div><div class="local-fila-acciones">' +
+        '<button type="button" class="sec">Cargar</button><button type="button" class="local-eliminar">Eliminar</button></div>';
+      li.querySelector("b").textContent = perfil.nombre;
+      var modificada = typeof perfil.modificada === "number" && Number.isFinite(perfil.modificada) ? " · " + fecha.format(perfil.modificada) : "";
+      li.querySelector("small").textContent = resumenConfiguracion(perfil.datos.equipos.length, perfil.datos.modo) + modificada;
+      var cargar = li.querySelector(".sec"), eliminar = li.querySelector(".local-eliminar");
+      cargar.setAttribute("aria-label", "Cargar " + perfil.nombre);
+      eliminar.setAttribute("aria-label", "Eliminar " + perfil.nombre);
+      cargar.addEventListener("click", function () {
+        if (!confirmarCambioDeCalculo("Cargar «" + perfil.nombre + "»")) { return; }
+        restaurarConfiguracion(perfil.datos, perfil.id);
+        guardarBorrador();
+        $("t2").focus({ preventScroll: true });
+        avisar("Configuración cargada: " + perfil.nombre);
+      });
+      eliminar.addEventListener("click", function () {
+        if (!window.confirm("¿Eliminar «" + perfil.nombre + "» de este dispositivo?")) { return; }
+        var restantes = leerConfiguraciones().filter(function (p) { return p.id !== perfil.id; });
+        if (!escribirGuardado(CLAVE_CONFIGURACIONES, restantes)) { avisar("No se pudo eliminar la configuración."); return; }
+        configuraciones = restantes;
+        if (perfilAbierto === perfil.id) { perfilAbierto = ""; guardarBorrador(); }
+        mostrarConfiguraciones();
+        $("configuraciones-locales").querySelector("summary").focus();
+      });
+      ul.appendChild(li);
+    });
+    actualizarZonaLocal();
+  }
+
+  function abrirConfiguraciones() {
+    if (pantallaActual !== 2) { mostrarPantalla(2); }
+    mostrandoContinuidad = true;
+    actualizarZonaLocal();
+    var detalles = $("configuraciones-locales");
+    detalles.open = true;
+    var destino = lista.length ? $("local-continuar") : detalles.querySelector("summary");
+    destino.focus({ preventScroll: true });
+    destino.scrollIntoView({ block: "center" });
+  }
+
+  function confirmarCambioDeCalculo(accion) {
+    var perfil = perfilActual();
+    var coincide = perfil && JSON.stringify(perfil.datos) === JSON.stringify(tomarConfiguracion());
+    return !lista.length || coincide || window.confirm("¿" + accion + "? Esto reemplazará tu cálculo en curso. Puedes cancelar y guardarlo como una configuración.");
+  }
+
+  function abrirGuardarConfiguracion() {
+    if (!lista.length) { return; }
+    configuraciones = leerConfiguraciones();
+    var perfil = perfilActual();
+    $("guardar-nombre").value = perfil ? perfil.nombre : "";
+    $("guardar-error").textContent = "";
+    $("guardar-copia").hidden = !perfil;
+    $("guardar-principal").value = perfil ? "actualizar" : "nueva";
+    $("guardar-principal").textContent = perfil ? "Actualizar" : "Guardar";
+    $("guardar-dialogo").showModal();
+    $("guardar-nombre").select();
+  }
+
+  $("guardar-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var nombre = $("guardar-nombre").value.trim();
+    if (!nombre) { $("guardar-error").textContent = "Escribe un nombre para esta configuración."; return; }
+    configuraciones = leerConfiguraciones();
+    var actualizar = e.submitter && e.submitter.value === "actualizar";
+    var anterior = actualizar ? perfilActual() : null;
+    if (actualizar && !anterior) { $("guardar-error").textContent = "Esa configuración ya no está disponible. Puedes guardar una copia."; return; }
+    var duplicado = configuraciones.some(function (perfil) {
+      return perfil !== anterior && normalizar(perfil.nombre) === normalizar(nombre);
+    });
+    if (duplicado) { $("guardar-error").textContent = "Ya existe una configuración con ese nombre. Escribe otro o elige Actualizar si es la configuración abierta."; return; }
+    var ahora = Date.now();
+    var id = anterior ? anterior.id : ahora.toString(36) + Math.random().toString(36).slice(2);
+    var nuevo = { id: id, nombre: nombre, modificada: ahora, datos: tomarConfiguracion() };
+    var siguientes = [nuevo].concat(configuraciones.filter(function (perfil) { return perfil.id !== id; }));
+    if (!escribirGuardado(CLAVE_CONFIGURACIONES, siguientes)) {
+      $("guardar-error").textContent = "El navegador no pudo guardar la configuración en este dispositivo.";
+      return;
+    }
+    configuraciones = siguientes;
+    perfilAbierto = id;
+    guardarBorrador();
+    mostrarConfiguraciones();
+    $("configuraciones-locales").open = true;
+    $("guardar-dialogo").close();
+    avisar("Configuración guardada: " + nombre);
+  });
+
+  window.addEventListener("storage", function (e) {
+    if (e.key === CLAVE_CONFIGURACIONES || e.key === null) {
+      configuraciones = leerConfiguraciones();
+      mostrarConfiguraciones();
+    }
+  });
+
+  var RAPIDOS = ["Refrigerador", "Foco LED", "Ventilador de pedestal", "Lavadora"];
   var LIMITE_DAC = { "1": 250, "1A": 300, "1B": 400, "1C": 850, "1D": 1000, "1E": 2000, "1F": 2500 };   // kWh al mes (promedio de 12 meses)
   var FACTOR_PERIODO = { dia: 1, semana: 7, mes: 30, bim: 60 };
   var ETQ_PERIODO = { dia: "(día)", semana: "(semana)", mes: "(mes)", bim: "(2 meses)" };
@@ -2035,152 +3364,260 @@ var TIPS_CAT = {
   function num(id, valor, formato, ms) { contar($(id), valor, formato, ms); }
 
   // Datos de la búsqueda
-var APARATOS = [];
+  function claveBusqueda(texto) { return normalizar(texto).replace(/[^a-z0-9]+/g, " ").trim(); }
+
+  var nombresAlternativos = {
+    "Aire acondicionado de ventana": "clima ac a/c aire",
+    "Aire acondicionado minisplit": "clima ac a/c minisplit mini split aire",
+    "Aire acondicionado minisplit inverter": "clima ac a/c minisplit mini split aire",
+    "Cargador de celular": "movil telefono smartphone",
+    "Freidora de aire": "airfryer air fryer",
+    "Foco LED": "bombilla bombillo lampara",
+    "Foco ahorrador (CFL)": "bombilla bombillo lampara",
+    "Foco incandescente": "bombilla bombillo lampara",
+    "Laptop estándar": "computadora portatil notebook",
+    "Laptop Gamer": "computadora portatil notebook",
+    "PC de escritorio (Alto Rendimiento/Gamer)": "computadora ordenador",
+    "PC de escritorio (Ofimática)": "computadora ordenador",
+    "Refrigerador": "refri refrigeradora",
+    "Router Wi-Fi": "wifi enrutador",
+    "Televisor": "tv smart tv"
+  };
+  var APARATOS = [];
   Object.keys(CATALOGO).forEach(function (cat) {
     CATALOGO[cat].forEach(function (a) {
-      // a[3] lee palabras clave ocultas si existen
-      APARATOS.push({ nombre: a[0], cat: cat, watts: a[1], tipo: a[2], clave: normalizar(a[0] + " " + cat + (a[3] ? " " + a[3] : "")) });
+      var nombre = claveBusqueda(a[0]);
+      APARATOS.push({
+        nombre: a[0], cat: cat, watts: a[1], tipo: a[2], clave: nombre,
+        palabras: nombre.split(" "),
+        alias: claveBusqueda((a[3] || "") + " " + (nombresAlternativos[a[0]] || "")).split(" ").filter(Boolean),
+        categoria: claveBusqueda(cat).split(" ")
+      });
     });
   });
 
   // ---------- Pantalla 2: buscador y tarjetas ----------
-  var busq = { ops: [], idx: -1, ignorarBlur: false };
+  var busq = { ops: [], idx: -1, categoria: "" };
+  var ordenCategorias = Object.keys(CATALOGO).sort(function (a, b) { return a.localeCompare(b, "es-MX"); });
+  var formatoWattsCatalogo = new Intl.NumberFormat("es-MX");
 
-  function busqAbierta() { return $("buscar").parentNode.classList.contains("abierto"); }
+  function busqAbierta() { return !$("catalogo-equipos").hidden; }
 
-  // Oculta el teclado del móvil sin cerrar la lista. El readonly temporal evita que algunos Android lo dejen abierto.
-  function ocultarTeclado() {
-    var inp = $("buscar");
-    if (document.activeElement !== inp) { return; }
-    busq.ignorarBlur = true; // este blur lo provocamos nosotros: no debe cerrar la lista
-    inp.setAttribute("readonly", "readonly");
-    inp.blur();
-    busq.ignorarBlur = false;
-    setTimeout(function () { inp.removeAttribute("readonly"); }, 120);
-  }
   function cerrarBusqueda() {
     var inp = $("buscar");
-    inp.parentNode.classList.remove("abierto"); // la CSS gira la flecha y desliza la lista hacia arriba
+    inp.closest(".buscador").classList.remove("abierto");
+    $("catalogo-equipos").hidden = true;
     inp.setAttribute("aria-expanded", "false");
+    inp.removeAttribute("aria-activedescendant");
     $("btn-desplegar").setAttribute("aria-expanded", "false");
     busq.idx = -1;
   }
+
   function marcarOpcion(i) {
-    var els = $("resultados-busqueda").querySelectorAll(".rb-op");
-    els.forEach(function (e, k) { e.classList.toggle("activo", k === i); });
-    busq.idx = i;
-    if (els[i]) { els[i].scrollIntoView({ block: "nearest" }); }
-  }
-  function pintarBusqueda(forzarTodo) {
-    var inp = $("buscar"), texto = inp.value.trim(), q = normalizar(texto), ul = $("resultados-busqueda");
-    
-    // Si la barra está vacía y no presionaron el botón explícitamente, cerramos la lista
-    if (!q && !forzarTodo) {
-      cerrarBusqueda();
-      return;
-    }
-    
-    var toks = q ? q.split(/\s+/) : [], ultima = "";
-    ul.innerHTML = "";
-    busq.ops = [];
-    function opcion(html, accion, extra) {
-      var li = document.createElement("li");
-      li.className = "rb-op" + (extra ? " " + extra : "");
-      li.setAttribute("role", "option");
-      li.innerHTML = html;
-      li.addEventListener("mousedown", function (e) { e.preventDefault(); accion(); });
-      ul.appendChild(li);
-      busq.ops.push(accion);
-      return li;
-    }
-    APARATOS.forEach(function (a) {
-      if (!toks.every(function (t) { return a.clave.indexOf(t) >= 0; })) { return; }
-      if (!q && a.cat !== ultima) {
-        ultima = a.cat;
-        var h = document.createElement("li");
-        h.className = "rb-grupo";
-        h.textContent = a.cat;
-        ul.appendChild(h);
-      }
-      var li = opcion('<span class="rb-n"></span><span class="rb-w"></span>', function () { elegirAparato(a); });
-      li.querySelector(".rb-n").textContent = a.nombre;
-      if (q) { var sm = document.createElement("small"); sm.textContent = a.cat; li.querySelector(".rb-n").appendChild(sm); }
-      li.querySelector(".rb-w").textContent = a.watts + " W";
+    busq.ops.forEach(function (op, k) {
+      op.li.classList.toggle("activo", k === i);
+      op.li.setAttribute("aria-selected", String(k === i));
     });
-    var exacto = APARATOS.some(function (a) { return normalizar(a.nombre) === q; });
-    if (!exacto) {
-      if (!q) {
-        var g = document.createElement("li");
-        g.className = "rb-grupo";
-        g.textContent = "Otros";
-        ul.appendChild(g);
-      }
-      var o = opcion('<span class="rb-n"></span>', function () { elegirOtro(texto); }, "rb-otro");
-      o.querySelector(".rb-n").textContent = texto ? "+ Agregar «" + texto + "» como otro aparato" : "+ Otro aparato (escribe su nombre)";
+    busq.idx = i;
+    var li = busq.ops[i].li;
+    $("buscar").setAttribute("aria-activedescendant", li.id);
+    li.scrollIntoView({ block: "nearest" });
+  }
+
+  function errataCorta(a, b) {
+    if (a.length > b.length) { return errataCorta(b, a); }
+    if (a.length < 4 || b.length - a.length > 1) { return false; }
+    var i = 0;
+    while (i < a.length && a[i] === b[i]) { i++; }
+    if (a.length !== b.length) { return a.slice(i) === b.slice(i + 1); }
+    return a.slice(i + 1) === b.slice(i + 1) ||
+      (a[i] === b[i + 1] && a[i + 1] === b[i] && a.slice(i + 2) === b.slice(i + 2));
+  }
+
+  function puntuarAparato(a, q, tokens) {
+    if (a.clave === q) { return 1000; }
+    var score = 0;
+    for (var t of tokens) {
+      if (a.palabras.includes(t)) { score += 12; }
+      else if (a.alias.includes(t)) { score += 10; }
+      else if (a.palabras.some(function (p) { return p.startsWith(t); })) { score += 8; }
+      else if (a.alias.some(function (p) { return p.startsWith(t); })) { score += 6; }
+      else if (a.categoria.some(function (p) { return p.startsWith(t); })) { score += 4; }
+      else if (t.length >= 3 && a.palabras.some(function (p) { return p.includes(t); })) { score += 3; }
+      else if (a.palabras.concat(a.alias).some(function (p) { return errataCorta(t, p); })) { score += 1; }
+      else { return -1; }
     }
-    Array.prototype.forEach.call(ul.children, function (el, k) { el.style.setProperty("--i", Math.min(k, 10)); });
-    var abriendo = !busqAbierta();
-    ul.classList.toggle("entrando", abriendo); // el efecto escalonado solo al abrir, no en cada tecla
+    return score + (a.clave.startsWith(q) ? 10 : 0);
+  }
+
+  function pintarBusqueda() {
+    var inp = $("buscar"), texto = inp.value.trim(), ul = $("resultados-busqueda");
+    var potencias = [];
+    var q = claveBusqueda(texto.replace(/\b(\d+(?:,\d{3})*)\s*w(?:atts?)?\b/gi, function (_, numero) {
+      potencias.push(Number(numero.replace(/,/g, "")));
+      return " ";
+    }));
+    var tokens = q ? q.split(" ").filter(function (t) { return !["de", "del", "la", "el", "y"].includes(t); }) : [];
+    var candidatos = APARATOS.filter(function (a) {
+      return potencias.every(function (watts) { return a.watts === watts; });
+    });
+    var resultados = texto ? [] : candidatos;
+    if (q) {
+      resultados = candidatos.map(function (a) {
+        return { aparato: a, puntos: puntuarAparato(a, q, tokens.length ? tokens : [q]) };
+      }).filter(function (r) { return r.puntos >= 0; }).sort(function (a, b) {
+        return b.puntos - a.puntos || a.aparato.nombre.localeCompare(b.aparato.nombre, "es-MX");
+      }).map(function (r) { return r.aparato; });
+    } else if (potencias.length) {
+      resultados = candidatos;
+    }
+    var conteos = new Map();
+    resultados.forEach(function (a) { conteos.set(a.cat, (conteos.get(a.cat) || 0) + 1); });
+    $("filtros-busqueda").querySelectorAll("button").forEach(function (b) {
+      var cat = b.dataset.categoria;
+      var cantidad = b.querySelector(".rb-cantidad");
+      b.setAttribute("aria-pressed", String(cat === busq.categoria));
+      cantidad.textContent = cat ? (conteos.get(cat) || 0) : resultados.length;
+      cantidad.hidden = !texto;
+    });
+    if (busq.categoria) { resultados = resultados.filter(function (a) { return a.cat === busq.categoria; }); }
+    $("limpiar-busqueda").hidden = !texto && !busq.categoria;
+    var n = resultados.length;
+    var lugar = busq.categoria ? " en " + busq.categoria : "";
+    $("estado-busqueda").textContent = n
+      ? n + (n === 1 ? " equipo" : " equipos") + lugar + " · Potencia típica"
+      : "Sin coincidencias" + (lugar || " en el catálogo") + ".";
+    ul.replaceChildren();
+    busq.ops = [];
+    function opcion(nombre, accion, categoria, watts) {
+      var li = document.createElement("li");
+      var n = document.createElement("span");
+      li.className = "rb-op" + (categoria ? "" : " rb-otro");
+      li.id = "op-aparato-" + busq.ops.length;
+      li.setAttribute("role", "option");
+      li.setAttribute("aria-selected", "false");
+      li.setAttribute("aria-label", categoria ? "Agregar " + nombre + ", " + categoria + ", " + watts + " watts típicos" : nombre);
+      n.className = "rb-n";
+      n.textContent = nombre;
+      li.appendChild(n);
+      if (categoria) {
+        if (texto && !busq.categoria) {
+          var subtitulo = document.createElement("small");
+          subtitulo.textContent = categoria;
+          n.appendChild(subtitulo);
+        }
+        var datos = document.createElement("span"), potencia = document.createElement("span"), agregar = document.createElement("span");
+        datos.className = "rb-datos";
+        potencia.className = "rb-w";
+        potencia.textContent = formatoWattsCatalogo.format(watts) + " W";
+        agregar.className = "rb-agregar";
+        agregar.setAttribute("aria-hidden", "true");
+        agregar.textContent = "+";
+        datos.append(potencia, agregar);
+        li.appendChild(datos);
+      }
+      li.addEventListener("click", function () { accion(false); });
+      ul.appendChild(li);
+      busq.ops.push({ li: li, accion: accion });
+    }
+    function filaAparato(a) {
+      opcion(a.nombre, function (teclado) { elegirAparato(a, teclado); }, a.cat, a.watts);
+    }
+    if (!texto && !busq.categoria) {
+      ordenCategorias.forEach(function (cat) {
+        var encabezado = document.createElement("li");
+        encabezado.setAttribute("role", "presentation");
+        encabezado.className = "rb-grupo";
+        encabezado.textContent = cat + " · " + conteos.get(cat);
+        ul.appendChild(encabezado);
+        resultados.filter(function (a) { return a.cat === cat; }).forEach(filaAparato);
+      });
+    } else {
+      resultados.forEach(filaAparato);
+    }
+    if (!resultados.some(function (a) { return a.clave === q; })) {
+      opcion(texto ? "+ Agregar «" + texto + "» como otro aparato" : "+ Agregar un aparato personalizado",
+        function () { elegirOtro(texto); });
+    }
     ul.scrollTop = 0;
-    // Alto real del contenido (+4 px de borde) con tope de 340 px: la caja anima hasta su tamaño exacto, también al filtrar
-    ul.style.setProperty("--alto", Math.min(ul.scrollHeight + 4, 340) + "px");
-    inp.parentNode.classList.add("abierto");
+    $("catalogo-equipos").hidden = false;
+    inp.closest(".buscador").classList.add("abierto");
     inp.setAttribute("aria-expanded", "true");
+    inp.removeAttribute("aria-activedescendant");
     $("btn-desplegar").setAttribute("aria-expanded", "true");
     busq.idx = -1;
   }
-  function elegirAparato(a) {
+  function elegirAparato(a, mantenerFoco) {
     agregarAparato({ nombre: a.nombre, cat: a.cat, tipo: a.tipo, watts: a.watts, otro: false });
     $("buscar").value = "";
-    $("buscar").blur();
     cerrarBusqueda();
+    if (!mantenerFoco) { $("buscar").blur(); }
   }
   function elegirOtro(texto) {
-    var it = agregarAparato({ nombre: texto || "Otro aparato", cat: OTROS, tipo: "otros", watts: 0, otro: true });
+    texto = texto.trim().slice(0, 40);
+    var it = agregarAparato({ nombre: texto || "Otro aparato", cat: OTROS, tipo: "otros", watts: "", otro: true });
     $("buscar").value = "";
     $("buscar").blur();
     cerrarBusqueda();
-    it.el.querySelector(".in-watts").focus();
+    it.el.querySelector(texto ? ".in-watts" : ".nombre-edit").focus();
   }
   function iniciarBusqueda() {
-    var inp = $("buscar"), ul = $("resultados-busqueda"), btn = $("btn-desplegar"), wrap = inp.parentNode;
-
-    // Barra de texto: teclado normal. La lista solo se muestra si hay texto escrito
-    inp.addEventListener("input", function () { pintarBusqueda(false); });
-    inp.addEventListener("focus", function () { pintarBusqueda(false); });
-    inp.addEventListener("blur", function () { if (!busq.ignorarBlur) { cerrarBusqueda(); } });
-
-    // Tocar o arrastrar la lista no le quita el foco a la barra; al arrastrar con el dedo se oculta el teclado
-    ul.addEventListener("mousedown", function (e) { e.preventDefault(); });
-    ul.addEventListener("touchmove", ocultarTeclado, { passive: true });
-
-    // Botón de flecha: no roba el foco al presionar y siempre oculta el teclado
-    btn.addEventListener("mousedown", function (e) { e.preventDefault(); });
-    btn.addEventListener("click", function (e) {
-      e.preventDefault();
-      ocultarTeclado();
-      if (busqAbierta()) { cerrarBusqueda(); return; }
-      inp.value = "";
-      pintarBusqueda(true);
+    var inp = $("buscar"), btn = $("btn-desplegar"), wrap = inp.closest(".buscador");
+    [""].concat(ordenCategorias).forEach(function (cat) {
+      var filtro = document.createElement("button");
+      var cantidad = document.createElement("span");
+      filtro.type = "button";
+      filtro.className = "rb-filtro";
+      filtro.textContent = cat || "Todas";
+      cantidad.className = "rb-cantidad";
+      cantidad.hidden = true;
+      filtro.appendChild(cantidad);
+      filtro.dataset.categoria = cat;
+      filtro.addEventListener("click", function (e) {
+        busq.categoria = cat;
+        pintarBusqueda();
+        if (!e.detail) { inp.focus({ preventScroll: true }); }
+      });
+      $("filtros-busqueda").appendChild(filtro);
     });
 
-    // Tocar fuera del buscador cierra la lista (necesario cuando se abrió con la flecha y la barra no tiene foco)
+    $("limpiar-busqueda").addEventListener("click", function () {
+      inp.value = "";
+      busq.categoria = "";
+      inp.focus({ preventScroll: true });
+      pintarBusqueda();
+    });
+    inp.addEventListener("input", pintarBusqueda);
+    inp.addEventListener("focus", function () { if (inp.value.trim()) { pintarBusqueda(); } });
+    $("resultados-busqueda").addEventListener("mousedown", function (e) { e.preventDefault(); });
+    btn.addEventListener("click", function () {
+      if (busqAbierta()) { cerrarBusqueda(); } else { pintarBusqueda(); }
+    });
     document.addEventListener("pointerdown", function (e) {
       if (busqAbierta() && !wrap.contains(e.target)) { cerrarBusqueda(); }
     });
+    wrap.addEventListener("focusout", function (e) {
+      if (e.relatedTarget && !wrap.contains(e.relatedTarget)) { cerrarBusqueda(); }
+    });
+    wrap.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && busqAbierta()) {
+        e.preventDefault();
+        if (e.target !== inp) { btn.focus(); }
+        cerrarBusqueda();
+      }
+    });
 
     inp.addEventListener("keydown", function (e) {
-      var n = busq.ops.length;
+      if (e.isComposing) { return; }
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault();
-        if (!busqAbierta()) { pintarBusqueda(true); n = busq.ops.length; } // Abrir con teclado hacia abajo
-        if (n) { marcarOpcion((busq.idx + (e.key === "ArrowDown" ? 1 : -1) + n) % n); }
-      } else if (e.key === "Enter") {
+        if (!busqAbierta()) { pintarBusqueda(); }
+        var n = busq.ops.length, abajo = e.key === "ArrowDown";
+        if (n) { marcarOpcion(busq.idx < 0 ? (abajo ? 0 : n - 1) : (busq.idx + (abajo ? 1 : -1) + n) % n); }
+      } else if (e.key === "Enter" && busqAbierta()) {
         e.preventDefault();
-        if (busq.idx >= 0) { busq.ops[busq.idx](); }
-        else if (n && inp.value.trim()) { busq.ops[0](); }
-      } else if (e.key === "Escape") {
-        cerrarBusqueda();
+        if (busq.idx >= 0) { busq.ops[busq.idx].accion(true); }
+        else if (busq.ops.length && inp.value.trim()) { busq.ops[0].accion(true); }
       }
     });
   }
@@ -2200,8 +3637,11 @@ var APARATOS = [];
     });
   }
 
-  function agregarAparato(a, tras) {
-    var it = { id: ++cont, nombre: a.nombre, cat: a.cat, tipo: a.tipo, watts: a.watts ? String(a.watts) : "", sugerido: a.watts || 0, otro: !!a.otro, minutos: 0, manualMal: false };
+  function agregarAparato(a, tras, restaurando) {
+    var minutos = restaurando && modo ? Math.min(MODOS[modo].max * 60, Math.max(0, Math.round(Number(a.minutos) || 0))) : 0;
+    var it = { id: ++cont, nombre: a.nombre, cat: a.cat, tipo: a.tipo,
+      watts: a.watts == null ? "" : String(a.watts), sugerido: a.sugerido ?? (a.watts || 0),
+      otro: !!a.otro, minutos: minutos, manualMal: false };
     var li = document.createElement("li");
     li.className = "tarjeta";
     li.innerHTML = '<div class="t-info"></div>' +
@@ -2213,8 +3653,17 @@ var APARATOS = [];
     if (it.otro) { info.innerHTML = '<input type="text" class="nombre-edit" maxlength="40" autocomplete="off" aria-label="Nombre del aparato"><span class="t-cat"></span>'; }
     else { info.innerHTML = '<b class="t-nombre"></b><span class="t-cat"></span>'; }
     var inW = li.querySelector(".in-watts");
+    li.querySelector(".error").id = "error-equipo-" + it.id;
+    inW.setAttribute("aria-describedby", "error-equipo-" + it.id);
     inW.value = it.watts;
-    inW.addEventListener("input", function () { it.watts = inW.value; limpiarTarjeta(it); });
+    inW.addEventListener("input", function () {
+      it.watts = inW.value;
+      confirmada = false;
+      resultado = null;
+      limpiarTarjeta(it);
+      actualizarRevisionEquipos();
+      guardarBorrador();
+    });
     inW.addEventListener("focus", function() { this.select(); });
    if (it.otro) {
       var inN = info.querySelector(".nombre-edit");
@@ -2223,7 +3672,9 @@ var APARATOS = [];
       inN.addEventListener("input", function () { 
         var val = inN.value.trim();
         it.nombre = val ? val.charAt(0).toUpperCase() + val.slice(1) : "Otro aparato"; 
-        etiquetarLista(); 
+        resultado = null;
+        etiquetarLista();
+        guardarBorrador();
       });
 
       // --- NUEVO: Autoseleccionar a prueba de móviles ---
@@ -2249,14 +3700,19 @@ var APARATOS = [];
       $("lista-tarjetas").appendChild(li);
     }
     confirmada = false;
-    actualizarLista();
-    li.scrollIntoView({ block: "nearest", behavior: REDUCIR ? "auto" : "smooth" });
+    if (!restaurando) {
+      resultado = null;
+      actualizarLista();
+      guardarBorrador();
+      if (document.activeElement !== $("buscar")) {
+        li.scrollIntoView({ block: "nearest", behavior: REDUCIR ? "auto" : "smooth" });
+      }
+    }
     return it;
   }
   // Duplica la tarjeta tal como está (nombre, categoría, tipo y Watts actuales) sin volver a buscar el aparato
   function copiarAparato(it) {
-    var c = agregarAparato({ nombre: it.nombre, cat: it.cat, tipo: it.tipo, watts: it.watts, otro: it.otro }, it);
-    c.sugerido = it.sugerido;
+    agregarAparato({ nombre: it.nombre, cat: it.cat, tipo: it.tipo, watts: it.watts, sugerido: it.sugerido, otro: it.otro }, it);
   }
   // Animación de salida: la tarjeta se desliza y se desvanece, y después se pliega
   function animarSalida(el, retraso, fin) {
@@ -2279,8 +3735,10 @@ var APARATOS = [];
     it.saliendo = true;
     lista = lista.filter(function (x) { return x !== it; });
     confirmada = false;
+    resultado = null;
     animarSalida(it.el, 0, actualizarLista);
     actualizarLista();
+    guardarBorrador();
   }
   // Vacía toda la lista: las tarjetas salen en cascada
   function vaciarLista() {
@@ -2289,18 +3747,21 @@ var APARATOS = [];
     var paso = Math.min(60, 420 / items.length);
     lista = [];
     confirmada = false;
+    resultado = null;
     items.forEach(function (it, i) { it.saliendo = true; animarSalida(it.el, Math.round(i * paso), actualizarLista); });
     actualizarLista();
+    guardarBorrador();
     $("t2").focus({ preventScroll: true });
   }
   function limpiarTarjeta(it) {
     it.el.querySelector(".error").hidden = true;
     it.el.querySelector(".in-watts").classList.remove("invalido");
+    it.el.querySelector(".in-watts").removeAttribute("aria-invalid");
     $("error-casa").hidden = true;
   }
   // Nombres finales: si hay aparatos repetidos se numeran (1), (2)...
   function etiquetarLista() {
-    var cuenta = {}, vistos = {};
+    var cuenta = Object.create(null), vistos = Object.create(null);
     lista.forEach(function (it) { cuenta[it.nombre] = (cuenta[it.nombre] || 0) + 1; });
     lista.forEach(function (it) {
       if (cuenta[it.nombre] > 1) { vistos[it.nombre] = (vistos[it.nombre] || 0) + 1; it.etq = it.nombre + " (" + vistos[it.nombre] + ")"; }
@@ -2308,7 +3769,17 @@ var APARATOS = [];
       var b = it.el.querySelector(".t-nombre");
       if (b) { b.textContent = it.etq; }
       it.el.querySelector(".t-cat").textContent = it.otro ? (cuenta[it.nombre] > 1 ? it.etq : "Otro aparato") : it.cat;
+      it.el.querySelector(".in-watts").setAttribute("aria-label", "Potencia en watts de " + it.etq);
+      it.el.querySelector(".copiar").setAttribute("aria-label", "Duplicar " + it.etq);
+      it.el.querySelector(".papelera").setAttribute("aria-label", "Quitar " + it.etq);
     });
+  }
+  function actualizarRevisionEquipos() {
+    var n = lista.filter(function (it) { return !potenciaValida(it); }).length;
+    var estado = $("equipos-revision");
+    estado.textContent = n === 1 ? "Revisa la potencia de 1 equipo."
+      : n > 1 ? "Revisa la potencia de " + n + " equipos."
+      : "";
   }
   function actualizarLista() {
     var n = lista.length;
@@ -2316,28 +3787,36 @@ var APARATOS = [];
     // el estado vacío espera a que terminen de salir las tarjetas que se están quitando
     $("estado-vacio").hidden = n > 0 || !!$("lista-tarjetas").querySelector(".saliendo");
     $("btn-vaciar").hidden = n < MIN_VACIAR;
-    $("contador-ap").textContent = n ? n + (n === 1 ? " equipo en tu lista" : " equipos en tu lista") : "";
+    $("contador-ap").textContent = n + (n === 1 ? " equipo" : " equipos");
     $("btn-siguiente-lista").disabled = n === 0;
     $("error-casa").hidden = true;
+    actualizarRevisionEquipos();
   }
 
   function siguienteLista() {
     if (!lista.length) { return; }
     var primero = null;
     lista.forEach(function (it) {
-      var w = parseFloat(it.watts);
-      if (!Number.isFinite(w) || w <= 0 || w > 50000) {
+      if (!potenciaValida(it)) {
         var er = it.el.querySelector(".error");
-        er.textContent = "Escribe un consumo válido (entre 1 y 50,000 W).";
+        er.textContent = "Ingresa una potencia mayor que 0 y de hasta 50,000 W.";
         er.hidden = false;
         it.el.querySelector(".in-watts").classList.add("invalido");
+        it.el.querySelector(".in-watts").setAttribute("aria-invalid", "true");
         primero = primero || it;
       }
     });
     if (primero) { primero.el.scrollIntoView({ block: "center", behavior: "smooth" }); primero.el.querySelector(".in-watts").focus(); return; }
     confirmada = true;
+    mostrandoContinuidad = false;
+    actualizarZonaLocal();
     construirTiempos();
     mostrarPantalla(3);
+  }
+
+  function potenciaValida(it) {
+    var w = parseFloat(it.watts);
+    return Number.isFinite(w) && w > 0 && w <= 50000;
   }
 
   // ---------- Pantalla 3: tiempo de uso con costo en vivo ----------
@@ -2365,7 +3844,11 @@ var APARATOS = [];
       it.er = li.querySelector(".it-error");
       it.sl.setAttribute("aria-label", "Tiempo de uso de " + it.etq);
       it.sl.addEventListener("input", function () { 
-        it.minutos = Number(it.sl.value); it.manualMal = false; pintarTiempo(it, "slider"); 
+        it.minutos = Number(it.sl.value);
+        it.manualMal = false;
+        resultado = null;
+        pintarTiempo(it, "slider");
+        guardarBorrador();
       });
       
       // Control de iluminación al arrastrar
@@ -2385,6 +3868,9 @@ var APARATOS = [];
   }
 
   function aplicarModoVisual() {
+    $("ayuda-modo").textContent = modo
+      ? "Máximo " + (modo === "dia" ? "24 horas al día" : "168 horas a la semana") + ". Los minutos van de 0 a 59 (60 min = 1 h)."
+      : "Elígelo primero: define el máximo de cada barra (24 h al día o 168 h a la semana).";
     ["dia", "semana"].forEach(function (k) {
       var b = $("m-" + k);
       b.classList.toggle("activa", k === modo);
@@ -2428,7 +3914,9 @@ var APARATOS = [];
     if (msg) { it.manualMal = true; it.er.textContent = msg; it.er.hidden = false; return; }
     it.manualMal = false;
     it.minutos = h * 60 + m;
+    resultado = null;
     pintarTiempo(it, "manual");
+    guardarBorrador();
   }
 
   // Elegir "por día" o "por semana" es obligatorio; si cambia, el tiempo escrito se convierte
@@ -2441,9 +3929,10 @@ var APARATOS = [];
         it.manualMal = false;
       }
     });
-    $("ayuda-modo").textContent = "Máximo " + (nuevo === "dia" ? "24 horas al día" : "168 horas a la semana") + ". Los minutos van de 0 a 59 (60 min = 1 h).";
+    if (antes !== nuevo) { resultado = null; }
     $("error-modo").hidden = true;
     aplicarModoVisual();
+    guardarBorrador();
   }
 
   // Contador flotante: se actualiza con cada movimiento de las barras
@@ -2455,7 +3944,7 @@ var APARATOS = [];
     var total = 0;
     lista.forEach(function (it) { total += kwhDiaEquipo(it); });
     var kwhMes = total * 30, reg = regionActual(), tarifa = reg.tarifa, verano = (temporada === "verano" && tarifa !== "1");
-    var costo = modo ? costoMes(kwhMes, 0, tarifa, verano) : 0, ce = $("cf-costo");
+    var costo = modo && kwhMes > 0 ? costoMes(kwhMes, tarifa, verano) : 0, ce = $("cf-costo");
     if (ce._val !== costo) { ce.classList.remove("tick"); void ce.offsetWidth; ce.classList.add("tick"); }
     contar(ce, costo, dinero, 320);
     contar($("cf-kwh"), kwhMes, function (v) { return fmt(v) + " kWh al mes"; }, 320);
@@ -2745,7 +4234,7 @@ var APARATOS = [];
     var m = {}, o = [];
     items.forEach(function (it) {
       var g = m[it.cat];
-      if (!g) { g = m[it.cat] = { nombre: it.cat, kwhDia: 0, n: 0, watts: 0, aps: {} }; o.push(g); }
+      if (!g) { g = m[it.cat] = { nombre: it.cat, kwhDia: 0, n: 0, watts: 0, aps: Object.create(null) }; o.push(g); }
       g.kwhDia += it.kwhDia;
       g.n++;
       g.watts += it.watts;
@@ -2770,7 +4259,7 @@ var APARATOS = [];
     vista = v;
     renderDashboard(true);
   }
-function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarContador(); renderDashboard(true); }
+  function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarContador(); renderDashboard(true); guardarBorrador(); }
 
   // Región y temporada: Veracruz (puerto) por defecto y verano según la fecha de hoy
   function pintarTemporada() {
@@ -2786,7 +4275,8 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
     $("pildora-temporada").hidden = sin;
     $("ayuda-region").textContent = reg.ayuda || "Elige la tarifa que aparece en tu recibo de luz.";
     var txt;
-    if (sin) { txt = "La Tarifa 1 cuesta lo mismo todo el año: no tiene temporada de verano."; }
+    if (sin) { txt = "La tarifa 1 usa los mismos bloques todo el año. Sus cuotas pueden cambiar cada mes."; }
+    else if (!reg.inicio) { txt = "Selecciona la temporada de tu recibo. Las fechas de verano dependen de tu localidad."; }
     else {
       txt = "Hoy estamos en " + MESES[hoy - 1] + ": " + (veranoHoy(reg) ? "temporada de verano" : "fuera de verano") + " (el verano va de mayo a octubre). ";
       if (veranoHoy(reg) && hoy === 10) { txt += "Termina el 31 de octubre. "; }
@@ -2795,7 +4285,13 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
     $("ayuda-temporada").textContent = txt;
     pintarTemporada();
   }
-  function alElegirRegion() { temporadaAutomatica(); actualizarContador(); renderDashboard(true); }
+  function alElegirRegion() {
+    temporadaAutomatica();
+    pintarTarifaPreferida();
+    actualizarContador();
+    renderDashboard(true);
+    guardarBorrador();
+  }
 
   // Todo lo que necesitan las pestañas, calculado una sola vez
   function contexto() {
@@ -2803,9 +4299,17 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
     var items = resultado.slice().sort(function (a, b) { return b.kwhDia - a.kwhDia; });
     var totalDia = 0;
     items.forEach(function (it) { totalDia += it.kwhDia; });
-    var kwhMes = totalDia * 30;
+    var kwhMes = totalDia * FACTOR_PERIODO.mes;
+    var mes = costoMes(kwhMes, tarifa, verano);
+    var diasBimestre = FACTOR_PERIODO.bim;
+    var tramos = reparto(kwhMes, tarifa, verano);
+    var excedente = tramos[tramos.length - 1];
+    var nivelBloque = excedente.kwh > 0 ? 2 : kwhMes > tramos[0].hasta ? 1 : 0;
     return { tarifa: tarifa, verano: verano, items: items, totalDia: totalDia, kwhMes: kwhMes,
-      mes: costoMes(kwhMes, 0, tarifa, verano), r: reparto(kwhMes, 0, tarifa, verano),
+      mes: mes, diasBimestre: diasBimestre, kwhBimestre: totalDia * diasBimestre,
+      costoBimestre: mes * (diasBimestre / FACTOR_PERIODO.mes),
+      tramos: tramos, nivelBloque: nivelBloque, periodoCuotas: periodoCuotasCFE(),
+      moneda: monedaVisible(), divisorMoneda: divisorMoneda(), fechaCambio: monedaVisible() === "USD" ? fechaTipoCambio(tipoCambio) : "",
       tarifaTxt: "tarifa " + tarifa + (tarifa === "1" ? "" : (verano ? " en verano" : " fuera de verano")) };
   }
   function colorDe(i) { return i < PALETA.length ? PALETA[i] : COLOR_RESTO; }
@@ -2816,20 +4320,21 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
     $("contexto-casa").textContent = c.items.length + (c.items.length === 1 ? " aparato" : " aparatos") + " · horas " + (modo === "dia" ? "por día" : "por semana");
 
     // Semáforo y costo total
-    var r = c.r, nivel = r[2] > 0 ? "rojo" : (r[1] > 0 ? "amarillo" : "verde");
+    var nivel = ["verde", "amarillo", "rojo"][c.nivelBloque];
+    var cuotaExcedente = c.tramos[c.tramos.length - 1].cuota;
     $("semaforo").setAttribute("data-nivel", nivel);
     $("semaforo").setAttribute("aria-label", "Semáforo de eficiencia: " + nivel);
     $("estado-casa").className = "estado " + nivel;
     $("estado-casa-t").textContent = nivel === "verde" ? "Tu consumo cae en el bloque básico" : (nivel === "amarillo" ? "Tu consumo llega al bloque intermedio" : "Tu consumo llega al bloque excedente");
     $("estado-casa-x").textContent = nivel === "verde" ? "Pagas el kWh más barato de la tarifa." :
-      (nivel === "amarillo" ? "Parte de tu consumo se cobra más caro." : "Los kWh de excedente cuestan hasta " + dinero(PRECIOS.excedente * PRECIOS.iva) + " con IVA: reducirlos ahorra mucho.");
-    num("d-bim", c.mes * 2, dinero, ms);
+      (nivel === "amarillo" ? "Parte de tu consumo se cobra más caro." : "Cada kWh en excedente suma " + dinero(cuotaExcedente * FACTOR_IVA) + " con IVA.");
+    num("d-bim", c.costoBimestre, dinero, ms);
     num("d-mes", c.mes, dinero, ms);
-    num("d-anio", c.mes * 365 / 30, dinero, ms);
+    num("d-anio", 6 * (costoMes(c.kwhMes, c.tarifa, true) + costoMes(c.kwhMes, c.tarifa, false)), dinero, ms);
     num("k-dia", c.totalDia, fmt, ms);
     num("k-sem", c.totalDia * 7, fmt, ms);
     num("k-mes", c.kwhMes, fmt, ms);
-    num("k-bim", c.totalDia * 60, fmt, ms);
+    num("k-bim", c.kwhBimestre, fmt, ms);
 
     // Aviso de la tarifa DAC
     var dac = LIMITE_DAC[c.tarifa], av = $("aviso-dac");
@@ -2838,29 +4343,48 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
       av.className = "estado " + (c.kwhMes > dac ? "rojo" : "amarillo");
       $("aviso-dac-t").textContent = c.kwhMes > dac ? "Cuidado con la tarifa DAC" : "Vas cerca del límite de la tarifa DAC";
       $("aviso-dac-x").textContent = c.kwhMes > dac
-        ? "Tu casa pasaría de " + dac + " kWh al mes, el límite de la tarifa " + c.tarifa + ". Si tu promedio de 12 meses lo supera, CFE retira el subsidio y cobra cerca de $6 por kWh."
+        ? "Esta estimación supera " + dac + " kWh al mes. CFE usa tu promedio móvil de 12 meses para determinar si te aplica DAC. Sus cargos dependen de la región."
         : "Tu casa llegaría a " + fmt(c.kwhMes) + " kWh al mes y el límite de la tarifa " + c.tarifa + " es de " + dac + " kWh al mes.";
     }
 
     // Bloques de la tarifa CFE en tarjetas
-    var pr = [PRECIOS.basico, PRECIOS.intermedio, PRECIOS.excedente], nombres = ["Básico", "Intermedio", "Excedente"];
-    var colores = ["var(--verde)", "var(--amarillo)", "var(--rojo)"];
-    var lim = BLOQUES[c.tarifa][c.verano ? "verano" : "fuera"], tope1 = lim[0], tope2 = lim[0] + lim[1];
-    var rangos = ["Primeros " + tope1 + " kWh al mes", "Siguientes " + lim[1] + " kWh (hasta " + tope2 + ")", "Más de " + tope2 + " kWh al mes"];
-    var ul = $("bloques-cfe"), barras = document.querySelectorAll("#barra-casa i");
-    ul.innerHTML = "";
-    for (var i = 0; i < 3; i++) {
-      barras[i].style.width = (c.kwhMes > 0 ? (r[i] / c.kwhMes * 100) : 0) + "%";
+    $("periodo-cuotas").textContent = "Cuotas de " + c.periodoCuotas + " · " + c.moneda + " por kWh" +
+      (c.fechaCambio ? " · Conversión BCE del " + c.fechaCambio : "");
+    $("cfe-minimo").hidden = c.kwhMes >= MINIMO_CFE;
+    $("nota-cuotas").textContent = "Estimación residencial con cuotas de " + c.periodoCuotas +
+      ", IVA y mínimo de 25 kWh por mes. El bimestre repite el mes y el año combina seis meses de cada temporada a las mismas cuotas. DAP y DAC quedan fuera de la estimación.";
+    var ul = $("bloques-cfe"), barra = $("barra-casa");
+    var cuatroBloques = c.tramos.length === 4;
+    var clases = cuatroBloques ? ["b1", "b2", "b-alto", "b3"] : ["b1", "b2", "b3"];
+    var colores = cuatroBloques
+      ? ["var(--verde)", "var(--amarillo)", "#e68135", "var(--rojo)"]
+      : ["var(--verde)", "var(--amarillo)", "var(--rojo)"];
+    ul.classList.toggle("cuatro-bloques", cuatroBloques);
+    ul.replaceChildren();
+    if (barra.childElementCount !== c.tramos.length) {
+      barra.replaceChildren();
+      clases.forEach(function (clase) {
+        var segmento = document.createElement("i");
+        segmento.className = clase;
+        barra.appendChild(segmento);
+      });
+    }
+    c.tramos.forEach(function (tramo, i) {
+      barra.children[i].style.width = (c.kwhMes > 0 ? tramo.kwh / c.kwhMes * 100 : 0) + "%";
       var li = document.createElement("li");
-      li.className = "bloque-cfe" + (r[i] > 0 ? " activo" : "");
+      li.className = "bloque-cfe" + (tramo.kwh > 0 ? " activo" : "");
       li.style.setProperty("--c", colores[i]);
       li.innerHTML = '<b></b><span class="bc-rango"></span><span class="bc-precio"></span><span class="bc-casa"></span>';
-      li.querySelector("b").textContent = nombres[i];
-      li.querySelector(".bc-rango").textContent = rangos[i];
-      li.querySelector(".bc-precio").textContent = "$" + pr[i].toFixed(3) + " por kWh + IVA";
-      li.querySelector(".bc-casa").textContent = r[i] > 0 ? "Tu casa: " + fmt(r[i]) + " kWh · " + dinero(r[i] * pr[i] * PRECIOS.iva) : "Tu casa: sin consumo aquí";
+      li.querySelector("b").textContent = tramo.nombre;
+      li.querySelector(".bc-rango").textContent = !Number.isFinite(tramo.hasta) ? "Más de " + tramo.desde + " kWh al mes"
+        : tramo.desde === 0 ? "Primeros " + tramo.hasta + " kWh al mes"
+        : "Siguientes " + (tramo.hasta - tramo.desde) + " kWh (hasta " + tramo.hasta + ")";
+      li.querySelector(".bc-precio").textContent = dinero(tramo.cuota, 3) + " por kWh + IVA";
+      li.querySelector(".bc-casa").textContent = tramo.kwh > 0
+        ? "Tu casa: " + fmt(tramo.kwh) + " kWh · " + dinero(tramo.kwh * tramo.cuota * FACTOR_IVA)
+        : "Tu casa: sin consumo aquí";
       ul.appendChild(li);
-    }
+    });
 
     // Píldora Aparato / Categoría: «Por categoría» no está disponible si solo hay una categoría
     var multiples = c.items.length >= 2, ncat = categoriasUsadas(c.items).length;
@@ -2926,7 +4450,7 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
 
     var datos = [];
     if (c.tarifa !== "1") {
-      var cv = costoMes(c.kwhMes, 0, c.tarifa, true) * 2, cf = costoMes(c.kwhMes, 0, c.tarifa, false) * 2;
+      var cv = costoMes(c.kwhMes, c.tarifa, true) * 2, cf = costoMes(c.kwhMes, c.tarifa, false) * 2;
       datos.push(["Verano y fuera de verano:", "al bimestre pagarías unos " + dinero(cv) + " en verano y unos " + dinero(cf) + " fuera de verano" + (cf - cv > 0.5 ? " (el verano te ahorra " + dinero(cf - cv) + ")." : "."), ""]);
     }
     datos.push(["Cómo se calcula:", "kWh de cada aparato por los bloques de la " + c.tarifaTxt + ", con IVA y sin DAP. Compara el total con los kWh de tu recibo para ver qué tan cerca estás.", ""]);
@@ -2972,16 +4496,16 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
   function ahorroPotencial(c) {
     var tot = 0;
     c.items.forEach(function (it) {
-      it.ef = EFICIENTE_NOMBRE[it.aparato] || EFICIENTE[it.tipo] || EFICIENTE.otros;
+      it.ef = Object.hasOwn(EFICIENTE_NOMBRE, it.aparato) ? EFICIENTE_NOMBRE[it.aparato] : (EFICIENTE[it.tipo] || EFICIENTE.otros);
       it.ahorroKwh = it.kwhDia * 30 * it.ef.ahorro;
       tot += it.ahorroKwh;
     });
     var kwhEf = c.kwhMes - tot;
-    return { tot: tot, kwhEf: kwhEf, mesEf: costoMes(kwhEf, 0, c.tarifa, c.verano), pct: Math.round(tot / c.kwhMes * 100) };
+    return { tot: tot, kwhEf: kwhEf, mesEf: costoMes(kwhEf, c.tarifa, c.verano), pct: Math.round(tot / c.kwhMes * 100) };
   }
 
   function renderGuia(c) {
-    var grupos = {}, orden = [];
+    var grupos = Object.create(null), orden = [];
     c.items.forEach(function (it) {
       var g = grupos[it.aparato];
       if (!g) { g = grupos[it.aparato] = { nombre: it.aparato, tipo: it.tipo, cat: it.cat, n: 0, kwhDia: 0, watts: 0, horasDia: 0 }; orden.push(g); }
@@ -3040,13 +4564,33 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
   }
 
   // ---------- Navegación y reinicio ----------
-  function comenzar() { mostrarPantalla(2); }
-  function regresar() { if (pantallaActual > 1) { mostrarPantalla(pantallaActual - 1, true); } }
+  function comenzar() {
+    mostrandoContinuidad = false;
+    restaurarConfiguracion(null);
+    $("configuraciones-locales").open = false;
+    guardarBorrador();
+    mostrarPantalla(2, pantallaActual > 2);
+  }
 
-  function reiniciar() {
+  function continuarCalculo() {
+    if (!lista.length) { return; }
+    mostrandoContinuidad = false;
+    $("configuraciones-locales").open = false;
+    actualizarZonaLocal();
+    if (modo) { siguienteLista(); return; }
+    $("buscar").focus();
+  }
+
+  function regresar() {
+    if (pantallaActual === 5) { volverDeAjustes(); return; }
+    if (pantallaActual > 1) { mostrarPantalla(pantallaActual - 1, true); }
+  }
+
+  function restaurarConfiguracion(datos, perfil) {
     lista = [];
     cont = 0;
-    modo = "";
+    modo = datos && (datos.modo === "dia" || datos.modo === "semana") ? datos.modo : "";
+    perfilAbierto = perfil || "";
     confirmada = false;
     resultado = null;
     periodo = "mes";
@@ -3055,45 +4599,33 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
     $("lista-tarjetas").innerHTML = "";
     $("lista-tiempo").innerHTML = "";
     $("buscar").value = "";
-    $("ayuda-modo").textContent = "Elígelo primero: define el máximo de cada barra (24 h al día o 168 h a la semana).";
+    busq.categoria = "";
+    cerrarBusqueda();
     $("error-modo").hidden = true;
     $("error-tiempos").hidden = true;
-    ["dia", "semana"].forEach(function (k) { $("m-" + k).classList.remove("activa"); $("m-" + k).setAttribute("aria-pressed", "false"); });
-    document.querySelectorAll(".panel[open]").forEach(function (d) { d.removeAttribute("open"); });
-    ddRegion.elegir(0);
+    var region = datos && buscarRegion(datos.region);
+    ddRegion.fijar((region || buscarRegion(tarifaPreferida) || REGIONES[0]).valor);
+    pintarTarifaPreferida();
+    temporadaAutomatica();
+    if (region && region.tarifa !== "1" && (datos.temporada === "verano" || datos.temporada === "fuera")) {
+      temporada = datos.temporada;
+      pintarTemporada();
+    }
+    if (datos) {
+      datos.equipos.forEach(function (equipo) { agregarAparato(equipo, null, true); });
+    }
     actualizarLista();
-    actualizarContador();
+    actualizarZonaLocal();
+    aplicarModoVisual();
     irPestana("consumo");
-    mostrarPantalla(1, true);
   }
 
-  // ---------- Advertencia al salir con datos en la lista ----------
-  var modalSalir = document.getElementById("modal-salir");
-  var cerrandoSalir = false;
+  function reiniciar() {
+    if (!confirmarCambioDeCalculo("Empezar de nuevo")) { return; }
+    comenzar();
+  }
 
-  // Clic en «Eficiencia Energética»: si hay equipos en la lista, antes pregunta
-  function intentarSalir() {
-    var n = lista.length;
-    if (!n) { reiniciar(); return; }
-    $("salir-n").textContent = n + (n === 1 ? " equipo" : " equipos");
-    cerrandoSalir = false;
-    modalSalir.classList.remove("cerrando");
-    if (!modalSalir.open) { modalSalir.showModal(); }
-  }
-  function cerrarModalSalir(despues) {
-    if (!modalSalir.open || cerrandoSalir) { return; }
-    cerrandoSalir = true;
-    modalSalir.classList.add("cerrando");
-    setTimeout(function () {
-      modalSalir.close();
-      modalSalir.classList.remove("cerrando");
-      cerrandoSalir = false;
-      if (typeof despues === "function") { despues(); }
-    }, REDUCIR ? 0 : 200);
-  }
-  function confirmarSalida() { cerrarModalSalir(reiniciar); }
-  modalSalir.addEventListener("cancel", function (e) { e.preventDefault(); cerrarModalSalir(); });     // tecla Escape
-  modalSalir.addEventListener("click", function (e) { if (e.target === modalSalir) { cerrarModalSalir(); } });   // clic en el fondo
+  function intentarSalir() { mostrarPantalla(1, true); }
 
   // Teclado en las pestañas: flechas izquierda y derecha
   $("pestanas").addEventListener("keydown", function (e) {
@@ -3164,11 +4696,180 @@ function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarConta
       if (mqOscuro.addEventListener) { mqOscuro.addEventListener("change", alCambiar); } else if (mqOscuro.addListener) { mqOscuro.addListener(alCambiar); }
     }
   }
-window.addEventListener("beforeunload", function (e) {
-    if (lista.length > 0) {
-      var msj = "Tienes equipos en tu lista. ¿Seguro que quieres salir?";
-      e.returnValue = msj;
-      return msj;
+
+  // Los respaldos abren la web con los datos en el fragmento, que el servidor no recibe.
+  var URL_APP_PUBLICA = "https://zomavilla.github.io/calculadora-energetica/";
+  var PREFIJO_RESPALDO = "#restaurar=";
+  var LIMITE_ARCHIVO_RESPALDO = 8 * 1024 * 1024;
+  var respaldoPendiente = null;
+
+  function codificarRespaldo(respaldo) {
+    var bytes = new TextEncoder().encode(JSON.stringify(respaldo));
+    var binario = "";
+    for (var i = 0; i < bytes.length; i += 8192) {
+      binario += String.fromCharCode(...bytes.subarray(i, i + 8192));
+    }
+    return btoa(binario).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  function decodificarRespaldo(texto) {
+    if (!texto || texto.length > LIMITE_ARCHIVO_RESPALDO || !/^[A-Za-z0-9_-]+$/.test(texto)) {
+      throw new Error("Respaldo inválido");
+    }
+    var binario = atob(texto.replace(/-/g, "+").replace(/_/g, "/"));
+    var bytes = Uint8Array.from(binario, function (c) { return c.charCodeAt(0); });
+    return JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
+  }
+
+  function exportarConfiguraciones() {
+    var respaldo = {
+      formato: "proyecto-eficiencia", version: 1, apariencia: apariencia, moneda: monedaPreferida,
+      tarifaPreferida: tarifaPreferida, configuraciones: leerConfiguraciones(),
+      borrador: { perfil: perfilAbierto, datos: tomarConfiguracion() }
+    };
+    var contenido = codificarRespaldo(respaldo);
+    var enlace = URL_APP_PUBLICA + (contenido.length <= 800000 ? PREFIJO_RESPALDO + contenido : "");
+    var hoja = '<!doctype html><html lang="es-MX"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
+      '<meta name="referrer" content="no-referrer"><title>Respaldo de Proyecto Eficiencia</title>' +
+      '<style>body{font:1rem system-ui;margin:10vh auto;max-width:30rem;padding:0 1rem;color:#16382d;background:#eef8f3}' +
+      'a{display:inline-block;padding:.7rem 1rem;border-radius:.5rem;background:#10553f;color:white;font-weight:700}</style>' +
+      '<h1>Respaldo de Proyecto Eficiencia</h1><p>Abre la app para restaurar tus equipos y preferencias.</p>' +
+      '<p>También puedes seleccionar este archivo en Ajustes → Restaurar respaldo.</p>' +
+      '<a id="abrir" href="' + enlace + '">Abrir Proyecto Eficiencia</a>' +
+      '<script type="application/octet-stream" id="respaldo-eficiencia">' + contenido + '<' + '/script>' +
+      '<script>location.replace(document.getElementById("abrir").href);<' + '/script></html>';
+    var url = URL.createObjectURL(new Blob([hoja], { type: "text/html;charset=utf-8" }));
+    var descarga = document.createElement("a");
+    descarga.href = url;
+    var fecha = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Mexico_City" });
+    descarga.download = "Proyecto-Eficiencia-" + fecha + ".eficiencia.html";
+    document.body.appendChild(descarga);
+    descarga.click();
+    descarga.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+    $("estado-respaldo").textContent = "Respaldo descargado. Guárdalo en un lugar privado.";
+  }
+
+  function configuracionRespaldada(datos) {
+    if (!configuracionValida(datos) || !buscarRegion(datos.region) ||
+        !["", "dia", "semana"].includes(datos.modo) || !["verano", "fuera"].includes(datos.temporada)) {
+      return false;
+    }
+    var maximo = datos.modo === "semana" ? 10080 : 1440;
+    return datos.equipos.every(function (it) {
+      return it.nombre.length > 0 && it.nombre.length <= 120 && it.watts.length <= 100 &&
+        (it.cat === OTROS || Object.hasOwn(CATALOGO, it.cat)) &&
+        typeof it.tipo === "string" && it.tipo !== "__proto__" && it.tipo !== "constructor" && it.tipo !== "prototype" &&
+        /^[a-z0-9_]{1,40}$/.test(it.tipo) &&
+        (typeof it.sugerido === "number" || typeof it.sugerido === "string") &&
+        typeof it.otro === "boolean" && Number.isInteger(it.minutos) && it.minutos >= 0 && it.minutos <= maximo;
+    });
+  }
+
+  function prepararRestauracion(respaldo) {
+    var aspecto = respaldo && respaldo.apariencia;
+    if (!respaldo || respaldo.formato !== "proyecto-eficiencia" || respaldo.version !== 1 ||
+        !aspecto || !TEMAS_IDS.includes(aspecto.tema) || typeof aspecto.auto !== "boolean" ||
+        !["claro", "oscuro"].includes(aspecto.manual) || !["MXN", "USD"].includes(respaldo.moneda) ||
+        !(respaldo.tarifaPreferida === "" || buscarRegion(respaldo.tarifaPreferida)) ||
+        !respaldo.borrador || typeof respaldo.borrador.perfil !== "string" || !configuracionRespaldada(respaldo.borrador.datos) ||
+        !Array.isArray(respaldo.configuraciones) || !respaldo.configuraciones.every(function (perfil) {
+          return perfil && typeof perfil.id === "string" && /^[a-z0-9]+$/.test(perfil.id) &&
+            typeof perfil.nombre === "string" && perfil.nombre.length > 0 && perfil.nombre.length <= 60 &&
+            Number.isFinite(perfil.modificada) && perfil.modificada >= 0 && perfil.modificada <= 8640000000000000 &&
+            configuracionRespaldada(perfil.datos);
+        }) || new Set(respaldo.configuraciones.map(function (p) { return p.id; })).size !== respaldo.configuraciones.length) {
+      throw new Error("Formato de respaldo inválido");
+    }
+    respaldoPendiente = respaldo;
+    abrirAjustes();
+    var n = respaldo.configuraciones.length;
+    $("restaurar-resumen").textContent = "Se restaurarán " + n + (n === 1 ? " configuración guardada" : " configuraciones guardadas") +
+      ", el cálculo en curso y tus preferencias. Esto reemplazará los datos de la app en este navegador.";
+    if (!$("restaurar-dialogo").open) { $("restaurar-dialogo").showModal(); }
+  }
+
+  function restaurarRespaldo() {
+    var respaldo = respaldoPendiente;
+    if (!respaldo) { return; }
+    var cambios = [
+      [CLAVE_APARIENCIA, { tema: respaldo.apariencia.tema, auto: respaldo.apariencia.auto, manual: respaldo.apariencia.manual }],
+      [CLAVE_MONEDA, respaldo.moneda],
+      [CLAVE_TARIFA_PREFERIDA, respaldo.tarifaPreferida],
+      [CLAVE_CONFIGURACIONES, respaldo.configuraciones],
+      [CLAVE_BORRADOR, respaldo.borrador]
+    ];
+    try {
+      var anteriores = cambios.map(function (cambio) { return [cambio[0], localStorage.getItem(cambio[0])]; });
+      try {
+        cambios.forEach(function (cambio) { localStorage.setItem(cambio[0], JSON.stringify(cambio[1])); });
+      } catch (err) {
+        anteriores.forEach(function (anterior) {
+          if (anterior[1] === null) { localStorage.removeItem(anterior[0]); }
+          else { localStorage.setItem(anterior[0], anterior[1]); }
+        });
+        throw err;
+      }
+    } catch (err) {
+      $("restaurar-dialogo").close();
+      $("estado-respaldo").textContent = "El navegador no pudo guardar los datos del respaldo. Revisa el espacio o los permisos de almacenamiento.";
+      return;
+    }
+    apariencia = cambios[0][1];
+    monedaPreferida = respaldo.moneda;
+    tarifaPreferida = respaldo.tarifaPreferida;
+    configuraciones = respaldo.configuraciones;
+    almacenamientoDisponible = true;
+    restaurarConfiguracion(respaldo.borrador.datos, respaldo.borrador.perfil);
+    mostrarConfiguraciones();
+    aplicarApariencia();
+    aplicarMoneda();
+    actualizarTipoCambio();
+    $("restaurar-dialogo").close();
+    $("estado-respaldo").textContent = "Respaldo restaurado en este navegador.";
+  }
+
+  function recibirEnlaceDeRespaldo() {
+    if (!location.hash.startsWith(PREFIJO_RESPALDO)) { return; }
+    var contenido = location.hash.slice(PREFIJO_RESPALDO.length);
+    var limpia = new URL(location.href);
+    limpia.hash = "";
+    try { history.replaceState(history.state, "", limpia); } catch (err) {}
+    try {
+      prepararRestauracion(decodificarRespaldo(contenido));
+    } catch (err) {
+      abrirAjustes();
+      $("estado-respaldo").textContent = "El enlace no contiene un respaldo válido. Puedes seleccionar el archivo desde Ajustes.";
+    }
+  }
+
+  function iniciarRespaldos() {
+    var archivo = $("archivo-configuraciones"), dialogo = $("restaurar-dialogo");
+    $("exportar-configuraciones").addEventListener("click", exportarConfiguraciones);
+    $("importar-configuraciones").addEventListener("click", function () { archivo.click(); });
+    archivo.addEventListener("change", async function () {
+      var seleccionado = archivo.files[0];
+      archivo.value = "";
+      if (!seleccionado) { return; }
+      try {
+        if (seleccionado.size > LIMITE_ARCHIVO_RESPALDO) { throw new Error("Archivo demasiado grande"); }
+        var texto = (await seleccionado.text()).trim();
+        var junto = texto.match(/<script type="application\/octet-stream" id="respaldo-eficiencia">([A-Za-z0-9_-]+)<\/script>/);
+        prepararRestauracion(junto ? decodificarRespaldo(junto[1]) : JSON.parse(texto));
+      } catch (err) {
+        $("estado-respaldo").textContent = "No se pudo abrir el respaldo. Selecciona un archivo exportado desde Proyecto Eficiencia.";
+      }
+    });
+    $("restaurar-confirmar").addEventListener("click", restaurarRespaldo);
+    dialogo.addEventListener("close", function () { respaldoPendiente = null; });
+    window.addEventListener("hashchange", recibirEnlaceDeRespaldo);
+    recibirEnlaceDeRespaldo();
+  }
+
+  window.addEventListener("beforeunload", function (e) {
+    if (!almacenamientoDisponible && lista.length) {
+      e.preventDefault();
+      e.returnValue = "";
     }
   });
   // ---------- Animaciones: onda al pulsar e indicador deslizante de las píldoras ----------
@@ -3325,44 +5026,9 @@ window.addEventListener("beforeunload", function (e) {
     seguir(600);
   }
   function iniciarScrollSuperpuesto() {
-    Array.prototype.forEach.call(document.querySelectorAll("main, .modal-card, .dd-lista, .resultados-busqueda"), function (el) { scrollSuperpuesto(el); });
+    Array.prototype.forEach.call(document.querySelectorAll("main, .modal-card, .dd-lista"), function (el) { scrollSuperpuesto(el); });
   }
 
-  // ---------- Globo «Prueba otros temas» (cada vez que se abre la web, en el inicio) ----------
-  var aviso = document.getElementById("aviso-temas");
-  var btnInfo = document.querySelector("header.barra .info");
-  var avisoTimer = 0;
-
-  // Lo coloca justo debajo del botón ⓘ, con la flecha apuntándole
-  function colocarAviso() {
-    var r = btnInfo.getBoundingClientRect();
-    var vw = document.documentElement.clientWidth;
-    var ancho = aviso.offsetWidth;
-    var izq = Math.max(12, Math.min(r.right - ancho + 8, vw - ancho - 12));
-    var flecha = Math.max(24, Math.min(r.left + r.width / 2 - izq, ancho - 24));
-    aviso.style.left = izq + "px";
-    aviso.style.top = Math.round(r.bottom + 12) + "px";
-    aviso.style.setProperty("--flecha-x", flecha + "px");
-  }
-  function mostrarAviso() {
-    if (pantallaActual !== 1 || aviso.classList.contains("on")) { return; }
-    clearTimeout(avisoTimer);
-    colocarAviso();
-    aviso.classList.add("anim", "on");
-    btnInfo.classList.add("llama");
-  }
-  function cerrarAviso() {
-    clearTimeout(avisoTimer);
-    if (!aviso.classList.contains("on")) { return; }
-    aviso.classList.remove("on");
-    btnInfo.classList.remove("llama");
-    avisoTimer = setTimeout(function () { aviso.classList.remove("anim"); }, 450);   // deja terminar el fundido antes de parar los colores
-  }
-  $("aviso-ok").addEventListener("click", cerrarAviso);
-  btnInfo.addEventListener("click", cerrarAviso);                       // si toca el ⓘ, ya vio el aviso
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { cerrarAviso(); } });
-  window.addEventListener("resize", function () { if (aviso.classList.contains("on")) { colocarAviso(); } });
-  window.addEventListener("pageshow", function (e) { if (e.persisted) { setTimeout(mostrarAviso, 300); } });   // al volver con «Atrás» desde otra página
 
   // ---------- SVG que se dibujan y bloques que aparecen al hacer scroll ----------
   document.querySelectorAll(".ico svg path, .ico svg circle, .ico svg line, .ico svg polyline, .ico svg rect, .ico svg ellipse").forEach(function (f) { f.setAttribute("pathLength", "1"); });
@@ -3374,17 +5040,33 @@ window.addEventListener("beforeunload", function (e) {
   }
 
   // ---------- Inicialización ----------
+  prepararReporte(function () {
+    if (!resultado || !resultado.length) { return null; }
+    var c = contexto();
+    var equipo = c.items[0];
+    c.consejos = consejosDe(equipo, c.totalDia ? equipo.kwhDia / c.totalDia : 0);
+    return c;
+  });
   iniciarApariencia();
   ddRegion = crearDD("region", "Selecciona tu tarifa", alElegirRegion);
   ddRegion.opciones(REGIONES.map(function (g) { return { valor: g.valor, texto: g.texto, nota: g.nota }; }));
-  ddRegion.elegir(0);
   construirChips();
   iniciarBusqueda();
   iniciarScrollSuperpuesto();
-  actualizarLista();
-  try { history.replaceState({ pantalla: 1, pos: 0 }, "", ""); } catch (err) {}
+  configuraciones = leerConfiguraciones();
+  tarifaPreferida = leerGuardado(CLAVE_TARIFA_PREFERIDA, "");
+  var borrador = leerGuardado(CLAVE_BORRADOR, {});
+  restaurarConfiguracion(configuracionValida(borrador.datos) ? borrador.datos : null, borrador.perfil);
+  mostrarConfiguraciones();
+  iniciarPreferencias();
+  iniciarDatosCFE(CFE_INCLUIDOS, function (tabla) {
+    datosCFE = tabla;
+    actualizarContador();
+    renderDashboard(false);
+  });
+  try { history.replaceState({ pantalla: 1, pos: 0 }, ""); } catch (err) {}
   mostrarPantalla(1, false, true);
-  setTimeout(mostrarAviso, REDUCIR ? 0 : 900);   // sale cada vez que se entra a la web
+  iniciarRespaldos();
 
   // PWA: el service worker solo se registra en http(s) (no al abrir el archivo directamente)
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
