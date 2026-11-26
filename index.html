@@ -18,6 +18,7 @@
   var oscuro = auto ? !!(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) : manual === "oscuro";
   d.setAttribute("data-tema", tema);
   d.setAttribute("data-modo", oscuro ? "oscuro" : "claro");
+  d.toggleAttribute("data-oled", oscuro && !!g && g.oled === true);
   var red = (g && typeof g.reducir === "boolean") ? g.reducir : !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   d.setAttribute("data-movimiento", red ? "reducido" : "normal");
 })();
@@ -79,7 +80,8 @@ html[data-modo="oscuro"] .fe-c1{fill:#0d2b34; opacity:.9}
 html[data-modo="oscuro"] .fe-c2{fill:#0a2229; opacity:.95}
 html[data-modo="oscuro"] .fe-c3{fill:#07181d; opacity:1}
 html[data-modo="oscuro"] .fe-nube ellipse{fill:#9fb8d8; opacity:.09}
-html[data-modo="oscuro"] .fe-t{fill:#0b1722; stroke:#6fbfa0; stroke-opacity:.75}
+html[data-modo="oscuro"] .fe-t{fill:color-mix(in srgb,var(--hoja) 18%,var(--cielo)); stroke:var(--hoja); stroke-opacity:.75}
+html[data-modo="oscuro"] .fe-luz{fill:var(--hoja)}
 html[data-modo="oscuro"] .fe-panel path{fill:#10324f; stroke:#5fb4e0; stroke-opacity:.6}
 .fe-nube ellipse{fill:var(--blanco); opacity:.75}
 .fe-nube{animation:fe-nube linear infinite}
@@ -302,6 +304,11 @@ footer{flex:none; text-align:center; font-size:.75rem; color:var(--gris); paddin
 .panel[open] > summary .ico{background:var(--blanco)}
 .panel-cuerpo{padding:8px 16px 18px;}
 .panel-cuerpo label{margin-top:16px}
+.panel-tarifa .campo{min-width:0}
+.panel-tarifa .campo > label{margin-top:6px}
+.panel-tarifa .ajuste-acciones{margin-top:10px}
+.panel-tarifa .ajuste-acciones .ajuste-accion{margin:0}
+#ayuda-temporada:empty{margin:0}
 .comparar{display:grid; gap:10px; margin:14px 0 4px}
 .fila{display:grid; grid-template-columns:92px 1fr 74px; align-items:center; gap:10px; font-size:.88rem}
 .fila > span{color:var(--gris); font-weight:700}
@@ -365,14 +372,16 @@ input[type=range].it-slider{-webkit-appearance:none; appearance:none; display:bl
 input:disabled{opacity:.6; cursor:not-allowed}
 .des-lista{list-style:none; display:grid; gap:10px; margin-top:12px}
 .des-item{padding:12px 14px; background:var(--cielo); border-radius:14px}
-.des-cab{display:flex; justify-content:space-between; gap:12px; align-items:baseline}
+.des-cab{display:flex; flex-wrap:wrap; gap:4px 12px; align-items:baseline}
 .des-val{font-weight:800; white-space:nowrap; font-variant-numeric:tabular-nums}
+.des-cifras{display:inline-flex; align-items:baseline; gap:6px; flex:none; margin-inline-start:auto; white-space:nowrap}
+.des-costo{padding:2px 6px; border:1px solid var(--hoja); border-radius:6px; background:var(--blanco); color:var(--hoja); font-size:.82rem; font-weight:750; font-variant-numeric:tabular-nums}
 .des-meta{color:var(--gris); font-size:.82rem; margin:2px 0 8px}
 .des-item .pista i{background:var(--hoja)}
 .des-pie{display:flex; justify-content:space-between; gap:8px; color:var(--gris); font-size:.8rem; font-weight:700; margin-top:6px}
 .total-casa{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:12px; padding:14px 16px; border-radius:14px; background:var(--hoja); color:var(--sobre-hoja); font-weight:800}
 .pildora.cuatro .opt{padding:8px 2px; font-size:.85rem; white-space:nowrap}
-.des-cab b{min-width:0}
+.des-cab b{flex:1 1 10rem; min-width:0; overflow-wrap:anywhere}
 .des-val{font-size:.95rem}
 .pildora + .des-lista{margin-top:14px}
 
@@ -617,7 +626,7 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
 .cmp-texto.cerca{background:#e8f9ee; color:#0c5a2c}
 .cmp-texto.lejos{background:#fff6dc; color:#6b4a00}
 .nota-anual{font-size:.74rem; max-width:34ch; opacity:.9}
-/* Indicador de eficiencia A–G (a la derecha del semáforo) */
+/* Nivel de consumo según tu tarifa A–G (a la derecha del semáforo) */
 .resumen-dash{flex-wrap:wrap}
 .escala-ef{flex:1 1 190px; min-width:190px; max-width:460px; margin-left:auto; padding:12px 14px 12px; border-radius:16px; background:var(--cielo)}
 .ef-tit{font-size:.8rem; font-weight:700; color:var(--gris); margin:0 0 8px}
@@ -642,6 +651,7 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
 .donut-wrap{display:flex; justify-content:center; margin:6px 0 16px; overflow:visible}
 .donut-wrap[hidden]{display:none}
 .donut{display:block; width:100%; max-width:620px; margin:0 auto; overflow:visible}
+@media (min-width:1024px) and (pointer:fine){.donut{max-width:900px}}
 .donut > svg{display:block; width:100%; height:auto; overflow:visible}
 .donut svg.dclip{overflow:hidden}
 .donut text{font-family:inherit}
@@ -649,8 +659,24 @@ button:disabled:not(.atras):not(.opt){opacity:.45; cursor:not-allowed}
 .des-item .pista i{background:var(--c)}
 .panel.nota{margin-top:16px}
 .grupo summary::after{margin-left:8px}
-.grupo .sm-pct{margin-left:auto}
-.grupo .num{width:28px; height:28px; font-size:.8rem}
+.grupo .sm-pct{margin-left:auto; flex:none}
+.grupo .sm-t{min-width:0; overflow-wrap:anywhere}
+.guia-prioridad{margin:16px 0 20px; padding:14px 18px; border:1px solid var(--linea); border-inline-start:4px solid var(--hoja); border-radius:14px; background:var(--menta)}
+.guia-prioridad h3{font-size:.85rem; color:var(--hoja); margin-bottom:4px}
+.guia-prioridad strong{font-size:1.05rem; overflow-wrap:anywhere}
+.guia-prioridad p{font-size:.875rem; color:var(--gris); margin-top:5px}
+#guia-grupos,#guia-otros{margin-top:10px}
+#guia-mas{margin-top:12px}
+#panel-guia .ctit{display:grid; justify-items:start; gap:4px}
+#panel-guia .consejos{gap:10px}
+@media (max-width:767px){
+  #panel-guia .consejos{display:grid}
+  #panel-guia .consejos li:not(.urgente){border:0; background:var(--cielo); border-radius:12px; padding:12px 12px 12px 44px}
+  #panel-guia .consejos li:not(.urgente)::before{left:10px}
+}
+@media (min-width:1024px){
+  #panel-guia .grupo .consejos:has(> li:nth-child(3):last-child):not(:has(> .urgente)){grid-template-columns:repeat(3,minmax(0,1fr))}
+}
 .metas .aporte{color:var(--tinta); font-weight:600; background:var(--cielo); padding:8px 10px; border-radius:10px; margin-top:8px}
 .estado[hidden]{display:none}
 
@@ -1062,8 +1088,18 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
   font-size: .875rem;
 }
 .reporte-campo { display: grid; gap: 6px; margin: 0; font-weight: 700; }
-.reporte-check { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--reporte-secundario); }
-.reporte-check input { width: 16px; height: 16px; accent-color: var(--reporte-acento); }
+.reporte-check { display: flex; align-items: center; gap: 8px; min-height: 36px; margin: 0; color: var(--reporte-secundario); }
+.reporte-check input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  accent-color: var(--reporte-acento);
+}
 #reporte-consejo {
   width: 100%;
   min-width: 0;
@@ -1158,9 +1194,11 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 .ajuste-tarjeta h3 { color: var(--tinta); font-size: 1.1rem; line-height: 1.3; }
 .ajuste-tarjeta p { margin-top: 5px; color: var(--gris); }
 .ajuste-tarjeta .creditos { margin: 14px 0 0; }
+.ajuste-tarjeta .creditos + .ajuste-seccion { margin-top: 16px; }
+.creditos .credito-detalle { margin-top: 6px; color: var(--gris); font-size: .875rem; font-weight: 400; }
 .ajustes-apariencia .fila-switch { margin-top: 14px; }
 .ajustes-apariencia .tema-titulo { margin-top: 22px; }
-.ajuste-tarjeta .ajuste-accion {
+:is(.ajuste-tarjeta,.panel-tarifa) .ajuste-accion {
   width: auto;
   max-width: 100%;
   min-width: 0;
@@ -1169,12 +1207,12 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
   padding: 8px 14px;
   text-align: center;
 }
-.ajuste-tarjeta .ajuste-accion.sec {
+:is(.ajuste-tarjeta,.panel-tarifa) .ajuste-accion.sec {
   background: var(--blanco);
   border: 1px solid var(--linea);
   color: var(--hoja);
 }
-.ajuste-tarjeta .ajuste-accion.sec:hover { background: var(--menta); }
+:is(.ajuste-tarjeta,.panel-tarifa) .ajuste-accion.sec:hover { background: var(--menta); }
 .ajuste-accion[hidden],
 #instalacion-manual[hidden] { display: none; }
 #instalacion-manual { margin-top: 12px; }
@@ -1300,7 +1338,6 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 }
 .local-borrador[hidden], .inicio-nota[hidden] { display: none; }
 .local-borrador small, .inicio-nota { color: var(--gris); font-size: .875rem; }
-.inicio-nota { margin: 8px 0 0; }
 .local-fila .local-fila-acciones { display: flex; gap: 6px; flex-wrap: wrap; }
 #pantalla2 .local-nueva { margin-top: 12px; }
 .equipos-ayuda p { margin-top: 7px; }
@@ -1311,7 +1348,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 }
 .local-fila button.local-eliminar:hover, #pantalla2 .local-nueva:hover { color: var(--tinta); background: var(--menta); }
 #pantalla2 .local-nueva[hidden], #guardar-copia[hidden] { display: none; }
-#guardar-dialogo, #restaurar-dialogo {
+#guardar-dialogo, #restaurar-dialogo, #reiniciar-dialogo {
   margin: auto;
   width: min(440px, calc(100% - 32px));
   padding: 20px;
@@ -1320,15 +1357,16 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
   background: var(--blanco);
   color: var(--tinta);
 }
-#guardar-dialogo::backdrop, #restaurar-dialogo::backdrop { background: #081d19b0; }
-#guardar-dialogo h2, #restaurar-dialogo h2 { font-size: 1.2rem; }
-#guardar-dialogo p, #restaurar-dialogo p { color: var(--gris); font-size: .875rem; }
-#restaurar-dialogo button { min-width: 0; min-height: 40px; padding: 8px 12px; font-size: .875rem; }
+#guardar-dialogo::backdrop, #restaurar-dialogo::backdrop, #reiniciar-dialogo::backdrop { background: #081d19b0; }
+#guardar-dialogo h2, #restaurar-dialogo h2, #reiniciar-dialogo h2 { font-size: 1.2rem; }
+#guardar-dialogo p, #restaurar-dialogo p, #reiniciar-dialogo p { color: var(--gris); font-size: .875rem; }
+#restaurar-dialogo button, #reiniciar-dialogo button { min-width: 0; min-height: 40px; padding: 8px 12px; font-size: .875rem; }
 #guardar-dialogo label { margin: 12px 0 4px; }
 #guardar-nombre { padding: 9px 12px; color: var(--tinta); background: var(--cielo); width: 100%; border: 1px solid var(--linea); border-radius: 8px; font: inherit; }
 .guardar-acciones { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .guardar-acciones #guardar-principal { order: 1; }
 #pantalla4 .acciones { flex-wrap: wrap; }
+.resultados-contenido { display: contents; }
 #guardar-error:empty { display: none; }
 #guardar-error { margin-top: 8px; }
 @media (min-width: 840px) {
@@ -1352,7 +1390,6 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 .inicio-principal .lead { font-size: .98rem; margin: 12px 0 18px; }
 .inicio-principal .acciones { gap: 10px; margin-top: 0; }
 .inicio-principal .acciones button { min-width: 0; min-height: 44px; }
-.inicio-principal .inicio-nota { max-width: 54ch; }
 .cfe-inicio {
   min-width: 0;
   padding: clamp(14px, 2.6vw, 22px);
@@ -1423,10 +1460,11 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
   text-decoration: none;
 }
 .ajuste-accion-enlace[hidden], #archivo-configuraciones[hidden] { display: none; }
-#estado-respaldo:empty, #estado-moneda:empty, #estado-ubicacion:empty { display: none; }
+#estado-respaldo:empty, #estado-moneda:empty { display: none; }
+[data-estado-ubicacion]:empty { margin: 0; }
 @media (min-width:768px) {
   .inicio-encabezado { grid-template-columns: minmax(0, 1.5fr) minmax(230px, 1fr); gap: 28px; }
-  .inicio-principal .acciones { flex-flow: row wrap; justify-content: flex-start; }
+  .inicio-principal .acciones { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,13.25rem),1fr)); }
   #pantalla1 .inicio-info { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 }
 </style>
@@ -1452,7 +1490,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 @keyframes es-aguja{from{transform:rotate(-55deg)}to{transform:rotate(45deg)}}
 @keyframes es-crece{from{transform:scaleY(0)}}
 @keyframes es-nube{to{transform:translateX(26px)}}
-#pantalla1 .acciones button{display:inline-flex; align-items:center; justify-content:center; gap:8px}
+#pantalla1 .acciones button,#pantalla4 > .acciones > button{display:inline-flex; align-items:center; justify-content:center; gap:8px}
 .acciones button .bi{width:20px; height:20px; flex:none}
 #pantalla1 .acciones button:hover .bi{transform:translateX(2px) rotate(-8deg)}
 
@@ -1535,10 +1573,10 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 .bloque.ve .oi-hoja{animation:es-brota .8s var(--muelle) 1s backwards}
 @keyframes es-brota{from{transform:scale(0)}}
 /* Empezar de nuevo, grande */
-.inicio-nota{display:grid; gap:12px; justify-items:start}
-.inicio-nota .nueva{min-height:50px; padding:12px 24px; font-size:1rem; display:inline-flex; align-items:center; gap:10px}
-.nueva .bi{width:20px; height:20px; flex:none}
-.nueva:hover .bi{transform:rotate(-200deg)}
+.inicio-nota{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px 12px; margin-top:12px; padding:10px 12px; border:1px solid var(--linea); border-radius:14px; background:var(--blanco)}
+.inicio-nota b{color:var(--tinta)}
+.inicio-nota .nueva{min-width:0; min-height:44px; padding:6px 10px; font-size:.875rem; display:inline-flex; align-items:center; gap:7px; border-width:1px; border-color:var(--linea)}
+.inicio-nota .bi{width:17px; height:17px; flex:none}
 /* Fuentes y supuestos: siempre visible */
 .fuentes-card{margin-top:16px; padding:clamp(16px,3vw,26px); border:1px solid var(--linea); border-radius:20px; background:var(--blanco)}
 .fuentes-cab{display:flex; align-items:center; gap:14px; cursor:pointer; list-style:none; border-radius:14px; touch-action:manipulation}
@@ -1620,14 +1658,23 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 .lista-tiempo{grid-template-columns:1fr; margin-top:6px}
 @media (min-width:900px){.lista-tiempo{grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px}}
 .item-tiempo{display:grid; grid-template-columns:minmax(0,1fr); min-width:0; gap:12px; padding:14px 16px 12px; border:1px solid var(--linea)}
-.item-tiempo .it-cab{display:flex; align-items:center; justify-content:flex-start; gap:12px}
+.item-tiempo .it-cab{
+  display:grid; grid-template-columns:auto minmax(0,1fr) 7.5rem;
+  grid-template-areas:"icono nombre nombre" "icono datos tiempo";
+  align-items:center; gap:5px 10px;
+}
 .it-ico{flex:none; display:grid; place-items:center; width:40px; height:40px; border-radius:13px; background:var(--blanco); color:var(--hoja)}
+.item-tiempo .it-ico{grid-area:icono}
 .it-ico svg{width:22px; height:22px}
-.it-tit{flex:1; min-width:0}
-.it-tit b{display:block; line-height:1.2; overflow-wrap:anywhere}
-.it-meta{display:flex; flex-wrap:wrap; gap:6px; margin-top:5px}
+.it-tit{display:contents}
+.it-tit b{grid-area:nombre; line-height:1.2; overflow-wrap:anywhere; min-width:0}
+.it-meta{grid-area:datos; display:flex; flex-wrap:wrap; gap:4px 6px; min-width:0; font-variant-numeric:tabular-nums}
 .it-meta span{padding:2px 9px; border-radius:999px; background:var(--blanco); color:var(--gris); font-size:.72rem; font-weight:700; white-space:nowrap}
-.item-tiempo .it-etq{margin-left:auto; font-size:1.25rem; line-height:1.1; text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums}
+.item-tiempo .it-etq{grid-area:tiempo; font-size:1.05rem; line-height:1.2; text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums}
+@media (max-width:390px) {
+  .item-tiempo .it-cab{grid-template-columns:auto minmax(0,1fr); grid-template-areas:"icono nombre" "icono datos" "tiempo tiempo"}
+  .item-tiempo .it-meta span{max-width:100%; white-space:normal; overflow-wrap:anywhere}
+}
 .it-fila{display:flex; align-items:center; gap:10px}
 .it-fila input[type=range].it-slider{flex:1 1 0; min-width:0; width:auto; margin:0}
 .item-tiempo .it-paso{flex:none; width:38px; min-width:0; height:38px; min-height:0; padding:0; border-radius:50%; background:var(--blanco); color:var(--hoja); font-size:1.4rem; line-height:1; box-shadow:inset 0 0 0 1.5px var(--linea)}
@@ -1635,6 +1682,17 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 .item-tiempo .it-paso:disabled{opacity:.5}
 .item-tiempo .it-pie{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:nowrap}
 .it-hint{font-size:.78rem; color:var(--gris); font-weight:600}
+.it-conexion{display:flex; flex-wrap:wrap; align-items:center; gap:5px 10px; margin-top:10px}
+.it-conexion .it-siempre{min-width:0; min-height:36px; padding:5px 10px; border:1px solid var(--linea); border-radius:9px; background:var(--menta); color:var(--hoja); font-size:.82rem}
+.it-conexion [hidden]{display:none}
+.it-conectado{color:var(--hoja); font-size:.82rem; font-weight:800}
+.it-controles{
+  display:grid; grid-template-rows:1fr; opacity:1;
+  transition:grid-template-rows .28s cubic-bezier(.2,.75,.25,1),opacity .2s ease;
+}
+.it-controles > div{min-height:0; overflow:hidden; margin-inline:-3px; padding-inline:3px}
+.it-controles.plegado{grid-template-rows:0fr; opacity:0}
+.it-controles.plegado > div{pointer-events:none}
 .acciones.dock-acciones{position:sticky; bottom:max(8px,env(safe-area-inset-bottom)); z-index:14; flex-direction:row; flex-wrap:nowrap; justify-content:stretch; gap:10px; margin-top:22px; padding:10px; border:1px solid var(--linea); border-radius:26px; background:color-mix(in srgb,var(--blanco) 88%,transparent); -webkit-backdrop-filter:blur(14px) saturate(1.3); backdrop-filter:blur(14px) saturate(1.3); box-shadow:0 14px 34px rgba(13,43,42,.22)}
 .dock-acciones button{min-width:0; display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:52px; border-radius:18px}
 .dock-acciones .sec{flex:0 1 auto; order:1}
@@ -1674,6 +1732,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 .it-fila{touch-action:pan-y; cursor:pointer}
 /* Fila "Otros" desplegable del desglose */
 .des-otros .des-otros-btn,.des-otros .des-otros-btn:hover,.des-otros .des-otros-btn:active{display:block; width:100%; min-width:0; min-height:0; padding:0; background:none; color:inherit; box-shadow:none; transform:none; text-align:left; font:inherit; font-weight:400; border-radius:10px}
+.des-otros-btn{overflow:visible}
 .des-otros-btn > .des-meta,.des-otros-btn > .pista{display:block}
 .des-otros-btn .des-cab b{font-weight:800}
 .des-ver{display:inline-flex; align-items:center; gap:4px; color:var(--hoja)}
@@ -1708,6 +1767,54 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
   .barra-centro .dock-resultados .pestanas .opt{min-width:0; min-height:44px; white-space:nowrap}
   .barra-centro .dock-resultados .reporte-boton{min-width:0; min-height:52px; padding:10px 20px; white-space:nowrap}
 }
+@media (min-width:1024px) and (orientation:landscape) and (pointer:fine) {
+  #pantalla4 {
+    --ancho-acciones: clamp(226px, 20vw, 254px);
+    --separacion-resultados: clamp(16px, 2vw, 28px);
+    max-width: calc(1060px + var(--ancho-acciones) + var(--separacion-resultados));
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  #pantalla4.activa {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--ancho-acciones);
+    align-items: start;
+    gap: var(--separacion-resultados);
+  }
+  .resultados-contenido {
+    display: block;
+    min-width: 0;
+    padding: clamp(24px, 3.5vw, 48px) clamp(24px, 3.35vw, 64px);
+    border: 1px solid var(--linea);
+    border-radius: inherit;
+    background: color-mix(in srgb, var(--blanco) 84%, transparent);
+  }
+  #pantalla4 > .acciones-resultados {
+    position: sticky;
+    top: 0;
+    margin: 0;
+    padding: clamp(6px, 1.5vh, 12px);
+    flex-flow: column nowrap;
+    gap: clamp(4px, 1vh, 8px);
+    /* Reserva espacio para la cabecera, el pie y los márgenes del área de resultados. */
+    max-height: max(44px, calc(90dvh - 140px));
+    overflow-y: auto;
+    border: 1px solid var(--linea);
+    border-radius: 16px;
+    background: var(--blanco);
+    box-shadow: 0 12px 28px rgba(13,43,42,.12);
+  }
+  #pantalla4 > .acciones-resultados > button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 10px;
+    justify-content: flex-start;
+    text-align: left;
+    font-size: .88rem;
+    line-height: 1.25;
+  }
+}
 /* PC: la barra «Guardar / Ver resultados» queda casi al borde inferior (compensa el margen de la página) */
 @media (min-width:1024px) and (orientation:landscape){
   .acciones.dock-acciones{bottom:calc(10px - 5vh)}
@@ -1720,6 +1827,68 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
   header.barra.con-extra .barra-centro .cf-ico{display:none}
   header.barra.con-extra .barra-centro .dock-resultados .pestanas .opt{font-size:.76rem}
 }
+</style>
+<style>
+html[data-modo="oscuro"][data-tema="atardecer"] { --cielo:#181008; --blanco:#2b1d14; --linea:#63432f; --menta:#40291a; --barra-sistema:#71320e; }
+html[data-modo="oscuro"][data-tema="violeta"] { --cielo:#130c21; --blanco:#221830; --linea:#4d3968; --menta:#352346; --barra-sistema:#492676; }
+html[data-modo="oscuro"][data-tema="verde"] { --barra-sistema:#124f3c; }
+html[data-modo="oscuro"][data-tema="oceano"] { --barra-sistema:#123e59; }
+html { background:var(--barra-sistema,var(--hoja)); }
+html[data-modo="oscuro"] .fe-s0 { stop-color:var(--cielo); }
+html[data-modo="oscuro"] .fe-s1 { stop-color:var(--menta); }
+html[data-modo="oscuro"]:is([data-tema="atardecer"],[data-tema="violeta"]) .fe-c1 { fill:var(--menta); }
+html[data-modo="oscuro"]:is([data-tema="atardecer"],[data-tema="violeta"]) .fe-c2 { fill:var(--blanco); }
+html[data-modo="oscuro"]:is([data-tema="atardecer"],[data-tema="violeta"]) .fe-c3 { fill:var(--cielo); }
+html[data-modo="oscuro"][data-oled] {
+  --cielo:#000000;
+  --blanco:#000000;
+  --menta:#141414;
+  --linea:#404040;
+  --barra-sistema:#000000;
+}
+html[data-modo="oscuro"][data-oled] :is(.fe-s0,.fe-s1) { stop-color:var(--cielo); }
+html[data-modo="oscuro"][data-oled] .fe-c1 { fill:color-mix(in srgb,var(--hoja) 16%,var(--cielo)); }
+html[data-modo="oscuro"][data-oled] .fe-c2 { fill:color-mix(in srgb,var(--hoja) 10%,var(--cielo)); }
+html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 5%,var(--cielo)); }
+#fila-oled[hidden] { display:none; }
+@media (max-width:767px) {
+  #pantalla3 .contador-flotante { padding:10px 11px; gap:7px; border-radius:13px; margin-bottom:12px; }
+  #pantalla3 .cf-costo { font-size:clamp(1.15rem,5vw,1.55rem); overflow-wrap:anywhere; }
+  #pantalla3 .cf-etq, #pantalla3 .cf-der { font-size:.73rem; line-height:1.3; }
+  #pantalla3 .cf-der { min-width:0; }
+  #pantalla3 .cf-der span { white-space:normal; }
+  #pantalla3 .panel-modo { padding:11px; gap:8px; }
+  #pildora-modo { width:fit-content; max-width:100%; align-self:start; }
+  #pildora-modo .opt { min-width:0; min-height:40px; padding:6px 9px; gap:4px; white-space:nowrap; font-size:.8rem; }
+  #pildora-modo .opt svg { width:14px; height:14px; }
+}
+</style>
+<style>
+#pildora-temporada { padding:3px; }
+#pildora-temporada .opt {
+  min-height:36px; min-width:0; padding:4px 6px;
+  font-size:clamp(.7rem, 3.2vw, .9rem); line-height:1.15; white-space:nowrap;
+}
+#calendario-temporada[hidden] { display:none; }
+.temporada-resumen {
+  margin-top:8px;
+  padding:9px 12px;
+  border:1px solid var(--linea);
+  border-inline-start:3px solid var(--hoja);
+  border-radius:10px;
+  background:var(--menta);
+  color:var(--tinta);
+  font-size:.86rem;
+}
+.temporada-resumen[hidden], #costo-temporada:empty { display:none; }
+.temporada-resumen strong { display:block; color:var(--hoja); }
+#costo-temporada { margin-top:3px; }
+</style>
+<style>
+#panel-consumo :is(#semaforo,#escala-ef,#estado-casa,#barra-casa,#bloques-cfe)[hidden],
+#cuotas-especiales[hidden], #campo-temporada[hidden] { display:none; }
+#cuotas-especiales { margin-top:12px; }
+#cuotas-especiales input { width:100%; min-width:0; }
 </style>
 </head>
 <body>
@@ -1751,7 +1920,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 <g transform="translate(770 470) scale(0.58)" opacity="0.5"><path class="fe-t" d="M-2.6 0 L-1.3 -120 L1.3 -120 L2.6 0Z"/><circle class="fe-luz" cx="0" cy="-131" r="2.6" style="animation-delay:0.0s"/><g transform="translate(0 -120)"><g class="fe-rotor" style="animation-duration:14s;animation-delay:-3s"><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(120)"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(240)"/><circle class="fe-t" r="3.6"/></g></g></g>
 <g transform="translate(1010 466) scale(0.6)" opacity="0.55"><path class="fe-t" d="M-2.6 0 L-1.3 -120 L1.3 -120 L2.6 0Z"/><circle class="fe-luz" cx="0" cy="-131" r="2.6" style="animation-delay:-0.45s"/><g transform="translate(0 -120)"><g class="fe-rotor" style="animation-duration:12s;animation-delay:-5s"><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(120)"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(240)"/><circle class="fe-t" r="3.6"/></g></g></g>
 <g transform="translate(1170 470) scale(0.5)" opacity="0.5"><path class="fe-t" d="M-2.6 0 L-1.3 -120 L1.3 -120 L2.6 0Z"/><circle class="fe-luz" cx="0" cy="-131" r="2.6" style="animation-delay:-0.9s"/><g transform="translate(0 -120)"><g class="fe-rotor" style="animation-duration:16s;animation-delay:-10s"><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(120)"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(240)"/><circle class="fe-t" r="3.6"/></g></g></g>
-<g class="fe-panel" aria-hidden="true">
+<g class="fe-panel" id="fe-paneles" aria-hidden="true">
 <path d="M579.0 490.0h13.0l-5.0 6.0h-13.0z"/><path d="M594.2 490.0h13.0l-5.0 6.0h-13.0z"/><path d="M609.4 490.0h13.0l-5.0 6.0h-13.0z"/><path d="M624.6 490.0h13.0l-5.0 6.0h-13.0z"/><path d="M639.8 490.0h13.0l-5.0 6.0h-13.0z"/><path d="M655.0 490.0h13.0l-5.0 6.0h-13.0z"/><path d="M670.2 490.0h13.0l-5.0 6.0h-13.0z"/><path d="M685.4 490.0h13.0l-5.0 6.0h-13.0z"/>
 <path d="M576.6 499.5h14.4l-5.6 6.9h-14.4z"/><path d="M593.2 499.5h14.4l-5.6 6.9h-14.4z"/><path d="M609.8 499.5h14.4l-5.6 6.9h-14.4z"/><path d="M626.4 499.5h14.4l-5.6 6.9h-14.4z"/><path d="M643.0 499.5h14.4l-5.6 6.9h-14.4z"/><path d="M659.6 499.5h14.4l-5.6 6.9h-14.4z"/><path d="M676.2 499.5h14.4l-5.6 6.9h-14.4z"/><path d="M692.8 499.5h14.4l-5.6 6.9h-14.4z"/>
 <path d="M574.2 510.8h15.8l-6.2 7.8h-15.8z"/><path d="M592.2 510.8h15.8l-6.2 7.8h-15.8z"/><path d="M610.2 510.8h15.8l-6.2 7.8h-15.8z"/><path d="M628.2 510.8h15.8l-6.2 7.8h-15.8z"/><path d="M646.2 510.8h15.8l-6.2 7.8h-15.8z"/><path d="M664.2 510.8h15.8l-6.2 7.8h-15.8z"/><path d="M682.2 510.8h15.8l-6.2 7.8h-15.8z"/><path d="M700.2 510.8h15.8l-6.2 7.8h-15.8z"/>
@@ -1766,6 +1935,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 </g>
 </g>
 <path class="fe-c2" d="M0 540 C180 500 330 520 520 545 S860 560 1010 520 S1150 505 1200 515 V700 H0Z"/>
+<use href="#fe-paneles" transform="translate(188 554) scale(0.6) translate(-645 -511)"/>
 <g transform="translate(470 540) scale(0.95)" opacity="0.8"><path class="fe-t" d="M-2.6 0 L-1.3 -120 L1.3 -120 L2.6 0Z"/><circle class="fe-luz" cx="0" cy="-131" r="2.6" style="animation-delay:-1.35s"/><g transform="translate(0 -120)"><g class="fe-rotor" style="animation-duration:9s;animation-delay:-4s"><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(120)"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(240)"/><circle class="fe-t" r="3.6"/></g></g></g>
 <g transform="translate(880 538) scale(0.9)" opacity="0.8"><path class="fe-t" d="M-2.6 0 L-1.3 -120 L1.3 -120 L2.6 0Z"/><circle class="fe-luz" cx="0" cy="-131" r="2.6" style="animation-delay:-0.45s"/><g transform="translate(0 -120)"><g class="fe-rotor" style="animation-duration:10s;animation-delay:-8s"><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(120)"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(240)"/><circle class="fe-t" r="3.6"/></g></g></g>
 <path class="fe-c3" d="M0 610 C200 580 380 600 560 620 S900 625 1050 595 S1160 585 1200 590 V700 H0Z"/>
@@ -1814,7 +1984,10 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
           <button type="button" id="inicio-comenzar" onclick="iniciarDesdeInicio()"><svg class="bi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><span id="inicio-comenzar-txt">Comenzar</span></button>
           <button type="button" class="sec" onclick="abrirConfiguraciones()"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>Mis configuraciones</button>
         </div>
-        <p class="inicio-nota" id="inicio-nota" hidden><span id="inicio-nota-txt"></span> <button type="button" class="sec nueva" onclick="empezarNuevoDesdeInicio()"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Empezar de nuevo</button></p>
+        <div class="inicio-nota" id="inicio-nota" hidden>
+          <div><b>Cálculo en curso</b><p id="inicio-nota-txt"></p></div>
+          <button type="button" class="sec nueva" onclick="empezarNuevoDesdeInicio()"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Empezar de nuevo</button>
+        </div>
       </div>
       <div class="inicio-lateral">
       <svg class="escena" viewBox="0 0 320 226" role="img" aria-label="Ilustración animada: un poste de luz lleva energía al medidor de una casa; de día sus paneles solares también la alimentan, de noche se encienden las luces y el consumo va bajando.">
@@ -2063,136 +2236,185 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 
   <!-- Pantalla 4: Dashboard de resultados -->
   <section id="pantalla4" class="pantalla" aria-labelledby="t4">
-    <h2 id="t4" tabindex="-1">Dashboard de resultados</h2>
-    <p class="contexto" id="contexto-casa"></p>
+    <div class="resultados-contenido">
+      <h2 id="t4" tabindex="-1">Dashboard de resultados</h2>
+      <p class="contexto" id="contexto-casa"></p>
 
-    <!-- Pestaña 1: Tu Consumo -->
-    <div id="panel-consumo" role="tabpanel" aria-labelledby="tab-consumo">
-      <div class="resumen-dash">
-        <div class="semaforo" id="semaforo" data-nivel="" role="img" aria-label="Semáforo de eficiencia">
-          <div class="luz rojo"></div><div class="luz amarillo"></div><div class="luz verde"></div>
-        </div>
-        <div class="costo-principal" aria-live="polite">
-          <p class="sub" id="d-bim-etq">Costo estimado del bimestre</p>
-          <span class="costo-num" id="d-bim">$0.00</span>
-          <p class="sub"><span id="d-mes">$0</span> al mes · ≈ <span id="d-anio">$0</span> al año · con IVA</p>
-          <p class="sub nota-anual">Proyección anual: supone el mismo consumo todo el año (6 meses de verano y 6 fuera de verano). Tu consumo y tus cuotas pueden variar.</p>
-        </div>
-        <div class="escala-ef" id="escala-ef" role="img" aria-label="Indicador de eficiencia">
-          <p class="ef-tit">Indicador de eficiencia</p>
-          <ol class="ef-barras" aria-hidden="true"><li data-clase="A"><span class="ef-barra" style="--c:#1f7a45; --t:#fff; --w:38%">A</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="B"><span class="ef-barra" style="--c:#36883a; --t:#fff; --w:44%">B</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="C"><span class="ef-barra" style="--c:#a0c85b; --t:#0d2b2a; --w:50%">C</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="D"><span class="ef-barra" style="--c:#ddcf55; --t:#0d2b2a; --w:56%">D</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="E"><span class="ef-barra" style="--c:#e5a94a; --t:#0d2b2a; --w:62%">E</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="F"><span class="ef-barra" style="--c:#d97b3f; --t:#0d2b2a; --w:68%">F</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="G"><span class="ef-barra" style="--c:#c0392b; --t:#fff; --w:74%">G</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li></ol>
-          <p class="ef-txt" id="ef-txt"></p>
-        </div>
-      </div>
-      <div class="estado verde" id="estado-casa" aria-live="polite"><strong id="estado-casa-t"></strong><span id="estado-casa-x"></span></div>
-      <div class="consumos cuatro" aria-label="Consumo total estimado por periodo">
-        <div class="tile"><span>Al día</span><b id="k-dia">0</b><small>kWh</small></div>
-        <div class="tile"><span>A la semana</span><b id="k-sem">0</b><small>kWh</small></div>
-        <div class="tile"><span>Al mes (30 días)</span><b id="k-mes">0</b><small>kWh</small></div>
-        <div class="tile destacada"><span id="k-bim-etq">A 2 meses (bimestre)</span><b id="k-bim">0</b><small>kWh</small></div>
-      </div>
-      <section class="datos-recibo" aria-labelledby="t-datos-recibo">
-        <h3 class="subtitulo" id="t-datos-recibo">Datos de tu recibo</h3>
-        <div class="dr-rejilla">
-          <div class="dias-recibo">
-            <label for="dias-recibo">Días de tu recibo</label>
-            <input type="number" id="dias-recibo" min="25" max="70" step="1" inputmode="numeric" value="60">
-            <p class="ayuda">Revisa el periodo de tu recibo (casi siempre son unos 60 días). Cambia el cuarto cuadro, el costo del periodo y el recibo de recomendaciones.</p>
+      <!-- Pestaña 1: Tu Consumo -->
+      <div id="panel-consumo" role="tabpanel" aria-labelledby="tab-consumo">
+        <div class="resumen-dash">
+          <div class="semaforo" id="semaforo" data-nivel="" role="img" aria-label="Bloque de cobro">
+            <div class="luz rojo"></div><div class="luz amarillo"></div><div class="luz verde"></div>
           </div>
-          <div class="cmp-recibo">
-            <label for="kwh-recibo">kWh de tu recibo <span class="cmp-opc">(opcional)</span></label>
-            <input type="number" id="kwh-recibo" min="1" max="100000" step="any" inputmode="decimal" placeholder="Ej. 230">
-            <p class="ayuda">Si lo escribes, lo comparamos con el consumo estimado.</p>
+          <div class="costo-principal" aria-live="polite">
+            <p class="sub" id="d-bim-etq">Costo proyectado del bimestre</p>
+            <span class="costo-num" id="d-bim" aria-describedby="alcance-costo">$0.00</span>
+            <p class="sub" id="alcance-costo">Con las cuotas y la temporada seleccionadas</p>
+            <p class="sub"><span id="d-mes">$0</span> al mes · ≈ <span id="d-anio">$0</span> al año · con IVA</p>
+            <p class="sub nota-anual">Proyección anual: supone el mismo consumo todo el año (6 meses de verano y 6 fuera de verano). Tu consumo y tus cuotas pueden variar.</p>
+          </div>
+          <div class="escala-ef" id="escala-ef" role="img" aria-label="Nivel de consumo según tu tarifa">
+            <p class="ef-tit">Nivel de consumo según tu tarifa</p>
+            <ol class="ef-barras" aria-hidden="true"><li data-clase="A"><span class="ef-barra" style="--c:#1f7a45; --t:#fff; --w:38%">A</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="B"><span class="ef-barra" style="--c:#36883a; --t:#fff; --w:44%">B</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="C"><span class="ef-barra" style="--c:#a0c85b; --t:#0d2b2a; --w:50%">C</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="D"><span class="ef-barra" style="--c:#ddcf55; --t:#0d2b2a; --w:56%">D</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="E"><span class="ef-barra" style="--c:#e5a94a; --t:#0d2b2a; --w:62%">E</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="F"><span class="ef-barra" style="--c:#d97b3f; --t:#0d2b2a; --w:68%">F</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li><li data-clase="G"><span class="ef-barra" style="--c:#c0392b; --t:#fff; --w:74%">G</span><span class="ef-marca" aria-hidden="true">◂ <span class="ef-larga">Tu casa</span><span class="ef-corta">Tú</span></span></li></ol>
+            <p class="ef-txt" id="ef-txt"></p>
           </div>
         </div>
-        <p class="cmp-texto" id="cmp-texto" role="status" hidden></p>
-      </section>
-      <div class="estado rojo" id="aviso-dac" role="alert" hidden><strong id="aviso-dac-t"></strong><span id="aviso-dac-x"></span></div>
-
-      <h3 class="subtitulo">Tu tarifa de CFE</h3>
-      <div class="campos">
-        <div class="campo">
-          <label id="lbl-region">Tarifa de tu región</label>
-          <div class="dd">
-            <div class="dd-campo vacio" id="region" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-region"><span class="dd-texto">Selecciona tu tarifa</span></div>
-            <ul class="dd-lista" role="listbox" aria-labelledby="lbl-region"></ul>
-          </div>
-          <p class="ayuda" id="ayuda-region"></p>
+        <div class="estado verde" id="estado-casa" aria-live="polite"><strong id="estado-casa-t"></strong><span id="estado-casa-x"></span></div>
+        <div class="consumos cuatro" aria-label="Consumo total estimado por periodo">
+          <div class="tile"><span>Al día</span><b id="k-dia">0</b><small>kWh</small></div>
+          <div class="tile"><span>A la semana</span><b id="k-sem">0</b><small>kWh</small></div>
+          <div class="tile"><span>Al mes (30 días)</span><b id="k-mes">0</b><small>kWh</small></div>
+          <div class="tile destacada"><span id="k-bim-etq">A 2 meses (bimestre)</span><b id="k-bim">0</b><small>kWh</small></div>
         </div>
-        <div class="campo">
-          <label id="lbl-temporada">Temporada</label>
-          <div class="pildora" id="pildora-temporada" role="group" aria-labelledby="lbl-temporada">
-            <button type="button" class="opt activa" id="temp-verano" aria-pressed="true" onclick="cambiarTemporada('verano')">Verano</button>
-            <button type="button" class="opt" id="temp-fuera" aria-pressed="false" onclick="cambiarTemporada('fuera')">Fuera de verano</button>
+        <section class="datos-recibo panel-tarifa" aria-labelledby="t-tarifa">
+          <h3 class="subtitulo" id="t-tarifa">Tu tarifa de CFE</h3>
+          <div class="campos">
+            <div class="campo">
+              <label id="lbl-region">Tarifa de tu recibo</label>
+              <div class="dd">
+                <div class="dd-campo vacio" id="region" tabindex="0" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-region"><span class="dd-texto">Selecciona tu tarifa</span></div>
+                <ul class="dd-lista" role="listbox" aria-labelledby="lbl-region"></ul>
+              </div>
+              <p class="ayuda" id="ayuda-region"></p>
+              <p class="ayuda" id="ayuda-temporada"></p>
+              <div class="ajuste-acciones">
+                <button type="button" class="ajuste-accion sec" data-detectar-tarifa>Sugerir por región</button>
+                <button type="button" class="ajuste-accion" data-aplicar-tarifa hidden>Usar la tarifa sugerida</button>
+              </div>
+              <p class="ayuda" data-estado-ubicacion role="status"></p>
+            </div>
+            <div class="campo" id="campo-temporada">
+              <label id="lbl-temporada">Temporada</label>
+              <div class="pildora" id="pildora-temporada" role="group" aria-labelledby="lbl-temporada">
+                <button type="button" class="opt" id="temp-auto" aria-pressed="false" onclick="cambiarTemporada('auto')">Auto</button>
+                <button type="button" class="opt activa" id="temp-verano" aria-pressed="true" onclick="cambiarTemporada('verano')">Verano</button>
+                <button type="button" class="opt" id="temp-fuera" aria-pressed="false" onclick="cambiarTemporada('fuera')">Fuera de verano</button>
+              </div>
+              <div class="temporada-resumen" id="resumen-temporada" role="status" hidden>
+                <strong id="titulo-temporada"></strong>
+                <p id="tramos-temporada"></p>
+                <p id="costo-temporada"></p>
+              </div>
+            </div>
           </div>
-          <p class="ayuda" id="ayuda-temporada"></p>
+          <section class="datos-recibo" id="cuotas-especiales" aria-labelledby="t-cuotas-especiales" hidden>
+            <h3 id="t-cuotas-especiales">Cuotas de tu recibo</h3>
+            <p class="ayuda">Captura las cuotas de tu división o recibo en pesos mexicanos antes de IVA. Para el cargo fijo, usa la cuota de un mes.</p>
+            <div class="dr-rejilla">
+              <div><label for="cuota-especial-fija">Cargo fijo mensual (MXN)</label><input type="number" id="cuota-especial-fija" min="0" max="1000000" step="any" inputmode="decimal"></div>
+              <div><label for="cuota-especial-kwh">Precio de energía (MXN/kWh)</label><input type="number" id="cuota-especial-kwh" min="0.001" max="1000" step="any" inputmode="decimal"></div>
+            </div>
+          </section>
+          <p class="ayuda" id="periodo-cuotas"></p>
+          <div class="barra-reparto" id="barra-casa" role="img" aria-label="Reparto del consumo mensual por bloque de la tarifa"></div>
+          <ul class="bloques-cfe" id="bloques-cfe"></ul>
+          <p class="ayuda" id="cfe-minimo" hidden>El costo estima el cargo mínimo de 25 kWh al mes a cuota básica. El desglose muestra los kWh que capturaste.</p>
+        </section>
+        <section class="datos-recibo" aria-labelledby="t-datos-recibo">
+          <h3 class="subtitulo" id="t-datos-recibo">Datos de tu recibo</h3>
+          <div class="dr-rejilla">
+            <div class="dias-recibo">
+              <label for="dias-recibo">Días de tu recibo</label>
+              <input type="number" id="dias-recibo" min="25" max="70" step="1" inputmode="numeric" value="60">
+              <p class="ayuda">Revisa el periodo de tu recibo (casi siempre son unos 60 días). Cambia el cuarto cuadro, el costo del periodo y el recibo de recomendaciones.</p>
+            </div>
+            <div>
+              <label for="fin-recibo">Fecha final del recibo <span class="cmp-opc">(opcional)</span></label>
+              <input type="date" id="fin-recibo" style="width:100%;min-width:0">
+              <p class="ayuda">Con los días del recibo, permite detectar si cruzó de temporada. Si la dejas vacía, se toma hoy como fecha final.</p>
+            </div>
+            <div class="cmp-recibo">
+              <label for="kwh-recibo">kWh de tu recibo <span class="cmp-opc">(opcional)</span></label>
+              <input type="number" id="kwh-recibo" min="1" max="100000" step="any" inputmode="decimal" placeholder="Ej. 230">
+              <p class="ayuda">Si lo escribes, lo comparamos con el consumo estimado.</p>
+            </div>
+          </div>
+          <p class="cmp-texto" id="cmp-texto" role="status" hidden></p>
+        </section>
+        <div class="estado rojo" id="aviso-dac" role="alert" hidden><strong id="aviso-dac-t"></strong><span id="aviso-dac-x"></span></div>
+
+        <h3 class="subtitulo" id="donut-titulo">Cuánto consume cada aparato</h3>
+        <div class="pildora" id="pildora-vista" role="group" aria-label="Agrupar el consumo por aparato o por categoría" hidden>
+          <button type="button" class="opt activa" id="vista-aparato" aria-pressed="true" onclick="cambiarVista('aparato')">Por aparato</button>
+          <button type="button" class="opt" id="vista-categoria" aria-pressed="false" onclick="cambiarVista('categoria')">Por categoría</button>
         </div>
-      </div>
-      <p class="ayuda" id="periodo-cuotas"></p>
-      <div class="barra-reparto" id="barra-casa" role="img" aria-label="Reparto del consumo mensual por bloque de la tarifa"></div>
-      <ul class="bloques-cfe" id="bloques-cfe"></ul>
-      <p class="ayuda" id="cfe-minimo" hidden>El costo estima el cargo mínimo de 25 kWh al mes a cuota básica. El desglose muestra los kWh que capturaste.</p>
+        <div class="donut-wrap" id="donut-wrap" hidden>
+          <div class="donut" id="donut"></div>
+        </div>
+        <div class="pildora cuatro" role="group" aria-label="Periodo del desglose">
+          <button type="button" class="opt" id="per-dia" aria-pressed="false" onclick="cambiarPeriodo('dia')">Día</button>
+          <button type="button" class="opt" id="per-semana" aria-pressed="false" onclick="cambiarPeriodo('semana')">Semana</button>
+          <button type="button" class="opt" id="per-mes" aria-pressed="false" onclick="cambiarPeriodo('mes')">Mes</button>
+          <button type="button" class="opt activa" id="per-bim" aria-pressed="true" onclick="cambiarPeriodo('bim')">2 meses</button>
+        </div>
+        <p class="ayuda">El costo de energía con IVA se reparte según los kWh de cada equipo. Excluye cargos fijos y cobros por consumo mínimo adicional.</p>
+        <ul class="des-lista" id="desglose"></ul>
+        <div class="total-casa"><span id="total-etq">Total acumulado</span><b id="total-valor">0 kWh</b></div>
 
-      <h3 class="subtitulo" id="donut-titulo">Cuánto consume cada aparato</h3>
-      <div class="pildora" id="pildora-vista" role="group" aria-label="Agrupar el consumo por aparato o por categoría" hidden>
-        <button type="button" class="opt activa" id="vista-aparato" aria-pressed="true" onclick="cambiarVista('aparato')">Por aparato</button>
-        <button type="button" class="opt" id="vista-categoria" aria-pressed="false" onclick="cambiarVista('categoria')">Por categoría</button>
+        <details class="panel nota">
+          <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span><span>Cómo se calcula</span></summary>
+          <div class="panel-cuerpo"><ul class="datos" id="datos-casa"></ul></div>
+        </details>
       </div>
-      <div class="donut-wrap" id="donut-wrap" hidden>
-        <div class="donut" id="donut"></div>
-      </div>
-      <div class="pildora cuatro" role="group" aria-label="Periodo del desglose">
-        <button type="button" class="opt" id="per-dia" aria-pressed="false" onclick="cambiarPeriodo('dia')">Día</button>
-        <button type="button" class="opt" id="per-semana" aria-pressed="false" onclick="cambiarPeriodo('semana')">Semana</button>
-        <button type="button" class="opt activa" id="per-mes" aria-pressed="true" onclick="cambiarPeriodo('mes')">Mes</button>
-        <button type="button" class="opt" id="per-bim" aria-pressed="false" onclick="cambiarPeriodo('bim')">2 meses</button>
-      </div>
-      <ul class="des-lista" id="desglose"></ul>
-      <div class="total-casa"><span id="total-etq">Total acumulado</span><b id="total-valor">0 kWh</b></div>
 
-      <details class="panel nota">
-        <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span><span>Cómo se calcula</span></summary>
-        <div class="panel-cuerpo"><ul class="datos" id="datos-casa"></ul></div>
-      </details>
+      <!-- Pestaña 2: Guía de Recomendaciones -->
+      <div id="panel-guia" role="tabpanel" aria-labelledby="tab-guia" hidden>
+        <p class="lead">Empieza por los aparatos que representan la mayor parte de tu consumo.</p>
+        <section class="guia-prioridad" aria-labelledby="guia-prioridad-titulo">
+          <h3 id="guia-prioridad-titulo">Por dónde empezar</h3>
+          <strong id="guia-prioridad-accion"></strong>
+          <p id="guia-prioridad-detalle"></p>
+          <p id="guia-prioridad-consumo"></p>
+        </section>
+        <h3 class="subtitulo">Consejos por aparato</h3>
+        <div class="paneles-ods" id="guia-grupos"></div>
+        <details class="panel" id="guia-mas" hidden>
+          <summary><span id="guia-mas-titulo"></span></summary>
+          <div class="panel-cuerpo"><div class="paneles-ods" id="guia-otros"></div></div>
+        </details>
+        <h3 class="subtitulo">Consejos generales</h3>
+        <ul class="consejos" id="guia-generales"></ul>
+        <h3 class="subtitulo">Cambia a equipos más eficientes</h3>
+        <p id="ca-ef-intro"></p>
+        <ul class="datos" id="ca-ef-lista"></ul>
+        <p class="nota-legal">Los porcentajes son valores típicos de referencia: el ahorro real depende de cada modelo, de su uso y de tu tarifa.</p>
+      </div>
+
+      <!-- Pestaña 3: ODS 7 -->
+      <div id="panel-ods" role="tabpanel" aria-labelledby="tab-ods" hidden>
+        <p class="lead">El ODS 7 busca garantizar el acceso a una energía asequible, fiable, sostenible y moderna para todos. Esto es lo que dice cada meta y cuál es tu aporte.</p>
+        <ul class="metas">
+          <li><span class="meta-n">7.1</span><div><b>Energía asequible, fiable y moderna para todos</b><p>Busca acceso universal a servicios de energía a precios que la gente pueda pagar.</p><p class="aporte" id="ods-71"></p></div></li>
+          <li><span class="meta-n">7.2</span><div><b>Más energía renovable</b><p>Busca aumentar considerablemente la proporción de energías renovables en el mundo.</p><p class="aporte" id="ods-72"></p></div></li>
+          <li><span class="meta-n">7.3</span><div><b>Duplicar la mejora en eficiencia energética</b><p>Busca hacer lo mismo con menos energía, al doble de velocidad que hoy.</p><p class="aporte" id="ods-73"></p></div></li>
+          <li><span class="meta-n">7.a</span><div><b>Cooperación internacional y tecnología limpia</b><p>Busca facilitar el acceso a investigación y tecnología de energía limpia, renovables y eficiencia, e impulsar la inversión en infraestructura.</p></div></li>
+          <li><span class="meta-n">7.b</span><div><b>Infraestructura para energía sostenible</b><p>Busca ampliar y modernizar la infraestructura que lleva energía moderna y sostenible a los países en desarrollo.</p></div></li>
+        </ul>
+        <h3 class="subtitulo">Cómo va el mundo</h3>
+        <div class="consumos cuatro">
+          <div class="tile"><span>Con electricidad (2023)</span><b>92 %</b><small>de la población mundial</small></div>
+          <div class="tile"><span>Sin electricidad (2023)</span><b>666 millones</b><small>de personas</small></div>
+          <div class="tile"><span>Sin cocina limpia (2023)</span><b>2,100 millones</b><small>de personas</small></div>
+          <div class="tile"><span>Energía renovable (2022)</span><b>17.9 %</b><small>del consumo final de energía</small></div>
+        </div>
+        <p class="nota-legal">Fuente: Tracking SDG 7: The Energy Progress Report 2025 (IEA, IRENA, UNSD, Banco Mundial y OMS). En la COP28 (2023) los países acordaron triplicar la capacidad renovable y duplicar el ritmo de mejora de la eficiencia energética para 2030.</p>
+      </div>
+
+      <p class="nota-legal" id="nota-cuotas"></p>
     </div>
-
-    <!-- Pestaña 2: Guía de Recomendaciones -->
-    <div id="panel-guia" role="tabpanel" aria-labelledby="tab-guia" hidden>
-      <p class="lead" id="guia-intro"></p>
-      <div class="paneles-ods" id="guia-grupos"></div>
-      <h3 class="subtitulo">Consejos generales</h3>
-      <ul class="consejos" id="guia-generales"></ul>
-      <h3 class="subtitulo">Cambia a equipos más eficientes</h3>
-      <p id="ca-ef-intro"></p>
-      <ul class="datos" id="ca-ef-lista"></ul>
-      <p class="nota-legal">Los porcentajes son valores típicos de referencia: el ahorro real depende de cada modelo, de su uso y de tu tarifa.</p>
-    </div>
-
-    <!-- Pestaña 3: ODS 7 -->
-    <div id="panel-ods" role="tabpanel" aria-labelledby="tab-ods" hidden>
-      <p class="lead">El ODS 7 busca garantizar el acceso a una energía asequible, fiable, sostenible y moderna para todos. Esto es lo que dice cada meta y cuál es tu aporte.</p>
-      <ul class="metas">
-        <li><span class="meta-n">7.1</span><div><b>Energía asequible, fiable y moderna para todos</b><p>Busca acceso universal a servicios de energía a precios que la gente pueda pagar.</p><p class="aporte" id="ods-71"></p></div></li>
-        <li><span class="meta-n">7.2</span><div><b>Más energía renovable</b><p>Busca aumentar considerablemente la proporción de energías renovables en el mundo.</p><p class="aporte" id="ods-72"></p></div></li>
-        <li><span class="meta-n">7.3</span><div><b>Duplicar la mejora en eficiencia energética</b><p>Busca hacer lo mismo con menos energía, al doble de velocidad que hoy.</p><p class="aporte" id="ods-73"></p></div></li>
-        <li><span class="meta-n">7.a</span><div><b>Cooperación internacional y tecnología limpia</b><p>Busca facilitar el acceso a investigación y tecnología de energía limpia, renovables y eficiencia, e impulsar la inversión en infraestructura.</p></div></li>
-        <li><span class="meta-n">7.b</span><div><b>Infraestructura para energía sostenible</b><p>Busca ampliar y modernizar la infraestructura que lleva energía moderna y sostenible a los países en desarrollo.</p></div></li>
-      </ul>
-      <h3 class="subtitulo">Cómo va el mundo</h3>
-      <div class="consumos cuatro">
-        <div class="tile"><span>Con electricidad (2023)</span><b>92 %</b><small>de la población mundial</small></div>
-        <div class="tile"><span>Sin electricidad (2023)</span><b>666 millones</b><small>de personas</small></div>
-        <div class="tile"><span>Sin cocina limpia (2023)</span><b>2,100 millones</b><small>de personas</small></div>
-        <div class="tile"><span>Energía renovable (2022)</span><b>17.9 %</b><small>del consumo final de energía</small></div>
-      </div>
-      <p class="nota-legal">Fuente: Tracking SDG 7: The Energy Progress Report 2025 (IEA, IRENA, UNSD, Banco Mundial y OMS). En la COP28 (2023) los países acordaron triplicar la capacidad renovable y duplicar el ritmo de mejora de la eficiencia energética para 2030.</p>
-    </div>
-
-    <p class="nota-legal" id="nota-cuotas"></p>
-    <div class="acciones">
-      <button type="button" onclick="mostrarPantalla(3, true)">Ajustar tiempos de uso</button>
-      <button type="button" class="sec" onclick="reiniciar()">Nueva estimación</button>
-      <button type="button" class="sec" id="guardar-res" onclick="guardarCambios()">Guardar configuración</button>
+    <div class="acciones acciones-resultados" role="group" aria-label="Acciones de resultados">
+      <button type="button" onclick="mostrarPantalla(3, true)">
+        <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span>Ajustar tiempos de uso</span>
+      </button>
+      <button type="button" class="sec" onclick="reiniciar()">
+        <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9z"/><path d="M13 3v6h6M12 12v6m-3-3h6"/></svg>
+        <span>Nueva estimación</span>
+      </button>
+      <button type="button" class="sec" id="guardar-res" onclick="guardarCambios()">
+        <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>
+        <span id="guardar-res-texto">Guardar configuración</span>
+      </button>
     </div>
     <div class="dock-resultados" id="dock-resultados">
     <button type="button" class="reporte-boton" id="abrir-reporte"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>Generar recibo</button>
@@ -2217,6 +2439,10 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
           <div class="pildora" id="pildora-manual" role="group" aria-label="Modo de color" hidden>
             <button type="button" class="opt" id="man-claro" aria-pressed="false" onclick="elegirModoManual('claro')">Claro</button>
             <button type="button" class="opt" id="man-oscuro" aria-pressed="false" onclick="elegirModoManual('oscuro')">Oscuro</button>
+          </div>
+          <div class="fila-switch" id="fila-oled" hidden>
+            <div><b>Modo OLED</b><p id="ayuda-oled">Usa fondos negros y conserva el color del tema.</p></div>
+            <button type="button" class="switch" id="sw-oled" role="switch" aria-checked="false" aria-label="Modo OLED" aria-describedby="ayuda-oled" onclick="alternarOLED()"><span class="knob"></span></button>
           </div>
           <p class="tema-titulo">Tema de color</p>
           <div class="temas" role="radiogroup" aria-label="Tema de color">
@@ -2282,12 +2508,16 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
               <label for="ajustes-tarifa">Tarifa de tu recibo de CFE</label>
               <select id="ajustes-tarifa"></select>
             </div>
+            <div class="ajuste-campo" id="calendario-temporada" hidden>
+              <label for="inicio-verano">Inicio de verano en tu localidad</label>
+              <select id="inicio-verano"><option value="">Automático según la localidad</option></select>
+            </div>
             <p>Si lo solicitas, usamos tu ubicación para sugerir una tarifa. Confirma la tarifa con tu recibo.</p>
             <div class="ajuste-acciones">
-              <button type="button" class="ajuste-accion sec" id="detectar-tarifa">Sugerir por ubicación</button>
-              <button type="button" class="ajuste-accion" id="aplicar-tarifa-sugerida" hidden>Usar la tarifa sugerida</button>
+              <button type="button" class="ajuste-accion sec" data-detectar-tarifa>Sugerir por ubicación</button>
+              <button type="button" class="ajuste-accion" data-aplicar-tarifa hidden>Usar la tarifa sugerida</button>
             </div>
-            <p id="estado-ubicacion" role="status"></p>
+            <p data-estado-ubicacion role="status"></p>
           </div>
           <div class="ajuste-seccion">
             <h3>Cuotas de CFE</h3>
@@ -2327,17 +2557,26 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
         </section>
         <section class="ajuste-tarjeta" aria-labelledby="t-proyecto">
           <h3 id="t-proyecto">Acerca de Proyecto Eficiencia</h3>
-          <p>Calculadora y Gestor de Eficiencia Energética para promover el ODS 7, Energía Asequible y No Contaminante.</p>
+          <p>Creamos Proyecto Eficiencia para que puedas saber qué aparatos consumen más en tu hogar, estimar su costo y elegir un cambio concreto para ahorrar energía.</p>
           <dl class="creditos">
             <div class="credito">
               <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-              <div><dt>Desarrolladores</dt><dd>Rafael López Zomavilla</dd><dd>Alonso de Jesús Orduña Mora</dd></div>
+              <div>
+                <dt>Equipo de desarrollo</dt>
+                <dd>Rafael López Zomavilla</dd>
+                <dd>Alonso de Jesús Orduña Mora</dd>
+                <dd class="credito-detalle">Desarrollamos la calculadora, el catálogo de aparatos y los reportes de recomendaciones.</dd>
+              </div>
             </div>
             <div class="credito">
               <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 10-10-5L2 10l10 5 10-5Z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
               <div><dt>Institución</dt><dd>Instituto Tecnológico de Veracruz</dd></div>
             </div>
           </dl>
+          <div class="ajuste-seccion">
+            <h3>Cómo aporta al ODS 7</h3>
+            <p>Con la calculadora puedes comparar horarios de uso y ver cómo cambian los kWh y el costo estimado. Así puedes probar hábitos de ahorro y compartir los resultados en casa o en clase.</p>
+          </div>
         </section>
       </div>
     </div>
@@ -2350,7 +2589,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
       <ul class="fuentes-lista">
           <li><span class="fi" style="--i:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.5.7-2.5 1.8s1 1.6 2.5 2 2.5.9 2.5 2-1.1 1.8-2.5 1.8c-1.1 0-2-.4-2.5-1.2M12 6.5V8M12 16v1.5"/></svg></span><div><b>Cuotas domésticas</b><p>Tabla de referencia de noviembre de 2026 basada en los cuadros de Hacienda del oficio 349-B-1-070. IVA estimado de 16 %.</p><p class="fuentes-enlaces"><a href="https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Acuerdos/DescargaAcuerdo.aspx?anio=2026&amp;id=1114&amp;idCliente=1&amp;tipo=SHCP" target="_blank" rel="noopener noreferrer">Oficio 349-B-1-070</a> <a href="https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Casa.aspx" target="_blank" rel="noopener noreferrer">Tarifas de casa en CFE</a></p></div></li>
           <li><span class="fi" style="--i:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg></span><div><b>Bloques y mínimo mensual</b><p>Los bloques de consumo y el mínimo mensual salen del acuerdo de tarifas domésticas. Confirma tu tarifa y la temporada en tu recibo.</p><p class="fuentes-enlaces"><a href="https://sidof.segob.gob.mx/notas/docFuente/5506179" target="_blank" rel="noopener noreferrer">Acuerdo de tarifas domésticas</a> <a href="https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Casa.aspx" target="_blank" rel="noopener noreferrer">Tarifas de casa en CFE</a></p></div></li>
-          <li><span class="fi" style="--i:2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4 4 0 0 1-.6-7.96A6 6 0 0 1 18 9.5 4 4 0 0 1 17 18z"/></svg></span><div><b>Emisiones</b><p>Cerca de 0.44 kg de CO₂ por kWh, valor aproximado de la red eléctrica de México.</p><p class="fuentes-enlaces"><a href="https://www.gob.mx/semarnat/acciones-y-programas/registro-nacional-de-emisiones-rene" target="_blank" rel="noopener noreferrer">Registro Nacional de Emisiones (SEMARNAT)</a> <a href="https://www.gob.mx/cms/uploads/attachment/file/806468/4_-Aviso_FE_2022__1_.pdf" target="_blank" rel="noopener noreferrer">Aviso del factor de emisión 2022 (CRE)</a></p></div></li>
+          <li><span class="fi" style="--i:2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4 4 0 0 1-.6-7.96A6 6 0 0 1 18 9.5 4 4 0 0 1 17 18z"/></svg></span><div><b>Emisiones</b><p>0.444 kg de CO₂e por kWh. Factor del Sistema Eléctrico Nacional para 2024.</p><p class="fuentes-enlaces"><a href="https://www.gob.mx/semarnat/acciones-y-programas/registro-nacional-de-emisiones-rene" target="_blank" rel="noopener noreferrer">Registro Nacional de Emisiones (SEMARNAT)</a> <a href="https://www.gob.mx/cms/uploads/attachment/file/981194/aviso_fesen_2024.pdf" target="_blank" rel="noopener noreferrer">Aviso del factor de emisión 2024 (SEMARNAT)</a></p></div></li>
           <li><span class="fi" style="--i:3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg></span><div><b>Paneles solares</b><p>Se usan los datos de tu panel de Ajustes. Por defecto: un panel de 550 W, unas 5 horas de sol pico al día y 80 % de rendimiento del sistema.</p><p class="fuentes-enlaces"><a href="https://globalsolaratlas.info" target="_blank" rel="noopener noreferrer">Global Solar Atlas (radiación solar por ubicación)</a></p></div></li>
           <li><span class="fi" style="--i:4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v3a5 5 0 0 1-10 0ZM12 16v5"/></svg></span><div><b>Aparatos eficientes</b><p>Los porcentajes de ahorro son valores típicos de referencia. El ahorro real depende del modelo, del uso y de tu tarifa.</p><p class="fuentes-enlaces"><a href="https://www.fide.org.mx" target="_blank" rel="noopener noreferrer">FIDE (equipos con sello de eficiencia)</a> <a href="https://www.gob.mx/conuee" target="_blank" rel="noopener noreferrer">CONUEE (eficiencia energética)</a></p></div></li>
           <li><span class="fi" style="--i:5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><div><b>ODS 7</b><p>Metas de las Naciones Unidas y datos de Tracking SDG 7 (2025), de IEA, IRENA, UNSD, Banco Mundial y OMS.</p><p class="fuentes-enlaces"><a href="https://www.iea.org/reports/tracking-sdg7-the-energy-progress-report-2025" target="_blank" rel="noopener noreferrer">Informe Tracking SDG 7 (2025)</a> <a href="https://trackingsdg7.esmap.org" target="_blank" rel="noopener noreferrer">Datos de Tracking SDG 7</a> <a href="https://sdgs.un.org/goals/goal7" target="_blank" rel="noopener noreferrer">ODS 7 en la ONU</a></p></div></li>
@@ -2358,7 +2597,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
     </details>
   </section>
 
-  <footer>Proyecto Eficiencia V1.18 · ODS 7 de la Agenda 2030</footer>
+  <footer>Proyecto Eficiencia V1.58 · ODS 7 de la Agenda 2030</footer>
 </main>
 
 <dialog id="reporte-dialogo" aria-labelledby="reporte-titulo">
@@ -2388,6 +2627,16 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 
 </div>
 
+<dialog id="reiniciar-dialogo" aria-labelledby="reiniciar-titulo" aria-describedby="reiniciar-aviso">
+  <form method="dialog">
+    <h2 id="reiniciar-titulo">¿Empezar de nuevo?</h2>
+    <p id="reiniciar-aviso">Se borrará el cálculo en curso. Tus configuraciones guardadas con nombre seguirán disponibles.</p>
+    <div class="guardar-acciones">
+      <button type="submit" class="sec" autofocus>Cancelar</button>
+      <button type="button" onclick="document.getElementById('reiniciar-dialogo').close(); comenzar()">Empezar de nuevo</button>
+    </div>
+  </form>
+</dialog>
 <dialog id="guardar-dialogo" aria-labelledby="guardar-titulo">
   <form id="guardar-form">
     <h2 id="guardar-titulo">Guardar configuración</h2>
@@ -2581,24 +2830,22 @@ function dibujarReporte(c, consejo, incluirCosto) {
   const moneda = new Intl.NumberFormat("es-MX", { style: "currency", currency: c.moneda, currencyDisplay: "symbol" });
   const fecha = new Date().toLocaleDateString("es-MX", { dateStyle: "long" });
   const nivel = 2 - c.nivelBloque;
-  const bloque = ["Excedente", "Intermedio", "Básico"][nivel];
+  const bloque = c.ef ? ["Excedente", "Intermedio", "Básico"][nivel] : c.tarifa;
   const varios = c.items.length > 1;
   const periodo = c.diasBimestre === 60 ? "bimestre" : "periodo";
   const dinero = function (n) { return moneda.format(n / c.divisorMoneda); };
   const maxFilas = c.items.length > 4 ? 3 : 4;
   const filas = c.items.slice(0, maxFilas).map(function (equipo) {
     return { nombre: equipo.nombre, kwh: equipo.kwhDia * c.diasBimestre,
-      detalle: numero.format(equipo.watts) + " W · " + (equipo.horasDia > 0 ? duracion(equipo.horasDia) + " al día" : "sin uso") };
+      detalle: numero.format(equipo.watts) + " W × " + equipo.uso + " % = " +
+        numero.format(equipo.watts * equipo.uso / 100) + " W efectivos · " +
+        numero.format(equipo.horasDia) + " h/día" };
   });
   if (c.items.length > maxFilas) {
     const resto = c.items.slice(maxFilas).reduce(function (suma, equipo) { return suma + equipo.kwhDia * c.diasBimestre; }, 0);
     filas.push({ nombre: "Otros equipos (" + (c.items.length - maxFilas) + ")", kwh: resto, detalle: "Suma de los de menor consumo" });
   }
 
-  function duracion(horas) {
-    const min = Math.round(horas * 60), h = Math.floor(min / 60), m = min % 60;
-    return h ? h + " h" + (m ? " " + m + " min" : "") : m + " min";
-  }
 
   function caja(x, y, ancho, alto, color) {
     ctx.fillStyle = color;
@@ -2679,20 +2926,22 @@ function dibujarReporte(c, consejo, incluirCosto) {
   }
   const separador = incluirCosto ? 534 : 411;
   caja(separador, 189, 1, 88, lineaSuave);
+  if (c.ef) {
   caja(separador + 19, 194, 30, 77, tinta);
   ["#ff5a4d", "#ffcc33", "#3fd68c"].forEach(function (color, i) {
     circulo(separador + 34, 211 + i * 22, 7, i === nivel ? color : "#4d655c");
   });
-  const bloqueX = separador + 62;
-  texto("BLOQUE DE COBRO", bloqueX, 205, 12, verde, true);
+  }
+  const bloqueX = separador + (c.ef ? 62 : 19);
+  texto(c.ef ? "BLOQUE DE COBRO" : "TARIFA DEL SERVICIO", bloqueX, 205, 12, verde, true);
   texto(bloque, bloqueX, 237, 21, tinta, true);
-  parrafo(c.tarifaTxt, bloqueX, 259, 736 - bloqueX, 12, suave, 2);
+  if (c.ef) { parrafo(c.tarifaTxt, bloqueX, 259, 736 - bloqueX, 12, suave, 2); }
 
   // Datos complementarios
   const datos = [
     ["AL MES (30 DÍAS)", numero.format(c.kwhMes) + " kWh" + (incluirCosto ? " · " + dinero(c.mes) : "")],
     incluirCosto ? ["PROYECCIÓN A UN AÑO", dinero(c.costoAnual)] : ["PROMEDIO DIARIO", numero.format(c.totalDia) + " kWh"],
-    ["EMISIONES DE CO₂ DEL " + periodo.toUpperCase(), numero.format(c.co2) + " kg"]
+    ["EMISIONES DE CO₂e DEL " + periodo.toUpperCase(), numero.format(c.co2) + " kg"]
   ];
   datos.forEach(function (d, i) {
     const x = 63 + i * 235.5;
@@ -2705,12 +2954,12 @@ function dibujarReporte(c, consejo, incluirCosto) {
   texto(varios ? "Consumo por equipo" : "Consumo de tu aparato", 44, 392, 23, tinta, true, 350);
   texto(c.items.length + (varios ? " aparatos registrados" : " aparato registrado"), 44, 416, 14, suave);
 
-  // Indicador de eficiencia A–G (a la derecha del título de la sección)
+  // Nivel de consumo según tu tarifa A–G (a la derecha del título de la sección)
   if (c.ef) {
     const clases = [["A", "#1f7a45", "#ffffff"], ["B", "#36883a", "#ffffff"], ["C", "#a0c85b", "#18352d"], ["D", "#ddcf55", "#18352d"],
       ["E", "#e5a94a", "#18352d"], ["F", "#d97b3f", "#18352d"], ["G", "#c0392b", "#ffffff"]];
     const anchoChip = 44, hueco = 5, efX = 750 - (7 * anchoChip + 6 * hueco), base = 416;
-    texto("INDICADOR DE EFICIENCIA", efX, 373, 12, verde, true);
+    texto("NIVEL DE CONSUMO SEGÚN TU TARIFA", efX, 373, 12, verde, true);
     clases.forEach(function (cl, i) {
       const activa = cl[0] === c.ef.clase, alto = 15 + i * 3.5, x = efX + i * (anchoChip + hueco), y = base - alto;
       ctx.globalAlpha = activa ? 1 : .42;
@@ -2728,7 +2977,7 @@ function dibujarReporte(c, consejo, incluirCosto) {
       ctx.textAlign = "left";
     });
     ctx.textAlign = "right";
-    texto("Clase " + c.ef.clase + " · " + numero.format(c.ef.kwh) + " kWh/mes · el excedente empieza en " + numero.format(Math.round(c.ef.limite)) + " kWh", 750, 434, 12, suave, false, 400);
+    texto("Nivel " + c.ef.clase + " · " + numero.format(c.ef.kwh) + " kWh/mes · el excedente empieza en " + numero.format(Math.round(c.ef.limite)) + " kWh", 750, 434, 12, suave, false, 400);
     ctx.textAlign = "left";
   }
 
@@ -2749,7 +2998,7 @@ function dibujarReporte(c, consejo, incluirCosto) {
     ctx.font = "700 " + tam + "px 'Segoe UI', Arial, sans-serif";
     while (tam > 11.5 && ctx.measureText(fila.nombre).width > anchoNombre) { tam -= .5; ctx.font = "700 " + tam + "px 'Segoe UI', Arial, sans-serif"; }
     texto(fila.nombre, nombreX, y + 18, tam, tinta, true, anchoNombre);
-    texto(fila.detalle, nombreX, y + 32, 11, suave, false, anchoNombre);
+    texto(fila.detalle, nombreX, y + 32, 10.5, suave, false, anchoNombre);
     ctx.textAlign = "right";
     texto(numero.format(fila.kwh), 668, y + 24, 14, tinta, false, 76);
     texto(c.kwhBimestre ? Math.round(fila.kwh / c.kwhBimestre * 100) + " %" : "0 %", 735, y + 24, 14, suave);
@@ -2808,7 +3057,7 @@ function dibujarReporte(c, consejo, incluirCosto) {
   ctx.strokeStyle = lineaSuave;
   ctx.lineWidth = 1;
   ctx.strokeRect(44.5, y + .5, 705, 73);
-  texto("AHORRO POSIBLE ESTIMADO", 64, y + 24, 12, verde, true);
+  texto("AHORRO ESTIMADO EN " + c.diasBimestre + " DÍAS", 64, y + 24, 12, verde, true, 224);
   caja(306, y + 14, 1, 46, lineaSuave);
   if (ahorro.kwh >= .005) {
     const enDinero = incluirCosto && ahorro.dinero >= .5;
@@ -2831,11 +3080,11 @@ function dibujarReporte(c, consejo, incluirCosto) {
   caja(44, 1024, 706, 1, lineaSuave);
   texto("Proyecto Eficiencia · Documento informativo", 44, 1044, 13, verde, true);
   parrafo((incluirCosto
-    ? (c.diasBimestre === 60 ? "Dos meses iguales" : c.diasBimestre + " días iguales") + " con cuotas de " + c.periodoCuotas + ", IVA y mínimo de 25 kWh por mes. " +
+    ? (!c.ef ? "Proyección con las cuotas capturadas, cargo fijo e IVA. " : ("Proyección por días de cada temporada") + " con cuotas de " + c.periodoCuotas + ", IVA y mínimo de 25 kWh por mes. " +
       (c.tarifa === "1" ? "" : "Año: 6 meses de verano y 6 fuera. ") +
       (c.fechaCambio ? "Conversión BCE del " + c.fechaCambio + ". " : "El recibo puede incluir otros cargos. ")
-    : "El consumo se estima con los datos capturados para un periodo de " + c.diasBimestre + " días. ") +
-    "CO₂: " + numero.format(c.factorCo2) + " kg por kWh (aproximado). Ahorro según porcentajes típicos.", 44, 1062, 706, 11, suave, 2);
+    ) : "El consumo se estima con los datos capturados para un periodo de " + c.diasBimestre + " días. ") +
+    "Factor de red SEN 2024 (SEMARNAT): " + c.factorCo2.toFixed(3) + " kg CO₂e/kWh. Ahorro según porcentajes típicos.", 44, 1062, 706, 11, suave, 2);
   return { lienzo: lienzo, bloque: bloque, filas: filas };
 }
 
@@ -2894,22 +3143,24 @@ function prepararReporte(obtenerDatos) {
 
   function actualizar() {
     const elegido = datos.consejos[Number(consejo.value)];
-    const reporte = dibujarReporte(datos, elegido, precios.checked);
+    const mostrarCosto = precios.checked && Number.isFinite(datos.costoBimestre);
+    const reporte = dibujarReporte(datos, elegido, mostrarCosto);
     lienzo = reporte.lienzo;
     imagen.src = lienzo.toDataURL("image/png");
     descripcion.textContent = datos.kwhBimestre.toLocaleString("es-MX", { maximumFractionDigits: 2 }) +
       " kWh estimados en un periodo de " + datos.diasBimestre + " días. Bloque " +
-      reporte.bloque + ". " + (datos.ef ? "Clase de eficiencia " + datos.ef.clase + ": " + datos.ef.kwh.toLocaleString("es-MX", { maximumFractionDigits: 2 }) + " kWh al mes; el bloque excedente empieza en " + Math.round(datos.ef.limite) + " kWh. " : "") + (precios.checked ? "Costo estimado: " + (datos.costoBimestre / datos.divisorMoneda).toFixed(2) + " " + datos.moneda + ". " : "") +
-      reporte.filas.map(function (fila) { return fila.nombre + ": " + fila.kwh.toFixed(2) + " kWh"; }).join(". ") +
+      reporte.bloque + ". " + (datos.ef ? "Nivel de consumo " + datos.ef.clase + ": " + datos.ef.kwh.toLocaleString("es-MX", { maximumFractionDigits: 2 }) + " kWh al mes; el bloque excedente empieza en " + Math.round(datos.ef.limite) + " kWh. " : "") + (mostrarCosto ? "Costo estimado: " + (datos.costoBimestre / datos.divisorMoneda).toFixed(2) + " " + datos.moneda + ". " : "") +
+      reporte.filas.map(function (fila) { return fila.nombre + ": " + fila.kwh.toFixed(2) + " kWh. " + fila.detalle; }).join(". ") +
       ". " + elegido[0] + ". " + elegido[1] +
       " Ahorro posible con equipos eficientes: " + datos.ahorro.kwh.toLocaleString("es-MX", { maximumFractionDigits: 2 }) + " kWh en el periodo. Huella aproximada: " +
-      datos.co2.toLocaleString("es-MX", { maximumFractionDigits: 2 }) + " kg de CO2.";
-    estado.textContent = "";
+      datos.co2.toLocaleString("es-MX", { maximumFractionDigits: 2 }) + " kg de CO₂e.";
+    estado.textContent = precios.disabled ? "Captura las cuotas de la tarifa para incluir el costo." : "";
   }
 
   document.getElementById("abrir-reporte").addEventListener("click", function () {
     datos = obtenerDatos();
     if (!datos) { return; }
+    precios.disabled = !Number.isFinite(datos.costoBimestre);
     consejo.replaceChildren();
     datos.consejos.forEach(function (opcion, i) { consejo.add(new Option(opcion[0], i)); });
     actualizar();
@@ -3283,7 +3534,7 @@ var TIPS = {
   pc: [
     ["Activa la suspensión automática", "Configura que el equipo se duerma tras 15-20 minutos de inactividad.", "tip"],
     ["Apágalo en pausas largas", "Si no lo usarás en un par de horas, apágalo. El mito de que apagando gastas más es falso en PCs modernas.", "tip"],
-    ["Elige una fuente 80 PLUS", "Una fuente certificada transforma la energía mejor y desperdicia menos en forma de calor.", "inv"]
+    ["Compara las fuentes a la misma carga", "Mide los watts en el enchufe con la misma tarea antes y después del cambio. La diferencia de watts por horas de uso dividida entre 1,000 da los kWh ahorrados.", "inv"]
   ],
   plancha: [
     ["Plancha en tandas grandes", "Junta toda la ropa y plancha un solo día; calentar la resistencia inicial es lo que más gasta.", "tip"],
@@ -3695,7 +3946,7 @@ var TIPS_CAT = {
     "1F": { verano: [300, 900, 1300], fuera: [75, 125] }
   };
   var GRUPO_VERANO_CFE = { "1A": "verano1AB", "1B": "verano1AB", "1C": "verano1CD", "1D": "verano1CD", "1E": "verano1E", "1F": "verano1F" };
-  var KG_CO2_POR_KWH = 0.44;   // valor aproximado de la red eléctrica de México
+  var KG_CO2_POR_KWH = 0.444;   // kg CO₂e/kWh, Sistema Eléctrico Nacional 2024, SEMARNAT
   var MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
   var REGIONES = [
     { valor: "ver", texto: "Veracruz, Ver. (puerto)", nota: "Tarifa 1C", tarifa: "1C", inicio: 5,
@@ -3706,7 +3957,9 @@ var TIPS_CAT = {
     { valor: "1C", texto: "Tarifa 1C · verano de 30 °C", tarifa: "1C" },
     { valor: "1D", texto: "Tarifa 1D · verano de 31 °C", tarifa: "1D" },
     { valor: "1E", texto: "Tarifa 1E · verano de 32 °C", tarifa: "1E" },
-    { valor: "1F", texto: "Tarifa 1F · verano de 33 °C", tarifa: "1F" }
+    { valor: "1F", texto: "Tarifa 1F · verano de 33 °C", tarifa: "1F" },
+    { valor: "DAC", texto: "DAC · Doméstica de alto consumo", tarifa: "DAC", ayuda: "Elige DAC si aparece en tu recibo. Usa el cargo fijo y el precio por kWh aplicables a tu región." },
+    { valor: "PDBT", texto: "PDBT · Comercio en baja tensión", tarifa: "PDBT", ayuda: "Pequeña Demanda en Baja Tensión, hasta 25 kW. Confirma que tu recibo indique PDBT." }
   ];
   var CLAVE_MONEDA = "eficiencia-moneda";
   var CLAVE_CAMBIO = "eficiencia-tipo-cambio";
@@ -3721,6 +3974,7 @@ var TIPS_CAT = {
   function divisorMoneda() { return monedaVisible() === "USD" ? tipoCambio.rate : 1; }
 
   function dinero(n, precision) {
+    if (!Number.isFinite(n)) { return "Cuotas pendientes"; }
     var moneda = monedaVisible(), decimales = precision === 3 ? 3 : 2;
     var clave = moneda + decimales;
     if (!MONEDAS_FORMATOS[clave]) {
@@ -3810,18 +4064,20 @@ var TIPS_CAT = {
     { nombre: "Villahermosa", lat: 17.989, lon: -92.933, radio: 8, tarifa: "1F" }
   ];
 
+  function pintarSugerenciaTarifa(mensaje, buscando) {
+    document.querySelectorAll("[data-detectar-tarifa]").forEach(function (boton) { boton.disabled = !!buscando; });
+    document.querySelectorAll("[data-aplicar-tarifa]").forEach(function (boton) { boton.hidden = !tarifaSugerida; });
+    document.querySelectorAll("[data-estado-ubicacion]").forEach(function (aviso) { aviso.textContent = mensaje; });
+  }
+
   function detectarTarifa() {
-    var aviso = $("estado-ubicacion"), boton = $("detectar-tarifa"), aplicar = $("aplicar-tarifa-sugerida");
     tarifaSugerida = null;
-    aplicar.hidden = true;
     if (!window.isSecureContext || !navigator.geolocation) {
-      aviso.textContent = "La ubicación no está disponible aquí. Selecciona la tarifa de tu recibo.";
+      pintarSugerenciaTarifa("La ubicación no está disponible aquí. Selecciona la tarifa de tu recibo.");
       return;
     }
-    boton.disabled = true;
-    aviso.textContent = "Buscando tu ubicación aproximada…";
+    pintarSugerenciaTarifa("Buscando tu ubicación aproximada…", true);
     navigator.geolocation.getCurrentPosition(function (posicion) {
-      boton.disabled = false;
       var datos = posicion.coords;
       var radianes = Math.PI / 180;
       var localidad = LOCALIDADES_CFE.find(function (lugar) {
@@ -3831,16 +4087,14 @@ var TIPS_CAT = {
           Math.hypot(norte, este) + datos.accuracy / 1000 <= lugar.radio;
       });
       if (!localidad) {
-        aviso.textContent = "Aún no tenemos cobertura fiable para esta ubicación. Selecciona la tarifa de tu recibo.";
+        pintarSugerenciaTarifa("Aún no tenemos cobertura fiable para esta ubicación. Selecciona la tarifa de tu recibo.");
         return;
       }
       tarifaSugerida = localidad.tarifa;
-      aviso.textContent = "Cerca de " + localidad.nombre + ". El recibo podría usar la tarifa " +
-        buscarRegion(localidad.tarifa).tarifa + ". Confírmala antes de aplicarla.";
-      aplicar.hidden = false;
+      pintarSugerenciaTarifa("Cerca de " + localidad.nombre + ". El recibo podría usar la tarifa " +
+        buscarRegion(localidad.tarifa).tarifa + ". Confírmala antes de aplicarla.");
     }, function () {
-      boton.disabled = false;
-      aviso.textContent = "No se pudo obtener la ubicación. Puedes elegir la tarifa de tu recibo.";
+      pintarSugerenciaTarifa("No se pudo obtener la ubicación. Puedes elegir la tarifa de tu recibo.");
     }, { enableHighAccuracy: false, timeout: 9000, maximumAge: 120000 });
   }
 
@@ -3861,15 +4115,18 @@ var TIPS_CAT = {
     $("ajustes-tarifa").addEventListener("change", function (e) {
       confirmarTarifaPreferida(e.target.value);
       tarifaSugerida = null;
-      $("aplicar-tarifa-sugerida").hidden = true;
-      $("estado-ubicacion").textContent = "Tarifa guardada para este cálculo y los siguientes.";
+      pintarSugerenciaTarifa("Tarifa guardada para este cálculo y los siguientes.");
     });
-    $("detectar-tarifa").addEventListener("click", detectarTarifa);
-    $("aplicar-tarifa-sugerida").addEventListener("click", function () {
-      confirmarTarifaPreferida(tarifaSugerida);
-      tarifaSugerida = null;
-      $("aplicar-tarifa-sugerida").hidden = true;
-      $("estado-ubicacion").textContent = "Tarifa aplicada. Algunas localidades tienen convenios que debes verificar en tu recibo.";
+    document.querySelectorAll("[data-detectar-tarifa]").forEach(function (boton) {
+      boton.addEventListener("click", detectarTarifa);
+    });
+    document.querySelectorAll("[data-aplicar-tarifa]").forEach(function (boton) {
+      boton.addEventListener("click", function () {
+        confirmarTarifaPreferida(tarifaSugerida);
+        tarifaSugerida = null;
+        boton.parentElement.querySelector("[data-detectar-tarifa]").focus();
+        pintarSugerenciaTarifa("Tarifa aplicada. Algunas localidades tienen convenios que debes verificar en tu recibo.");
+      });
     });
     aplicarMoneda();
     pintarTarifaPreferida();
@@ -3887,7 +4144,32 @@ var TIPS_CAT = {
     return MESES[Number(partes[1]) - 1] + " de " + partes[0];
   }
 
+  var cuotasEspeciales = {};
+  function tarifaEspecial(tarifa) { return tarifa === "DAC" || tarifa === "PDBT"; }
+
+  function valorCuota(valor, minimo, maximo) {
+    return typeof valor === "number" && Number.isFinite(valor) && valor >= minimo && valor <= maximo ? valor : null;
+  }
+
+  function leerCuotasEspeciales(datos) {
+    var cuotas = {};
+    ["DAC", "PDBT"].forEach(function (tarifa) {
+      var entrada = datos && datos[tarifa];
+      if (entrada) { cuotas[tarifa] = { fijo: valorCuota(entrada.fijo, 0, 1000000), energia: valorCuota(entrada.energia, 0.001, 1000) }; }
+    });
+    return cuotas;
+  }
+
+  function pintarCuotasEspeciales(tarifa) {
+    $("cuotas-especiales").hidden = !tarifaEspecial(tarifa);
+    if (!tarifaEspecial(tarifa)) { return; }
+    var cuotas = cuotasEspeciales[tarifa] || {};
+    if (document.activeElement !== $("cuota-especial-fija")) { $("cuota-especial-fija").value = cuotas.fijo ?? ""; }
+    if (document.activeElement !== $("cuota-especial-kwh")) { $("cuota-especial-kwh").value = cuotas.energia ?? ""; }
+  }
+
   function reparto(kwhMes, tarifa, verano) {
+    if (tarifaEspecial(tarifa)) { return []; }
     var temporadaCalida = verano && tarifa !== "1";
     var limites = BLOQUES[tarifa][temporadaCalida ? "verano" : "fuera"];
     var cuotas = datosCFE.cuotas[temporadaCalida ? GRUPO_VERANO_CFE[tarifa] : "fuera"];
@@ -3903,14 +4185,51 @@ var TIPS_CAT = {
     });
   }
 
-  function costoMes(kwhMes, tarifa, verano) {
-    return reparto(Math.max(MINIMO_CFE, kwhMes), tarifa, verano).reduce(function (suma, tramo) {
+  function costoMes(kwhMes, tarifa, verano, soloEnergia) {
+    if (tarifaEspecial(tarifa)) {
+      var cuota = cuotasEspeciales[tarifa];
+      if (!cuota || cuota.energia == null || (!soloEnergia && cuota.fijo == null)) { return NaN; }
+      var energia = tarifa === "DAC" && !soloEnergia ? Math.max(MINIMO_CFE, kwhMes) : kwhMes;
+      return ((soloEnergia ? 0 : cuota.fijo) + energia * cuota.energia) * FACTOR_IVA;
+    }
+    return reparto(soloEnergia ? kwhMes : Math.max(MINIMO_CFE, kwhMes), tarifa, verano).reduce(function (suma, tramo) {
       return suma + tramo.kwh * tramo.cuota;
     }, 0) * FACTOR_IVA;
   }
 
-  function veranoHoy(reg) {
-    return !!reg.inicio && (new Date().getMonth() + 13 - reg.inicio) % 12 < 6;
+  function fechaReciboValida(fecha) {
+    if (typeof fecha !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) { return false; }
+    var instante = Date.parse(fecha);
+    return Number.isFinite(instante) && new Date(instante).toISOString().slice(0, 10) === fecha;
+  }
+
+  function calendarioPeriodo(reg) {
+    var dias = FACTOR_PERIODO.bim, inicio = inicioVerano || reg.inicio;
+    if (reg.tarifa === "1" || tarifaEspecial(reg.tarifa)) { return { verano: 0, fuera: dias, ultimoVerano: false }; }
+    if (temporada !== "auto" || !inicio) {
+      var veranoManual = temporada === "verano";
+      return { verano: veranoManual ? dias : 0, fuera: veranoManual ? 0 : dias, ultimoVerano: veranoManual };
+    }
+    // El día final es la lectura de cierre. Se cuentan los días anteriores en UTC para evitar saltos de horario.
+    var hoy = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Mexico_City" });
+    var cierre = Date.parse(finRecibo || hoy), msDia = 86400000, diasVerano = 0, ultimoVerano = false;
+    for (var i = dias; i > 0; i--) {
+      var mes = new Date(cierre - i * msDia).getUTCMonth() + 1;
+      ultimoVerano = (mes + 12 - inicio) % 12 < 6;
+      if (ultimoVerano) { diasVerano++; }
+    }
+    return { verano: diasVerano, fuera: dias - diasVerano, ultimoVerano: ultimoVerano };
+  }
+
+  function costoPeriodo(kwhMes, tarifa, dias, soloEnergia) {
+    var verano = dias.verano ? costoMes(kwhMes, tarifa, true, soloEnergia) * dias.verano : 0;
+    var fuera = dias.fuera ? costoMes(kwhMes, tarifa, false, soloEnergia) * dias.fuera : 0;
+    return (verano + fuera) / FACTOR_PERIODO.mes;
+  }
+
+  function etiquetaTemporada(dias) {
+    if (dias.verano && dias.fuera) { return dias.verano + " d. verano / " + dias.fuera + " d. fuera"; }
+    return dias.verano ? "verano" : "fuera de verano";
   }
   // Por tipo de aparato: alternativa típica, ahorro de energía típico (0 a 1) y por qué se ahorra
   var EFICIENTE = {
@@ -3927,7 +4246,6 @@ var TIPS_CAT = {
     cocina_peq: { alt: "un equipo del tamaño justo para tus porciones", ahorro: 0.20, det: "Calentar un equipo grande para poca comida desperdicia energía." },
     plancha: { alt: "una plancha con apagado automático y vapor continuo", ahorro: 0.15, det: "Se apaga sola y plancha en menos pasadas." },
     aspiradora: { alt: "una aspiradora con motor eficiente y potencia variable", ahorro: 0.30, det: "Limpia igual con menos watts porque el motor moderno aprovecha mejor la energía." },
-    pc: { alt: "un equipo con fuente 80 PLUS y componentes eficientes", ahorro: 0.30, det: "Una fuente certificada desperdicia menos energía en forma de calor y los componentes nuevos rinden más por watt." },
     laptop: { alt: "una laptop con procesador eficiente", ahorro: 0.30, det: "Los procesadores modernos hacen el mismo trabajo con menos potencia." },
     monitor: { alt: "un monitor LED con modo eco", ahorro: 0.25, det: "La retroiluminación LED y el modo eco bajan el consumo de la pantalla." },
     tv: { alt: "una televisión LED moderna con sello de eficiencia", ahorro: 0.40, det: "Las pantallas actuales gastan mucho menos que las antiguas del mismo tamaño." },
@@ -3967,7 +4285,6 @@ var TIPS_CAT = {
     "Aire acondicionado de ventana": { alt: "un minisplit inverter", ahorro: 0.40, det: "Es mucho más eficiente que un equipo de ventana y además es más silencioso." },
     "Ventilador de techo": { alt: "un ventilador de techo con motor DC", ahorro: 0.50, det: "Los motores DC usan cerca de la mitad de potencia con el mismo flujo de aire." },
     "PC de escritorio (Ofimática)": { alt: "un mini PC", ahorro: 0.50, det: "Un mini PC de oficina trabaja con una fracción de la potencia de una torre." },
-    "PC de escritorio (Alto Rendimiento/Gamer)": { alt: "un equipo con fuente 80 PLUS Gold y componentes eficientes", ahorro: 0.30, det: "Una fuente certificada y una gráfica eficiente, con límite de FPS, bajan mucho el consumo." },
     "Laptop Gamer": { alt: "una laptop con gráfica eficiente y modo ahorro", ahorro: 0.30, det: "Los modos de energía y las gráficas nuevas dan el mismo rendimiento con menos watts." }
   };
   // Paneles solares (editable en Ajustes): por defecto un panel de 550 W, 5 horas de sol pico al día y 80 % de rendimiento del sistema
@@ -4013,6 +4330,14 @@ var TIPS_CAT = {
     while (destino > 1 && !pantallaPermitida(destino)) { destino--; }
     mostrarPantalla(destino, true);
   }
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape" || pantallaActual !== 5 || e.defaultPrevented || e.isComposing || e.repeat) { return; }
+    // Un diálogo o selector abierto recibe primero el Escape del navegador.
+    if (document.querySelector("dialog[open]") ||
+        (CSS.supports("selector(select:open)") && document.querySelector("#pantalla5 select:open"))) { return; }
+    e.preventDefault();
+    volverDeAjustes();
+  });
 
   var instalacionPendiente = null;
   var modoInstalado = window.matchMedia("(display-mode: standalone)");
@@ -4071,8 +4396,8 @@ var TIPS_CAT = {
   var lista = [], cont = 0;             // equipos de la casa
   var modo = "";                        // "dia" | "semana" (hay que elegirlo)
   var confirmada = false, resultado = null;
-  var periodo = "mes", pestana = "consumo", vista = "aparato";   // vista: "aparato" | "categoria"
-  var temporada = "verano", ddRegion;
+  var periodo = "bim", pestana = "consumo", vista = "aparato";   // vista: "aparato" | "categoria"
+  var temporada = "auto", finRecibo = "", inicioVerano = 0, ddRegion;
   var CLAVE_BORRADOR = "eficiencia-borrador";
   var CLAVE_CONFIGURACIONES = "eficiencia-configuraciones";
   var perfilAbierto = "";
@@ -4096,6 +4421,8 @@ var TIPS_CAT = {
   function tomarConfiguracion() {
     return {
       modo: modo, region: ddRegion.valor(), temporada: temporada,
+      cuotasEspeciales: leerCuotasEspeciales(cuotasEspeciales),
+      diasRecibo: FACTOR_PERIODO.bim, kwhRecibo: kwhRecibo, finRecibo: finRecibo, inicioVerano: inicioVerano,
       equipos: lista.map(function (it) {
         return {
           nombre: it.nombre, cat: it.cat, tipo: it.tipo, watts: it.watts,
@@ -4139,7 +4466,7 @@ var TIPS_CAT = {
     // Si sigues editando una configuración guardada, los botones dicen «Guardar cambios»
     $("guardar-lista").textContent = perfil ? "Guardar cambios" : "Guardar con nombre";
     $("guardar-como").hidden = !perfil || !lista.length;
-    $("guardar-res").textContent = perfil ? "Guardar cambios" : "Guardar configuración";
+    $("guardar-res-texto").textContent = perfil ? "Guardar cambios" : "Guardar configuración";
     $("guardar-dock-s").textContent = perfil ? " cambios" : " configuración";
     $("guardar-dock").setAttribute("aria-label", perfil ? "Guardar cambios" : "Guardar configuración");
     var sinGuardar = !!perfil && JSON.stringify(perfil.datos) !== JSON.stringify(tomarConfiguracion());
@@ -4282,8 +4609,6 @@ var TIPS_CAT = {
   var RAPIDOS = ["Refrigerador", "Foco LED", "Ventilador de pedestal", "Lavadora"];
   var LIMITE_DAC = { "1": 250, "1A": 300, "1B": 400, "1C": 850, "1D": 1000, "1E": 2000, "1F": 2500 };   // kWh al mes (promedio de 12 meses)
   var FACTOR_PERIODO = { dia: 1, semana: 7, mes: 30, bim: 60 };   // bim = días del periodo de tu recibo (por defecto 60)
-  var CLAVE_DIAS = "eficiencia-dias-recibo";
-  var CLAVE_KWH_RECIBO = "eficiencia-kwh-recibo";
   var kwhRecibo = 0;   // kWh que marca el recibo para el mismo periodo (0 = sin comparar)
   function pintarComparacion(c) {
     var el = $("cmp-texto");
@@ -4316,8 +4641,8 @@ var TIPS_CAT = {
  // Animación dinámica: cuenta desde el valor actual hacia el nuevo valor
   function contar(el, valor, formato, ms) {
     if (el._raf) { cancelAnimationFrame(el._raf); }
-    var inicio = (typeof el._val === "number") ? el._val : 0;
-    if (REDUCIR || !ms || inicio === valor) { 
+    var inicio = Number.isFinite(el._val) ? el._val : 0;
+    if (REDUCIR || !ms || inicio === valor || !Number.isFinite(valor)) { 
       el._val = valor; el.textContent = formato(valor); return; 
     }
     var t0 = null;
@@ -4379,7 +4704,8 @@ var TIPS_CAT = {
   // Cómo empiezan los equipos nuevos: "auto" o "manual" (se recuerda en este navegador)
   var CLAVE_USO_DEF = "eficiencia-uso-defecto";
   var usoPorDefecto = "auto";
-  try { if (localStorage.getItem(CLAVE_USO_DEF) === "manual") { usoPorDefecto = "manual"; } } catch (e) {}
+  if (leerGuardado(CLAVE_USO_DEF, "") === "manual") { usoPorDefecto = "manual"; }
+  else { try { if (localStorage.getItem(CLAVE_USO_DEF) === "manual") { usoPorDefecto = "manual"; } } catch (e) {} }
   function pintarUsoDefecto() {
     [["auto", "uso-def-auto"], ["manual", "uso-def-manual"]].forEach(function (par) {
       var on = usoPorDefecto === par[0];
@@ -4392,7 +4718,7 @@ var TIPS_CAT = {
   }
   function elegirUsoDefecto(modo) {
     usoPorDefecto = modo === "manual" ? "manual" : "auto";
-    try { localStorage.setItem(CLAVE_USO_DEF, usoPorDefecto); } catch (e) {}
+    escribirGuardado(CLAVE_USO_DEF, usoPorDefecto);
     pintarUsoDefecto();
   }
   pintarUsoDefecto();
@@ -4910,13 +5236,17 @@ var TIPS_CAT = {
       li.innerHTML =
         '<div class="it-cab"><span class="it-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v3a5 5 0 0 1-10 0ZM12 16v5"/></svg></span>' +
         '<div class="it-tit"><b></b><div class="it-meta"><span class="it-w"></span><span class="it-kwh"></span></div></div><span class="it-etq"></span></div>' +
-        '<div class="it-fila"><button type="button" class="it-paso it-menos">−</button>' +
+        '<div class="it-controles" id="it-controles-' + it.id + '"><div><div class="it-fila"><button type="button" class="it-paso it-menos">−</button>' +
         '<input type="range" class="it-slider" min="0" max="1440" step="15" value="0">' +
         '<button type="button" class="it-paso it-mas">+</button></div>' +
         '<div class="it-pie"><span class="it-hint">Escribe el tiempo</span><div class="it-manual">' +
         '<input type="number" class="it-h" inputmode="numeric" min="0" step="1" placeholder="0" aria-label="Horas">h' +
         '<input type="number" class="it-m" inputmode="numeric" min="0" max="59" step="1" placeholder="0" aria-label="Minutos">min</div></div>' +
-        '<p class="error it-error" role="alert" hidden></p>';
+        '<p class="error it-error" role="alert" hidden></p></div></div>' +
+        (SIEMPRE_ENCENDIDO[it.tipo] ? '<div class="it-conexion"><span class="it-conectado" hidden>✓ Siempre conectado</span>' +
+          '<button type="button" class="it-siempre">Siempre conectado</button>' +
+          '<button type="button" class="it-siempre it-ajustar" aria-controls="it-controles-' + it.id + '" aria-expanded="false" hidden>Ajustar horario</button>' +
+          '<small class="it-hint">Se conserva el porcentaje de utilización.</small></div>' : '');
       li.querySelector("b").textContent = it.etq;
       li.querySelector(".it-w").textContent = hrs(parseFloat(it.watts)) + " W";
       it.li = li;
@@ -4928,6 +5258,25 @@ var TIPS_CAT = {
       it.kb = li.querySelector(".it-kwh");
       it.bM = li.querySelector(".it-menos");
       it.bP = li.querySelector(".it-mas");
+      it.bSiempre = li.querySelector("button.it-siempre:not(.it-ajustar)");
+      if (it.bSiempre) {
+        it.bAjustar = li.querySelector(".it-ajustar");
+        plegarHorario(it, !!modo && it.minutos === MODOS[modo].max * 60);
+        it.bSiempre.addEventListener("click", function () {
+          if (!modo) { return; }
+          it.minutos = MODOS[modo].max * 60;
+          it.manualMal = false;
+          resultado = null;
+          pintarTiempo(it);
+          guardarBorrador();
+          plegarHorario(it, true);
+          it.bAjustar.focus({ preventScroll: true });
+        });
+        it.bAjustar.addEventListener("click", function () {
+          plegarHorario(it, false);
+          it.sl.focus({ preventScroll: true });
+        });
+      }
       it.bM.setAttribute("aria-label", "Quitar tiempo de uso de " + it.etq);
       it.bP.setAttribute("aria-label", "Agregar tiempo de uso de " + it.etq);
       it.sl.setAttribute("aria-label", "Tiempo de uso de " + it.etq);
@@ -4956,6 +5305,16 @@ var TIPS_CAT = {
       ul.appendChild(li);
     });
     aplicarModoVisual();
+  }
+
+  function plegarHorario(it, plegado) {
+    var controles = it.li.querySelector(".it-controles");
+    controles.classList.toggle("plegado", plegado);
+    controles.inert = plegado;
+    it.li.querySelector(".it-conectado").hidden = !plegado;
+    it.bSiempre.hidden = plegado;
+    it.bAjustar.hidden = !plegado;
+    it.bAjustar.setAttribute("aria-expanded", String(!plegado));
   }
 
   // Tocar la barra para saltar a ese punto. La barra no reacciona al primer contacto (así el scroll no la mueve):
@@ -5008,6 +5367,7 @@ var TIPS_CAT = {
       it.sl.max = max;
       it.sl.step = paso;
       it.sl.disabled = it.inH.disabled = it.inM.disabled = it.bM.disabled = it.bP.disabled = !modo;
+      if (it.bSiempre) { it.bSiempre.disabled = !modo; }
       it.li.classList.toggle("bloqueado", !modo);
       pintarTiempo(it);
     });
@@ -5070,14 +5430,15 @@ var TIPS_CAT = {
   function actualizarContador() {
     var total = 0;
     lista.forEach(function (it) { total += kwhDiaEquipo(it); });
-    var kwhMes = total * 30, reg = regionActual(), tarifa = reg.tarifa, verano = (temporada === "verano" && tarifa !== "1");
-    var costoM = modo && kwhMes > 0 ? costoMes(kwhMes, tarifa, verano) : 0, costo = costoM * escalaPeriodo(), ce = $("cf-costo");   // el periodo repite el mes
+    var kwhMes = total * 30, reg = regionActual(), tarifa = reg.tarifa, dias = calendarioPeriodo(reg);
+    var costo = modo && kwhMes > 0 ? costoPeriodo(kwhMes, tarifa, dias) : 0;
+    var costoM = costo / escalaPeriodo(), ce = $("cf-costo");
     if (ce._val !== costo) { ce.classList.remove("tick"); void ce.offsetWidth; ce.classList.add("tick"); }
     contar(ce, costo, dinero, 320);
     contar($("cf-kwh"), kwhMes * escalaPeriodo(), function (v) { return fmt(v) + " kWh al " + nombrePeriodo(); }, 320);
     $("cf-dias").textContent = FACTOR_PERIODO.bim === 60 ? "Bimestre de 60 días" : "Periodo de " + FACTOR_PERIODO.bim + " días";
     $("cf-mes").textContent = "≈ " + dinero(costoM) + " al mes";
-    $("cf-tarifa").textContent = "Tarifa " + tarifa + (tarifa === "1" ? "" : (verano ? " · verano" : " · fuera de verano"));
+    $("cf-tarifa").textContent = "Tarifa " + tarifa + (tarifa === "1" || tarifaEspecial(tarifa) ? "" : " · " + etiquetaTemporada(dias));
   }
 
   function calcular() {
@@ -5105,7 +5466,7 @@ var TIPS_CAT = {
       var w = parseFloat(it.watts), horasDia = (modo === "dia") ? it.minutos / 60 : it.minutos / 60 / 7;
       return { nombre: it.etq, aparato: it.nombre, cat: it.cat, tipo: it.tipo, watts: w, horasDia: horasDia, uso: it.uso || 100, kwhDia: w * horasDia * ((it.uso || 100) / 100) / 1000 };
     });
-    periodo = "mes";
+    periodo = "bim";
     vista = "aparato";
     $("donut")._firma = "";
     irPestana("consumo");
@@ -5114,6 +5475,28 @@ var TIPS_CAT = {
   }
 
   // ---------- Dona SVG con Spider Labels (sin conic-gradient) ----------
+  var DONA_ESCRITORIO = window.matchMedia("(min-width:1024px) and (pointer:fine)");
+
+  // Gira lo mínimo necesario para repartir las etiquetas sin cambiar el orden de los segmentos.
+  function anguloDonaEscritorio(datos, total) {
+    var inicio = -Math.PI / 2, acumulado = 0, centros = [];
+    datos.forEach(function (d) {
+      var arco = d.valor / total * 2 * Math.PI;
+      if (arco <= 0) { return; }
+      centros.push(acumulado + arco / 2);
+      acumulado += arco;
+    });
+    var mejor = inicio, desbalance = centros.length, objetivo = centros.length % 2;
+    // La distribución se repite cada 180°, intercambiando izquierda y derecha.
+    for (var paso = 0; paso <= 24 && desbalance > objetivo; paso++) {
+      var angulo = inicio + Math.ceil(paso / 2) * (paso % 2 ? 1 : -1) * Math.PI / 24;
+      var derecha = centros.filter(function (centro) { return Math.cos(angulo + centro) >= 0; }).length;
+      var diferencia = Math.abs(2 * derecha - centros.length);
+      if (diferencia < desbalance) { mejor = angulo; desbalance = diferencia; }
+    }
+    return mejor;
+  }
+
   function dibujarDonaSpider(contenedor, datos, opc) {
     opc = opc || {};
     contenedor._ultima = { datos: datos, opc: opc };
@@ -5125,11 +5508,13 @@ var TIPS_CAT = {
     var anchoReal = Math.round(contenedor.getBoundingClientRect().width);
     contenedor._cw = anchoReal;
     contenedor._oculto = !anchoReal;
-    var W = Math.max(260, Math.min(anchoReal || 340, 640));
+    var escritorio = DONA_ESCRITORIO.matches;
+    var W = Math.max(260, Math.min(anchoReal || 340, escritorio ? 900 : 640));
     var esc = (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16) / 16;
     var fs = (W < 420 ? 12 : 13.5) * esc, fsp = fs - 1, LH = Math.round(fs * 1.3);
     var R = Math.round(Math.max(46, Math.min(W * 0.165, 108))), r = Math.round(R * 0.64);
-    var PROY = W < 420 ? 8 : 10, CODO = W < 420 ? 12 : 16, GAP = 4, GAPV = 3;
+    var PROY = W < 420 ? 8 : 10, CODO = escritorio ? 28 : W < 420 ? 12 : 16;
+    var GAP = escritorio ? 8 : 4, GAPV = escritorio ? 8 : 3;
     var borde = R + PROY + CODO;                                   // dónde termina la línea guía y empieza el texto
     var colW = Math.max(40, Math.floor(W / 2 - borde - GAP - 2));  // ancho disponible para cada etiqueta
 
@@ -5190,7 +5575,7 @@ var TIPS_CAT = {
     barr.style.setProperty("--circ", f(circ));
     gSeg.setAttribute("mask", "url(#dona-mascara)");
     if (opc.intro) { svg.setAttribute("class", "donut-intro"); }
-    var etiquetas = [], ang = -Math.PI / 2;
+    var etiquetas = [], ang = escritorio ? anguloDonaEscritorio(datos, total) : -Math.PI / 2;
 
     datos.forEach(function (d) {
       var frac = d.valor / total;
@@ -5343,6 +5728,7 @@ var TIPS_CAT = {
   var PESTANAS = ["consumo", "guia", "ods"];
   function irPestana(k) {
     pestana = k;
+    $("t4").textContent = k === "guia" ? "Recomendaciones para tu hogar" : "Dashboard de resultados";
     PESTANAS.forEach(function (n) {
       var activa = (n === k);
       $("tab-" + n).classList.toggle("activa", activa);
@@ -5390,31 +5776,42 @@ var TIPS_CAT = {
   }
   function cambiarTemporada(t) { temporada = t; pintarTemporada(); actualizarContador(); renderDashboard(true); guardarBorrador(); }
 
-  // Región y temporada: Veracruz (puerto) por defecto y verano según la fecha de hoy
   function pintarTemporada() {
-    ["verano", "fuera"].forEach(function (k) {
+    var reg = regionActual(), inicio = inicioVerano || reg.inicio, sin = reg.tarifa === "1";
+    $("campo-temporada").hidden = tarifaEspecial(reg.tarifa);
+    pintarCuotasEspeciales(reg.tarifa);
+    $("pildora-temporada").hidden = sin;
+    $("calendario-temporada").hidden = sin;
+    $("inicio-verano").value = inicioVerano || "";
+    ["auto", "verano", "fuera"].forEach(function (k) {
       var b = $("temp-" + k);
       b.classList.toggle("activa", k === temporada);
       b.setAttribute("aria-pressed", k === temporada ? "true" : "false");
     });
-  }
-  function temporadaAutomatica() {
-    var reg = regionActual(), hoy = new Date().getMonth() + 1, sin = (reg.tarifa === "1");
-    temporada = (!sin && veranoHoy(reg)) ? "verano" : "fuera";
-    $("pildora-temporada").hidden = sin;
     $("ayuda-region").textContent = reg.ayuda || "Elige la tarifa que aparece en tu recibo de luz.";
-    var txt;
-    if (sin) { txt = "La tarifa 1 usa los mismos bloques todo el año. Sus cuotas pueden cambiar cada mes."; }
-    else if (!reg.inicio) { txt = "Selecciona la temporada de tu recibo. Las fechas de verano dependen de tu localidad."; }
-    else {
-      txt = "Hoy estamos en " + MESES[hoy - 1] + ": " + (veranoHoy(reg) ? "temporada de verano" : "fuera de verano") + " (el verano va de mayo a octubre). ";
-      if (veranoHoy(reg) && hoy === 10) { txt += "Termina el 31 de octubre. "; }
-      txt += "En tu recibo aparece si te aplica.";
-    }
-    $("ayuda-temporada").textContent = txt;
+    $("ayuda-temporada").textContent = tarifaEspecial(reg.tarifa) ? "" : sin ? "La tarifa 1 usa los mismos bloques todo el año."
+      : inicio ? "Calendario " + (inicioVerano ? "elegido" : "de referencia para tu localidad") + ": de " + MESES[inicio - 1] +
+        " a " + MESES[(inicio + 4) % 12] + ". Confirma las fechas con tu recibo."
+      : "Calendario local sin confirmar. Puedes indicar el mes de inicio en Ajustes → Tarifa del hogar.";
+    var dias = calendarioPeriodo(reg);
+    var sinCalendario = temporada === "auto" && !inicio;
+    $("resumen-temporada").hidden = sin;
+    $("titulo-temporada").textContent = sinCalendario ? "Calendario local pendiente"
+      : temporada === "auto" ? (dias.verano && dias.fuera ? "✓ Cruce de temporada detectado" : "✓ Temporada detectada")
+      : "Temporada seleccionada manualmente";
+    $("tramos-temporada").textContent = sin ? "" : sinCalendario
+      ? "La proyección usa cuotas de fuera de verano hasta confirmar el calendario local."
+      : dias.verano + " días de verano · " + dias.fuera + " días fuera de verano";
+    $("costo-temporada").textContent = "";
+  }
+
+  function temporadaAutomatica() {
+    temporada = "auto";
     pintarTemporada();
   }
+
   function alElegirRegion() {
+    inicioVerano = 0;
     temporadaAutomatica();
     pintarTarifaPreferida();
     actualizarContador();
@@ -5422,9 +5819,9 @@ var TIPS_CAT = {
     guardarBorrador();
   }
 
-  // Indicador de eficiencia A–G, coherente con el semáforo: se mide contra los bloques de la tarifa.
+  // Nivel de consumo según tu tarifa A–G, coherente con el semáforo: se mide contra los bloques de la tarifa.
   //  Bloque básico → A, B, C (tercios)  ·  Intermedio → D, E (mitades)  ·  Excedente → F (hasta 1.5×) o G
-  function claseEficiencia(kwhMes, tarifa, tramos) {
+  function nivelConsumoTarifario(kwhMes, tarifa, tramos) {
     var umbral = tramos[tramos.length - 1].desde;                 // kWh/mes donde empieza el excedente
     var basico = tramos[0].hasta, uso = kwhMes / umbral, clase;
     if (kwhMes > LIMITE_DAC[tarifa] || kwhMes > umbral * 1.5) { clase = "G"; }
@@ -5435,7 +5832,7 @@ var TIPS_CAT = {
   }
   // Todo lo que necesitan las pestañas, calculado una sola vez
   function contexto() {
-    var reg = regionActual(), tarifa = reg.tarifa, verano = (temporada === "verano" && tarifa !== "1");
+    var reg = regionActual(), tarifa = reg.tarifa, diasTemporada = calendarioPeriodo(reg), verano = diasTemporada.ultimoVerano;
     var items = resultado.slice().sort(function (a, b) { return b.kwhDia - a.kwhDia; });
     var totalDia = 0;
     items.forEach(function (it) { totalDia += it.kwhDia; });
@@ -5444,14 +5841,14 @@ var TIPS_CAT = {
     var diasBimestre = FACTOR_PERIODO.bim;
     var tramos = reparto(kwhMes, tarifa, verano);
     var excedente = tramos[tramos.length - 1];
-    var nivelBloque = excedente.kwh > 0 ? 2 : kwhMes > tramos[0].hasta ? 1 : 0;
-    var ef = claseEficiencia(kwhMes, tarifa, tramos);
+    var nivelBloque = !excedente ? null : excedente.kwh > 0 ? 2 : kwhMes > tramos[0].hasta ? 1 : 0;
+    var ef = tramos.length ? nivelConsumoTarifario(kwhMes, tarifa, tramos) : null;
     return { ef: ef, tarifa: tarifa, verano: verano, items: items, totalDia: totalDia, kwhMes: kwhMes,
       mes: mes, diasBimestre: diasBimestre, kwhBimestre: totalDia * diasBimestre,
-      costoBimestre: mes * (diasBimestre / FACTOR_PERIODO.mes),
+      costoBimestre: costoPeriodo(kwhMes, tarifa, diasTemporada), diasTemporada: diasTemporada,
       tramos: tramos, nivelBloque: nivelBloque, periodoCuotas: periodoCuotasCFE(),
       moneda: monedaVisible(), divisorMoneda: divisorMoneda(), fechaCambio: monedaVisible() === "USD" ? fechaTipoCambio(tipoCambio) : "",
-      tarifaTxt: "tarifa " + tarifa + (tarifa === "1" ? "" : (verano ? " en verano" : " fuera de verano")) };
+      tarifaTxt: "tarifa " + tarifa + (tarifa === "1" || tarifaEspecial(tarifa) ? "" : " · " + etiquetaTemporada(diasTemporada)) };
   }
   function colorDe(i) { return i < PALETA.length ? PALETA[i] : COLOR_RESTO; }
 
@@ -5461,20 +5858,26 @@ var TIPS_CAT = {
     $("contexto-casa").textContent = c.items.length + (c.items.length === 1 ? " aparato" : " aparatos") + " · horas " + (modo === "dia" ? "por día" : "por semana");
 
     // Semáforo y costo total
+    var especial = tarifaEspecial(c.tarifa);
+    ["semaforo", "escala-ef", "estado-casa", "barra-casa", "bloques-cfe"].forEach(function (id) {
+      $(id).hidden = especial;
+    });
+    if (!especial) {
     var nivel = ["verde", "amarillo", "rojo"][c.nivelBloque];
     var cuotaExcedente = c.tramos[c.tramos.length - 1].cuota;
     $("semaforo").setAttribute("data-nivel", nivel);
-    $("semaforo").setAttribute("aria-label", "Semáforo de eficiencia: " + nivel);
+    $("semaforo").setAttribute("aria-label", "Bloque de cobro: " + nivel);
     $("estado-casa").className = "estado " + nivel;
     $("estado-casa-t").textContent = nivel === "verde" ? "Tu consumo cae en el bloque básico" : (nivel === "amarillo" ? "Tu consumo llega al bloque intermedio" : "Tu consumo llega al bloque excedente");
     $("estado-casa-x").textContent = nivel === "verde" ? "Pagas el kWh más barato de la tarifa." :
       (nivel === "amarillo" ? "Parte de tu consumo se cobra más caro." : "Cada kWh en excedente suma " + dinero(cuotaExcedente * FACTOR_IVA) + " con IVA.");
-    // Indicador de eficiencia A–G
+    // Nivel de consumo según tu tarifa A–G
     var claseEf = c.ef.clase, usoDac = c.ef.uso;
     Array.prototype.forEach.call(document.querySelectorAll("#escala-ef li"), function (li) { li.classList.toggle("activa", li.getAttribute("data-clase") === claseEf); });
-    var txtEf = "Clase " + claseEf + " · " + fmt(c.ef.kwh) + " kWh al mes; el bloque excedente empieza en " + Math.round(c.ef.limite) + " kWh.";
-    $("ef-txt").innerHTML = "<b>Clase " + claseEf + "</b> · " + fmt(c.ef.kwh) + " kWh/mes · el excedente empieza en " + Math.round(c.ef.limite) + " kWh";
-    $("escala-ef").setAttribute("aria-label", "Indicador de eficiencia: " + txtEf);
+    var txtEf = "Nivel " + claseEf + " · " + fmt(c.ef.kwh) + " kWh al mes; el bloque excedente empieza en " + Math.round(c.ef.limite) + " kWh.";
+    $("ef-txt").innerHTML = "<b>Nivel " + claseEf + "</b> · " + fmt(c.ef.kwh) + " kWh/mes · el excedente empieza en " + Math.round(c.ef.limite) + " kWh";
+    $("escala-ef").setAttribute("aria-label", "Nivel de consumo según tu tarifa: " + txtEf);
+    }
     num("d-bim", c.costoBimestre, dinero, ms);
     num("d-mes", c.mes, dinero, ms);
     num("d-anio", 6 * (costoMes(c.kwhMes, c.tarifa, true) + costoMes(c.kwhMes, c.tarifa, false)), dinero, ms);
@@ -5485,10 +5888,17 @@ var TIPS_CAT = {
     var dRec = FACTOR_PERIODO.bim, esBim = dRec === 60;
     ETQ_PERIODO.bim = esBim ? "(2 meses)" : "(" + dRec + " días)";
     $("k-bim-etq").textContent = esBim ? "A 2 meses (bimestre)" : "En tu recibo (" + dRec + " días)";
-    $("d-bim-etq").textContent = esBim ? "Costo estimado del bimestre" : "Costo estimado de " + dRec + " días";
+    $("d-bim-etq").textContent = esBim ? "Costo proyectado del bimestre" : "Costo proyectado de " + dRec + " días";
     $("per-bim").textContent = esBim ? "2 meses" : dRec + " días";
     if (document.activeElement !== $("dias-recibo")) { $("dias-recibo").value = dRec; }
     pintarComparacion(c);
+    pintarTemporada();
+    if (c.diasTemporada.verano && c.diasTemporada.fuera) {
+      var costoVerano = costoMes(c.kwhMes, c.tarifa, true) * c.diasTemporada.verano / FACTOR_PERIODO.mes;
+      var costoFuera = costoMes(c.kwhMes, c.tarifa, false) * c.diasTemporada.fuera / FACTOR_PERIODO.mes;
+      $("costo-temporada").textContent = "Costo proyectado · " + dinero(costoVerano) +
+        " en verano · " + dinero(costoFuera) + " fuera de verano";
+    }
 
     // Aviso de la tarifa DAC
     var dac = LIMITE_DAC[c.tarifa], av = $("aviso-dac");
@@ -5503,10 +5913,17 @@ var TIPS_CAT = {
 
     // Bloques de la tarifa CFE en tarjetas
     $("periodo-cuotas").textContent = "Cuotas de " + c.periodoCuotas + " · " + c.moneda + " por kWh" +
+      (c.diasTemporada.verano && c.diasTemporada.fuera ? " · Bloques mensuales de referencia al cierre: " + (c.verano ? "verano" : "fuera de verano") : "") +
       (c.fechaCambio ? " · Conversión BCE del " + c.fechaCambio : "");
-    $("cfe-minimo").hidden = c.kwhMes >= MINIMO_CFE;
-    $("nota-cuotas").textContent = "Estimación residencial con cuotas de " + c.periodoCuotas +
-      ", IVA y mínimo de 25 kWh por mes. El bimestre repite el mes y el año combina seis meses de cada temporada a las mismas cuotas. DAP y DAC quedan fuera de la estimación.";
+    if (especial) {
+      $("periodo-cuotas").textContent = Number.isFinite(c.costoBimestre)
+        ? "Proyección con las cuotas capturadas · " + c.moneda : "Captura ambas cuotas para obtener una proyección en dinero.";
+    }
+    $("cfe-minimo").hidden = especial || c.kwhMes >= MINIMO_CFE;
+    $("nota-cuotas").textContent = especial
+      ? "Proyección con el cargo fijo y la cuota de energía capturados, más IVA. " + (c.tarifa === "DAC" ? "DAC incluye el mínimo mensual de 25 kWh. " : "") + "Se usa la misma cuota en todo el periodo y se excluyen cargos adicionales."
+      : "Estimación residencial con cuotas de " + c.periodoCuotas +
+      ", IVA y mínimo de 25 kWh por mes. El costo del periodo se prorratea por días de cada temporada usando una sola tabla de cuotas. El recibo real puede aplicar cuotas de distintos meses. La proyección anual combina seis meses de cada temporada. DAP y DAC quedan fuera de la estimación.";
     var ul = $("bloques-cfe"), barra = $("barra-casa");
     var cuatroBloques = c.tramos.length === 4;
     var clases = cuatroBloques ? ["b1", "b2", "b-alto", "b3"] : ["b1", "b2", "b3"];
@@ -5578,6 +5995,13 @@ var TIPS_CAT = {
     });
     var lst = $("desglose"), acu = 0;
     lst.innerHTML = "";
+    var costoEnergia = periodo === "bim" ? costoPeriodo(c.kwhMes, c.tarifa, c.diasTemporada, true)
+      : costoMes(c.kwhMes, c.tarifa, c.verano, true) * fac / FACTOR_PERIODO.mes;
+    function costoDesglose(kwhDia) {
+      if (kwhDia === 0) { return dinero(0); }
+      if (!Number.isFinite(costoEnergia)) { return "Cuota pendiente"; }
+      return "≈ " + dinero(costoEnergia * (kwhDia / c.totalDia));
+    }
     // Los que quedan en gris (fuera de la paleta de la dona) se guardan en una fila "Otros" desplegable
     var corte = PALETA.length, nResto = Math.max(0, grupos.length - corte), agrupar = nResto >= 2, lstOtros = null, restoKwh = 0;
     grupos.forEach(function (g, i) { if (i >= corte) { restoKwh += g.kwhDia; } });
@@ -5587,10 +6011,11 @@ var TIPS_CAT = {
       var d = document.createElement("li");
       d.className = "des-item";
       d.style.setProperty("--c", colorDe(i));
-      d.innerHTML = '<div class="des-cab"><b></b><span class="des-val"></span></div><div class="des-meta"></div>' + (porCat ? '<div class="des-meta des-aps"></div>' : "") +
+      d.innerHTML = '<div class="des-cab"><b></b><span class="des-cifras"><span class="des-val"></span><span class="des-costo"></span></span></div><div class="des-meta"></div>' + (porCat ? '<div class="des-meta des-aps"></div>' : "") +
         '<div class="pista"><i></i></div><div class="des-pie"><span class="des-pct"></span><span class="des-acum"></span></div>';
       d.querySelector("b").textContent = it.nombre;
       d.querySelector(".des-val").textContent = fmt(it.kwhDia * fac) + " kWh";
+      d.querySelector(".des-costo").textContent = costoDesglose(it.kwhDia);
       if (porCat) {
         d.querySelector(".des-meta").textContent = it.n + (it.n === 1 ? " aparato" : " aparatos") + " · " + hrs(it.watts) + " W sumados";
         d.querySelector(".des-aps").textContent = Object.keys(it.aps).map(function (k) { return k + (it.aps[k] > 1 ? " (×" + it.aps[k] + ")" : ""); }).join(", ");
@@ -5601,7 +6026,7 @@ var TIPS_CAT = {
       d.querySelector(".des-pct").textContent = fmt(pct) + " % del total";
       d.querySelector(".des-acum").textContent = "Acumulado: " + fmt(acu * fac) + " kWh";
       if (agrupar && i >= corte) {
-        if (!lstOtros) { lstOtros = crearOtros(lst, nResto, restoKwh, c.totalDia > 0 ? restoKwh / c.totalDia * 100 : 0, porCat, fac); }
+        if (!lstOtros) { lstOtros = crearOtros(lst, nResto, restoKwh, c.totalDia > 0 ? restoKwh / c.totalDia * 100 : 0, porCat, fac, costoDesglose(restoKwh)); }
         lstOtros.appendChild(d);
       } else { lst.appendChild(d); }
     });
@@ -5609,7 +6034,7 @@ var TIPS_CAT = {
     num("total-valor", c.totalDia * fac, function (v) { return fmt(v) + " kWh"; }, ms);
 
     var datos = [];
-    if (c.tarifa !== "1") {
+    if (c.tarifa !== "1" && !tarifaEspecial(c.tarifa)) {
       var cv = costoMes(c.kwhMes, c.tarifa, true) * escalaPeriodo(), cf = costoMes(c.kwhMes, c.tarifa, false) * escalaPeriodo();
       datos.push(["Verano y fuera de verano:", "al " + nombrePeriodo() + " pagarías unos " + dinero(cv) + " en verano y unos " + dinero(cf) + " fuera de verano" + (cf - cv > 0.5 ? " (el verano te ahorra " + dinero(cf - cv) + ")." : "."), ""]);
     }
@@ -5622,13 +6047,13 @@ var TIPS_CAT = {
 
   // Fila "Otros": resume los aparatos o categorías de menor consumo y los muestra al tocarla
   var otrosAbierto = false;
-  function crearOtros(lst, n, kwh, pct, porCat, fac) {
+  function crearOtros(lst, n, kwh, pct, porCat, fac, costo) {
     var li = document.createElement("li");
     li.className = "des-item des-otros";
     li.style.setProperty("--c", COLOR_RESTO);
     li.innerHTML =
       '<button type="button" class="des-otros-btn">' +
-        '<span class="des-cab"><b></b><span class="des-val"></span></span>' +
+        '<span class="des-cab"><b></b><span class="des-cifras"><span class="des-val"></span><span class="des-costo"></span></span></span>' +
         '<span class="des-meta"></span>' +
         '<span class="pista"><i></i></span>' +
         '<span class="des-pie"><span class="des-pct"></span><span class="des-ver"><span class="des-ver-txt"></span>' +
@@ -5637,6 +6062,7 @@ var TIPS_CAT = {
       '<div class="des-otros-cuerpo"><div class="des-otros-in"><ul class="des-lista des-otros-lista"></ul></div></div>';
     li.querySelector("b").textContent = "Otros (" + n + ")";
     li.querySelector(".des-val").textContent = fmt(kwh * fac) + " kWh";
+    li.querySelector(".des-costo").textContent = costo;
     li.querySelector(".des-meta").textContent = n + (porCat ? " categorías" : " aparatos") + " con menor consumo";
     li.querySelector("i").style.width = pct + "%";
     li.querySelector(".des-pct").textContent = fmt(pct) + " % del total";
@@ -5665,8 +6091,8 @@ var TIPS_CAT = {
     var bd = document.createElement("span");
     bd.className = "badge " + t[2];
     bd.textContent = BADGES[t[2]];
-    cab.appendChild(b);
     cab.appendChild(bd);
+    cab.appendChild(b);
     var d = document.createElement("span");
     d.className = "cdesc";
     d.textContent = t[1];
@@ -5677,7 +6103,7 @@ var TIPS_CAT = {
   // Consejos de un aparato según su tipo, sus Watts, sus horas y lo que pesa en la casa
   function consejosDe(g, share) {
     var out = [];
-    if (g.horasDia >= 6 && share >= 0.3) {
+    if (g.horasDia >= 6 && share >= 0.3 && !SIEMPRE_ENCENDIDO[g.tipo]) {
       out.push(["Reduce el tiempo de uso de «" + g.nombre + "»", "Lo usas " + hm(g.horasDia) + " al día y aporta " + Math.round(share * 100) + " % de tu consumo. Recortar una o dos horas diarias, con pausas o temporizador, es tu ahorro más rápido.", "urg"]);
     }
     if ((g.tipo === "pc" || g.tipo === "laptop") && g.watts > UMBRAL_PC) { out = out.concat(TIPS_CALIENTE); }
@@ -5691,7 +6117,7 @@ var TIPS_CAT = {
     var tot = 0;
     c.items.forEach(function (it) {
       it.ef = Object.hasOwn(EFICIENTE_NOMBRE, it.aparato) ? EFICIENTE_NOMBRE[it.aparato] : (EFICIENTE[it.tipo] || EFICIENTE.otros);
-      it.ahorroKwh = it.kwhDia * 30 * it.ef.ahorro;
+      it.ahorroKwh = it.tipo === "pc" ? 0 : it.kwhDia * 30 * it.ef.ahorro;
       tot += it.ahorroKwh;
     });
     var kwhEf = c.kwhMes - tot;
@@ -5709,29 +6135,43 @@ var TIPS_CAT = {
       g.horasDia = Math.max(g.horasDia, it.horasDia);
     });
     orden.sort(function (a, b) { return b.kwhDia - a.kwhDia; });
-    $("guia-intro").textContent = "Consejos específicos para cada aparato, ordenados por lo que más pesa en tu consumo. Empieza por el primero.";
-    var cont2 = $("guia-grupos"), cats = {};
-    cont2.innerHTML = "";
+    var principales = $("guia-grupos"), otros = $("guia-otros"), cats = {};
+    var abiertos = new Set(Array.from($("panel-guia").querySelectorAll(".grupo[open]"), function (d) { return d.dataset.aparato; }));
+    principales.replaceChildren();
+    otros.replaceChildren();
+    $("guia-mas").hidden = orden.length <= 3;
+    if (orden.length <= 3) { $("guia-mas").open = false; }
+    $("guia-mas-titulo").textContent = "Ver todos los aparatos (" + c.items.length + ")";
     orden.forEach(function (g, idx) {
       cats[g.cat] = true;
       var share = c.totalDia > 0 ? g.kwhDia / c.totalDia : 0;
+      var porcentaje = Math.round(share * 100) + " %";
+      var consejos = consejosDe(g, share);
+      var nombre = g.nombre + (g.n > 1 ? " (×" + g.n + ")" : "");
+      if (idx === 0) {
+        var destacado = consejos.find(function (t) { return t[2] === "urg"; }) ||
+          consejos.find(function (t) { return t[2] === "tip"; }) || consejos[0];
+        $("guia-prioridad-accion").textContent = destacado[0];
+        $("guia-prioridad-detalle").textContent = destacado[1];
+        $("guia-prioridad-consumo").textContent = nombre + " · " + porcentaje + " del consumo estimado";
+      }
       var d = document.createElement("details");
       d.className = "panel grupo";
-      if (idx === 0) { d.open = true; }
+      d.dataset.aparato = g.nombre;
+      d.open = abiertos.has(g.nombre);
       var sm = document.createElement("summary");
-      sm.innerHTML = '<span class="num"></span><span class="sm-t"></span><span class="badge tip sm-pct"></span>';
-      sm.querySelector(".num").textContent = idx + 1;
-      sm.querySelector(".sm-t").textContent = g.nombre + (g.n > 1 ? " (×" + g.n + ")" : "");
-      sm.querySelector(".sm-pct").textContent = Math.round(share * 100) + " %";
+      sm.innerHTML = '<span class="sm-t"></span><span class="badge tip sm-pct"></span>';
+      sm.querySelector(".sm-t").textContent = nombre;
+      sm.querySelector(".sm-pct").textContent = porcentaje;
       d.appendChild(sm);
       var cuerpo = document.createElement("div");
       cuerpo.className = "panel-cuerpo";
       var ul = document.createElement("ul");
       ul.className = "consejos";
-      consejosDe(g, share).forEach(function (t) { ul.appendChild(crearConsejo(t)); });
+      consejos.forEach(function (t) { ul.appendChild(crearConsejo(t)); });
       cuerpo.appendChild(ul);
       d.appendChild(cuerpo);
-      cont2.appendChild(d);
+      (idx < 3 ? principales : otros).appendChild(d);
     });
 
     var gen = $("guia-generales"), vistos = {};
@@ -5742,9 +6182,11 @@ var TIPS_CAT = {
     gen.appendChild(crearConsejo(TIP_SOLAR));
 
     var a = ahorroPotencial(c);
-    poner("#ca-ef-intro", "Si cambiaras todos tus aparatos por modelos eficientes típicos, tu casa pasaría de " + fmt(c.kwhMes) + " a " + fmt(a.kwhEf) + " kWh al mes (" + a.pct + " % menos): unos " +
-      dinero((c.mes - a.mesEf) * escalaPeriodo()) + " menos al " + nombrePeriodo() + " y cerca de " + fmt(a.tot * KG_CO2_POR_KWH) + " kg de CO₂ menos al mes.");
-    llenarLista("#ca-ef-lista", c.items.slice().sort(function (x, y) { return y.ahorroKwh - x.ahorroKwh; }).slice(0, 5).map(function (it) {
+    var ahorroDinero = c.costoBimestre - costoPeriodo(a.kwhEf, c.tarifa, c.diasTemporada);
+    poner("#ca-ef-intro", "Si aplicaras los cambios de equipo con ahorro estimable, pasarías de " + fmt(c.kwhMes) + " a " + fmt(a.kwhEf) + " kWh al mes (" + a.pct + " % menos)." +
+      (Number.isFinite(ahorroDinero) ? " Ahorrarías cerca de " + dinero(ahorroDinero) + " por " + nombrePeriodo() + "." : "") +
+      " Las emisiones bajarían cerca de " + fmt(a.tot * KG_CO2_POR_KWH) + " kg de CO₂e al mes.");
+    llenarLista("#ca-ef-lista", c.items.filter(function (it) { return it.ahorroKwh > 0; }).sort(function (x, y) { return y.ahorroKwh - x.ahorroKwh; }).slice(0, 5).map(function (it) {
       return [it.nombre + ":", "cámbialo por " + it.ef.alt + " y ahorra cerca de " + fmt(it.ahorroKwh) + " kWh al mes (" + Math.round(it.ef.ahorro * 100) + " %).", ""];
     }));
   }
@@ -5752,7 +6194,7 @@ var TIPS_CAT = {
   // ---------- Pestaña "ODS 7" ----------
   function renderODS(c) {
     var a = ahorroPotencial(c);
-    poner("#ods-71", "Tu aporte: tu casa gasta cerca de " + dinero(c.mes * escalaPeriodo()) + " al " + nombrePeriodo() + " en estos aparatos. Con modelos eficientes serían unos " + dinero(a.mesEf * escalaPeriodo()) + ": energía más asequible para tu hogar.");
+    poner("#ods-71", "Tu aporte: tu casa gasta cerca de " + dinero(c.costoBimestre) + " al " + nombrePeriodo() + " en estos aparatos. Con modelos eficientes serían unos " + dinero(costoPeriodo(a.kwhEf, c.tarifa, c.diasTemporada)) + ": energía más asequible para tu hogar.");
     poner("#ods-72", "Tu aporte: para generar con sol lo que consume tu casa en un mes (" + fmt(c.kwhMes) + " kWh) harían falta " + textoPaneles(c.kwhMes / kwhPanelMes()) + " de " + panel.w + " W, con unas " + panel.horas + " horas de sol pico al día y " + panel.rend + " % de rendimiento. Con aparatos eficientes bastarían " + textoPaneles(a.kwhEf / kwhPanelMes()) + ".");
     poner("#ods-73", "Tu aporte: con modelos eficientes harías lo mismo con " + a.pct + " % menos energía en total, justo la mejora que busca la meta 7.3.");
   }
@@ -5770,9 +6212,7 @@ var TIPS_CAT = {
   function pintarInicio() {
     var hay = lista.length > 0;
     $("inicio-comenzar-txt").textContent = hay ? "Continuar mi cálculo" : "Comenzar";
-    $("inicio-nota-txt").textContent = hay
-      ? "Tienes un cálculo en curso (" + resumenConfiguracion(lista.length, modo) + "). Las configuraciones guardadas con nombre no se borran."
-      : "";
+    $("inicio-nota-txt").textContent = hay ? resumenConfiguracion(lista.length, modo) : "";
   }
 
   function iniciarDesdeInicio() {
@@ -5781,10 +6221,7 @@ var TIPS_CAT = {
     continuarCalculo();
   }
 
-  function empezarNuevoDesdeInicio() {
-    if (!confirmarCambioDeCalculo("Empezar de nuevo")) { return; }
-    comenzar();
-  }
+  function empezarNuevoDesdeInicio() { reiniciar(); }
 
   function continuarCalculo() {
     if (!lista.length) { return; }
@@ -5805,9 +6242,18 @@ var TIPS_CAT = {
     cont = 0;
     modo = datos && (datos.modo === "dia" || datos.modo === "semana") ? datos.modo : "";
     perfilAbierto = perfil || "";
+    cuotasEspeciales = leerCuotasEspeciales(datos && datos.cuotasEspeciales);
+    var dias = datos && datos.diasRecibo, kwh = datos && datos.kwhRecibo;
+    finRecibo = datos && fechaReciboValida(datos.finRecibo) ? datos.finRecibo : "";
+    inicioVerano = datos && Number.isInteger(datos.inicioVerano) && datos.inicioVerano >= 1 && datos.inicioVerano <= 12 ? datos.inicioVerano : 0;
+    $("fin-recibo").value = finRecibo;
+    FACTOR_PERIODO.bim = Number.isInteger(dias) && dias >= 25 && dias <= 70 ? dias : 60;
+    kwhRecibo = Number.isFinite(kwh) && kwh > 0 && kwh <= 100000 ? kwh : 0;
+    $("dias-recibo").value = FACTOR_PERIODO.bim;
+    $("kwh-recibo").value = kwhRecibo || "";
     confirmada = false;
     resultado = null;
-    periodo = "mes";
+    periodo = "bim";
     vista = "aparato";
     $("toast").classList.remove("on");
     $("lista-tarjetas").innerHTML = "";
@@ -5821,7 +6267,7 @@ var TIPS_CAT = {
     ddRegion.fijar((region || buscarRegion(tarifaPreferida) || REGIONES[0]).valor);
     pintarTarifaPreferida();
     temporadaAutomatica();
-    if (region && region.tarifa !== "1" && (datos.temporada === "verano" || datos.temporada === "fuera")) {
+    if (region && region.tarifa !== "1" && ["verano", "fuera"].includes(datos.temporada)) {
       temporada = datos.temporada;
       pintarTemporada();
     }
@@ -5835,8 +6281,12 @@ var TIPS_CAT = {
   }
 
   function reiniciar() {
-    if (!confirmarCambioDeCalculo("Empezar de nuevo")) { return; }
-    comenzar();
+    var perfil = perfilActual();
+    if (!lista.length || (perfil && JSON.stringify(perfil.datos) === JSON.stringify(tomarConfiguracion()))) {
+      comenzar();
+      return;
+    }
+    $("reiniciar-dialogo").showModal();
   }
 
   function intentarSalir() { mostrarPantalla(1, true); }
@@ -5855,7 +6305,7 @@ var TIPS_CAT = {
   // ---------- Temas y modo oscuro ----------
   var CLAVE_APARIENCIA = "eficiencia-apariencia";
   var TEMAS_IDS = ["verde", "oceano", "atardecer", "violeta"];
-  var apariencia = { tema: "verde", auto: true, manual: "claro", reducir: null };   // primera visita: modo oscuro automático activado
+  var apariencia = { tema: "verde", auto: true, manual: "claro", oled: false, reducir: null };   // primera visita: modo oscuro automático activado
   var mqOscuro = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
   var mqMov = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
 
@@ -5866,6 +6316,7 @@ var TIPS_CAT = {
         if (TEMAS_IDS.indexOf(g.tema) >= 0) { apariencia.tema = g.tema; }
         if (typeof g.auto === "boolean") { apariencia.auto = g.auto; }
         if (g.manual === "claro" || g.manual === "oscuro") { apariencia.manual = g.manual; }
+        apariencia.oled = g.oled === true;
         if (typeof g.reducir === "boolean") { apariencia.reducir = g.reducir; }
       }
     } catch (err) { /* sin almacenamiento: se usan los valores de la primera visita */ }
@@ -5879,8 +6330,16 @@ var TIPS_CAT = {
     var raiz = document.documentElement, oscuro = esOscuro();
     raiz.setAttribute("data-tema", apariencia.tema);
     raiz.setAttribute("data-modo", oscuro ? "oscuro" : "claro");
+    var oled = oscuro && apariencia.oled;
+    raiz.toggleAttribute("data-oled", oled);
+    $("fila-oled").hidden = !oscuro;
+    $("sw-oled").setAttribute("aria-checked", String(oled));
     var meta = $("meta-tema");
-    if (meta) { meta.setAttribute("content", getComputedStyle(raiz).getPropertyValue(oscuro ? "--cielo" : "--hoja").trim() || "#0f7a4f"); }
+    if (meta) {
+      var estilos = getComputedStyle(raiz);
+      var colorBarra = estilos.getPropertyValue("--barra-sistema").trim() || estilos.getPropertyValue("--hoja").trim();
+      meta.setAttribute("content", colorBarra || "#0f7a4f");
+    }
     $("sw-auto").setAttribute("aria-checked", apariencia.auto ? "true" : "false");
     $("pildora-manual").hidden = apariencia.auto;
     ["claro", "oscuro"].forEach(function (m) {
@@ -5913,6 +6372,12 @@ var TIPS_CAT = {
     aplicarApariencia();
   }
   function elegirModoManual(m) { apariencia.manual = m; guardarApariencia(); aplicarApariencia(); }
+  function alternarOLED() {
+    if (!esOscuro()) { return; }
+    apariencia.oled = !apariencia.oled;
+    guardarApariencia();
+    aplicarApariencia();
+  }
   function elegirTema(id) { apariencia.tema = id; guardarApariencia(); aplicarApariencia(); }
   function iniciarApariencia() {
     leerApariencia();
@@ -5954,7 +6419,7 @@ var TIPS_CAT = {
   function exportarConfiguraciones() {
     var respaldo = {
       formato: "proyecto-eficiencia", version: 1, apariencia: apariencia, moneda: monedaPreferida,
-      tarifaPreferida: tarifaPreferida, configuraciones: leerConfiguraciones(),
+      tarifaPreferida: tarifaPreferida, usoPorDefecto: usoPorDefecto, configuraciones: leerConfiguraciones(),
       borrador: { perfil: perfilAbierto, datos: tomarConfiguracion() }
     };
     var contenido = codificarRespaldo(respaldo);
@@ -5982,7 +6447,7 @@ var TIPS_CAT = {
 
   function configuracionRespaldada(datos) {
     if (!configuracionValida(datos) || !buscarRegion(datos.region) ||
-        !["", "dia", "semana"].includes(datos.modo) || !["verano", "fuera"].includes(datos.temporada)) {
+        !["", "dia", "semana"].includes(datos.modo) || !["auto", "verano", "fuera"].includes(datos.temporada)) {
       return false;
     }
     var maximo = datos.modo === "semana" ? 10080 : 1440;
@@ -6000,6 +6465,9 @@ var TIPS_CAT = {
     var aspecto = respaldo && respaldo.apariencia;
     if (!respaldo || respaldo.formato !== "proyecto-eficiencia" || respaldo.version !== 1 ||
         !aspecto || !TEMAS_IDS.includes(aspecto.tema) || typeof aspecto.auto !== "boolean" ||
+        (aspecto.oled !== undefined && typeof aspecto.oled !== "boolean") ||
+        (aspecto.reducir != null && typeof aspecto.reducir !== "boolean") ||
+        (respaldo.usoPorDefecto !== undefined && !["auto", "manual"].includes(respaldo.usoPorDefecto)) ||
         !["claro", "oscuro"].includes(aspecto.manual) || !["MXN", "USD"].includes(respaldo.moneda) ||
         !(respaldo.tarifaPreferida === "" || buscarRegion(respaldo.tarifaPreferida)) ||
         !respaldo.borrador || typeof respaldo.borrador.perfil !== "string" || !configuracionRespaldada(respaldo.borrador.datos) ||
@@ -6023,12 +6491,15 @@ var TIPS_CAT = {
     var respaldo = respaldoPendiente;
     if (!respaldo) { return; }
     var cambios = [
-      [CLAVE_APARIENCIA, { tema: respaldo.apariencia.tema, auto: respaldo.apariencia.auto, manual: respaldo.apariencia.manual }],
+      [CLAVE_APARIENCIA, { tema: respaldo.apariencia.tema, auto: respaldo.apariencia.auto,
+        manual: respaldo.apariencia.manual, oled: respaldo.apariencia.oled === true,
+        reducir: typeof respaldo.apariencia.reducir === "boolean" ? respaldo.apariencia.reducir : null }],
       [CLAVE_MONEDA, respaldo.moneda],
       [CLAVE_TARIFA_PREFERIDA, respaldo.tarifaPreferida],
       [CLAVE_CONFIGURACIONES, respaldo.configuraciones],
       [CLAVE_BORRADOR, respaldo.borrador]
     ];
+    if (respaldo.usoPorDefecto !== undefined) { cambios.push([CLAVE_USO_DEF, respaldo.usoPorDefecto]); }
     try {
       var anteriores = cambios.map(function (cambio) { return [cambio[0], localStorage.getItem(cambio[0])]; });
       try {
@@ -6046,6 +6517,7 @@ var TIPS_CAT = {
       return;
     }
     apariencia = cambios[0][1];
+    if (respaldo.usoPorDefecto !== undefined) { usoPorDefecto = respaldo.usoPorDefecto; pintarUsoDefecto(); }
     monedaPreferida = respaldo.moneda;
     tarifaPreferida = respaldo.tarifaPreferida;
     configuraciones = respaldo.configuraciones;
@@ -6301,29 +6773,50 @@ var TIPS_CAT = {
     });
   })();
 
-  // kWh del recibo para comparar con la estimación (se recuerda en este navegador)
+  // Datos del recibo asociados al borrador y a las configuraciones guardadas.
   (function () {
-    var g = Number(leerGuardado(CLAVE_KWH_RECIBO, 0));
-    if (Number.isFinite(g) && g > 0 && g <= 100000) { kwhRecibo = g; $("kwh-recibo").value = g; }
     $("kwh-recibo").addEventListener("input", function () {
       var n = Number($("kwh-recibo").value);
       kwhRecibo = Number.isFinite(n) && n > 0 && n <= 100000 ? n : 0;
-      escribirGuardado(CLAVE_KWH_RECIBO, kwhRecibo);
+      guardarBorrador();
       if (resultado) { pintarComparacion(contexto()); }
     });
   })();
 
-  // Días del periodo del recibo (25 a 70): se recuerdan en este navegador
+  MESES.forEach(function (mes, i) { $("inicio-verano").add(new Option(mes, i + 1)); });
+  $("inicio-verano").addEventListener("change", function () {
+    inicioVerano = Number(this.value);
+    temporadaAutomatica();
+    cambiarTemporada(temporada);
+  });
+  $("fin-recibo").addEventListener("change", function () {
+    finRecibo = fechaReciboValida(this.value) ? this.value : "";
+    cambiarTemporada(temporada);
+  });
+
+  ["cuota-especial-fija", "cuota-especial-kwh"].forEach(function (id) {
+    $(id).addEventListener("input", function () {
+      var tarifa = regionActual().tarifa;
+      if (!tarifaEspecial(tarifa)) { return; }
+      cuotasEspeciales[tarifa] = {
+        fijo: valorCuota($("cuota-especial-fija").valueAsNumber, 0, 1000000),
+        energia: valorCuota($("cuota-especial-kwh").valueAsNumber, 0.001, 1000)
+      };
+      guardarBorrador();
+      actualizarContador();
+      renderDashboard(false);
+    });
+  });
+
+  // Días del periodo del recibo (25 a 70).
   (function () {
-    var d = Number(leerGuardado(CLAVE_DIAS, 60));
-    if (Number.isInteger(d) && d >= 25 && d <= 70) { FACTOR_PERIODO.bim = d; }
     var campo = $("dias-recibo");
     campo.value = FACTOR_PERIODO.bim;
     campo.addEventListener("input", function () {
       var n = Number(campo.value);
       if (campo.value !== "" && Number.isInteger(n) && n >= 25 && n <= 70) {
         FACTOR_PERIODO.bim = n;
-        escribirGuardado(CLAVE_DIAS, n);
+        guardarBorrador();
         actualizarContador();
         renderDashboard(false);
       }
@@ -6337,21 +6830,22 @@ var TIPS_CAT = {
     var c = contexto();
     var equipo = c.items[0];
     c.consejos = consejosDe(equipo, c.totalDia ? equipo.kwhDia / c.totalDia : 0);
-    // En equipos que deben quedar siempre encendidos (como el refrigerador) el recibo no sugiere apagarlos antes
-    if (SIEMPRE_ENCENDIDO[equipo.tipo]) { c.consejos = c.consejos.filter(function (t) { return t[2] !== "urg"; }); }
     // Datos que solo usa el recibo: proyección anual, CO2 y ahorro posible del periodo
     c.costoAnual = 6 * (costoMes(c.kwhMes, c.tarifa, true) + costoMes(c.kwhMes, c.tarifa, false));
     c.factorCo2 = KG_CO2_POR_KWH;
     c.co2 = c.kwhBimestre * KG_CO2_POR_KWH;
     var a = ahorroPotencial(c);
     var mayor = c.items.reduce(function (m, it) { return it.ahorroKwh > m.ahorroKwh ? it : m; }, c.items[0]);
-    c.ahorro = { kwh: a.tot * escalaPeriodo(), dinero: Math.max(0, c.mes - a.mesEf) * escalaPeriodo(),
+    c.ahorro = { kwh: a.tot * escalaPeriodo(), dinero: Math.max(0, c.costoBimestre - costoPeriodo(a.kwhEf, c.tarifa, c.diasTemporada)),
       pct: c.kwhMes > 0 ? a.pct : 0, equipo: mayor.nombre, alternativa: mayor.ef.alt };
     return c;
   });
   iniciarApariencia();
   ddRegion = crearDD("region", "Selecciona tu tarifa", alElegirRegion);
-  ddRegion.opciones(REGIONES.map(function (g) { return { valor: g.valor, texto: g.texto, nota: g.nota }; }));
+  ddRegion.opciones([{ grupo: "Hogar" }].concat(REGIONES.slice(0, -2), [
+    { grupo: "Hogar de alto consumo" }, REGIONES[REGIONES.length - 2],
+    { grupo: "Comercio" }, REGIONES[REGIONES.length - 1]
+  ]));
   construirChips();
   iniciarBusqueda();
   iniciarScrollSuperpuesto();
