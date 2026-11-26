@@ -1,7 +1,7 @@
 // Service worker: guarda la app para usarla sin conexión.
 // Al cambiar index.html, sube el número de versión para que los teléfonos descarguen la nueva.
 var PREFIJO_CACHE = "eficiencia:" + self.registration.scope + ":";
-var CACHE = PREFIJO_CACHE + "v9";
+var CACHE = PREFIJO_CACHE + "v10";
 var ARCHIVOS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
 
 self.addEventListener("install", function (e) {
