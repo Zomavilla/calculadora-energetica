@@ -18,6 +18,8 @@
   var oscuro = auto ? !!(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) : manual === "oscuro";
   d.setAttribute("data-tema", tema);
   d.setAttribute("data-modo", oscuro ? "oscuro" : "claro");
+  var red = (g && typeof g.reducir === "boolean") ? g.reducir : !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  d.setAttribute("data-movimiento", red ? "reducido" : "normal");
 })();
 </script>
 <meta name="mobile-web-app-capable" content="yes">
@@ -406,9 +408,7 @@ input:disabled{opacity:.6; cursor:not-allowed}
   .costo-num{font-size:3.8rem}
   footer{font-size:.8rem; margin-top:auto}
 }
-@media (prefers-reduced-motion:reduce){
-  *,::backdrop{animation:none !important; transition:none !important}
-}
+html[data-movimiento="reducido"] *,html[data-movimiento="reducido"] *::before,html[data-movimiento="reducido"] *::after,html[data-movimiento="reducido"] dialog::backdrop{animation:none !important; transition:none !important}
 
 /* Pantalla ancha pero vertical (por ejemplo, un teléfono en "modo escritorio"): todo se escala para que no se vea diminuto */
 @media (min-width:768px) and (orientation:portrait){
@@ -819,8 +819,8 @@ button.tema-op[aria-checked="true"]{animation:pop-sel .4s var(--muelle)}
 .rb-op:hover .rb-n{transform:translateX(4px)}
 input,.dd-campo{transition:border-color .2s, box-shadow .25s}
 input:not(.in-watts):not(.nombre-edit):not(.it-slider):focus,.dd.abierto .dd-campo{box-shadow:0 0 0 4px color-mix(in srgb,var(--agua) 22%,transparent)}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important; transition:none !important}}
-@media (prefers-reduced-motion:reduce){.lab.act .largo{display:none}.lab.act .corto{display:inline}}
+html[data-movimiento="reducido"] *,html[data-movimiento="reducido"] *::before,html[data-movimiento="reducido"] *::after{animation:none !important; transition:none !important}
+html[data-movimiento="reducido"] .lab.act .largo{display:none}html[data-movimiento="reducido"] .lab.act .corto{display:inline}
 
 /* Píldora Aparato / Categoría y aviso emergente inferior */
 .pildora .opt.nodisp{opacity:.45; cursor:not-allowed}
@@ -1304,11 +1304,11 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 /* Inicio: escena animada, botones con icono y pasos ilustrados */
 .inicio-lateral{display:grid; gap:16px; min-width:0}
 .escena{display:block; width:100%; max-width:340px; height:auto; margin:0 auto; overflow:visible}
-.es-cielo{fill:var(--cielo); stroke:var(--linea); stroke-width:2}
+.es-cielo{fill:url(#gCielo); stroke:var(--linea); stroke-width:2}
 .es-linea{fill:none; stroke:var(--hoja); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; animation:trazo 1s ease-out var(--d,0s) backwards}
 .es-casa{fill:var(--blanco)}
 .es-techo{fill:var(--menta)}
-.es-panel{fill:var(--agua); animation:fundido-in .5s ease-out 1.3s backwards}
+.es-panel{fill:url(#gPanel); animation:fundido-in .5s ease-out 1.3s backwards}
 .es-vent{fill:var(--amarillo); animation:es-luz 3.2s ease-in-out 1.6s infinite}
 .es-puerta{fill:var(--hoja)}
 .es-suelo{stroke:var(--linea); stroke-width:3; stroke-linecap:round}
@@ -1316,7 +1316,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 .es-aguja{stroke:var(--hoja); stroke-width:3; stroke-linecap:round; transform-box:view-box; transform-origin:56px 152px; animation:es-aguja 5s ease-in-out 1s infinite alternate}
 .es-dig{fill:var(--brote)}
 .es-dig-u{animation:es-luz 1s steps(2,jump-none) infinite}
-.es-cable{fill:none; stroke:var(--brote); stroke-width:3; stroke-linecap:round; stroke-dasharray:3 9; animation:es-fluye 1.1s linear infinite}
+.es-cable{fill:none; stroke:var(--linea); stroke-width:4; stroke-linecap:round}
 .es-rayo{fill:var(--brote); transform-box:fill-box; transform-origin:center; animation:pop .6s var(--muelle) 1.1s backwards, chispa 4.5s ease-in-out 2s infinite}
 .es-sol circle{fill:var(--amarillo)}
 .es-rayos{fill:none; stroke:var(--amarillo); stroke-width:3; stroke-linecap:round; transform-box:fill-box; transform-origin:center; animation:gira 24s linear infinite}
@@ -1330,8 +1330,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 #pantalla1 .acciones button{display:inline-flex; align-items:center; justify-content:center; gap:8px}
 .acciones button .bi{width:20px; height:20px; flex:none}
 #pantalla1 .acciones button:hover .bi{transform:translateX(2px) rotate(-8deg)}
-.inicio-nota button.enlace{min-height:0; padding:2px 6px; border-radius:6px; background:none; color:var(--hoja); text-decoration:underline; text-underline-offset:3px}
-.inicio-nota button.enlace:hover{background:var(--menta); color:var(--hoja)}
+
 .inicio-pasos{list-style:none; margin-left:0; gap:12px}
 .inicio-pasos li{display:flex; align-items:center; gap:12px}
 .inicio-pasos li::marker{content:""}
@@ -1339,7 +1338,81 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 .pi *{stroke-dasharray:1}
 .bloque.ve .pi{animation:pop .5s var(--muelle) calc(var(--i)*.25s) backwards}
 .bloque.ve .pi *{animation:trazo .9s ease-out calc(var(--i)*.25s + .3s) backwards}
-@media (prefers-reduced-motion: reduce){.escena *,.inicio-pasos *{animation:none!important}}
+</style>
+<style>
+/* Hero: detalles de la escena */
+.es-colina{fill:var(--linea); opacity:.55}
+.es-colina2{fill:var(--menta)}
+.es-pasto{fill:var(--menta)}
+.es-lin{fill:none; stroke:var(--gris); stroke-width:2; opacity:.55}
+.es-halo{animation:es-luz 4s ease-in-out infinite}
+.es-glow{animation:es-luz 3.2s ease-in-out 1.6s infinite}
+.es-cruz{stroke:var(--blanco); stroke-width:2; opacity:.75}
+.es-celda{fill:none; stroke:#fff; stroke-width:1; opacity:.5}
+.es-barre{fill:#fff; opacity:.5; transform-box:fill-box; transform-origin:center; transform:skewX(-30deg); animation:es-barre 5s ease-in-out 2s infinite}
+.es-led{fill:var(--brote); animation:es-luz 1.4s ease-in-out infinite}
+.es-part{fill:var(--brote); filter:drop-shadow(0 0 3px var(--brote))}
+.es-tarjeta{stroke:var(--linea); stroke-width:2}
+.es-trend{stroke:var(--agua); stroke-width:2.5}
+@keyframes es-barre{0%,65%{transform:translateX(0) skewX(-30deg)}100%{transform:translateX(48px) skewX(-30deg)}}
+/* Icono ODS 7 */
+.ods-ico{display:block; width:58px; height:58px; margin-bottom:10px}
+.oi-halo{fill:var(--brote); opacity:.2; animation:es-luz 3s ease-in-out infinite}
+.oi-trazo{fill:none; stroke:var(--hoja); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1}
+.oi-hoja{fill:var(--brote); transform-box:fill-box; transform-origin:bottom center}
+.bloque.ve .oi-trazo{animation:trazo 1.3s ease-out backwards}
+.bloque.ve .oi-hoja{animation:es-brota .8s var(--muelle) 1s backwards}
+@keyframes es-brota{from{transform:scale(0)}}
+/* Empezar de nuevo, grande */
+.inicio-nota{display:grid; gap:12px; justify-items:start}
+.inicio-nota .nueva{min-height:50px; padding:12px 24px; font-size:1rem; display:inline-flex; align-items:center; gap:10px}
+.nueva .bi{width:20px; height:20px; flex:none}
+.nueva:hover .bi{transform:rotate(-200deg)}
+/* Fuentes y supuestos: siempre visible */
+.fuentes-card{margin-top:16px; padding:clamp(16px,3vw,26px); border:1px solid var(--linea); border-radius:20px; background:var(--blanco)}
+.fuentes-cab{display:flex; align-items:center; gap:14px; margin-bottom:18px}
+.fuentes-cab h3{margin:0; font-size:1.2rem; color:var(--tinta)}
+.fuentes-cab p{margin:2px 0 0; font-size:.88rem; color:var(--gris)}
+.fi{flex:none; display:grid; place-items:center; width:42px; height:42px; border-radius:13px; background:var(--cielo); color:var(--hoja); transition:transform .3s var(--muelle)}
+.fi svg{width:22px; height:22px}
+.fuentes-lista{list-style:none; margin:0; padding:0; display:grid; gap:12px}
+.fuentes-lista li{display:flex; gap:12px; align-items:flex-start; padding:14px; border:1px solid var(--linea); border-radius:16px; background:var(--menta)}
+.fuentes-lista li:hover .fi{transform:rotate(-6deg) scale(1.1)}
+.fuentes-lista b{display:block; color:var(--tinta)}
+.fuentes-lista p{margin:3px 0 0; font-size:.87rem; line-height:1.45; color:var(--gris)}
+.fuentes-lista a{color:var(--hoja); font-weight:700; text-underline-offset:3px}
+@media (min-width:768px){.fuentes-lista{grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px}}
+/* Dock de resultados: recibo y secciones siempre visibles abajo */
+.dock-resultados{position:sticky; bottom:max(8px,env(safe-area-inset-bottom)); z-index:14; display:grid; gap:10px; margin-top:22px; padding:10px; border:1px solid var(--linea); border-radius:26px; background:color-mix(in srgb,var(--blanco) 88%,transparent); -webkit-backdrop-filter:blur(14px) saturate(1.3); backdrop-filter:blur(14px) saturate(1.3); box-shadow:0 14px 34px rgba(13,43,42,.22)}
+.dock-resultados .pestanas{position:static; margin:0; box-shadow:none; order:2}
+.dock-resultados .pestanas .opt{min-height:40px; padding:6px 4px; font-size:.8rem}
+.dock-resultados .reporte-boton{order:1; margin:0; width:100%; min-height:52px; padding:12px 18px; display:flex; align-items:center; justify-content:center; gap:10px; border-radius:18px; font-size:1.02rem; line-height:1.2; color:var(--sobre-hoja); background:linear-gradient(135deg,var(--hoja),color-mix(in srgb,var(--hoja) 62%,var(--brote))); box-shadow:0 8px 20px color-mix(in srgb,var(--hoja) 38%,transparent)}
+.dock-resultados .reporte-boton:hover{background:linear-gradient(135deg,var(--hoja-hover),var(--hoja)); transform:translateY(-2px)}
+.dock-resultados .reporte-boton .bi{width:24px; height:24px; flex:none}
+.dock-resultados .reporte-boton::after{content:""; position:absolute; inset:0; background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.4) 50%,transparent 65%); transform:translateX(-120%); animation:es-brillo 4.5s ease-in-out 1.5s infinite; pointer-events:none}
+@keyframes es-brillo{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+@media (min-width:768px){.dock-resultados{grid-template-columns:minmax(0,1fr) auto; align-items:center}.dock-resultados .pestanas{order:1}.dock-resultados .reporte-boton{order:2; width:auto; padding:12px 26px}}
+/* Desplegables con el diseño de la app (donde el navegador lo permite; en los demás queda el nativo con los colores del tema) */
+.ajuste-campo select option,#reporte-consejo option{background:var(--blanco); color:var(--tinta)}
+@supports (appearance: base-select){
+  .ajuste-campo select,#reporte-consejo{appearance:base-select; display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:46px; padding:8px 12px; border:1.5px solid var(--linea); border-radius:12px; background:var(--blanco); color:var(--tinta); font-weight:600; cursor:pointer; transition:border-color .2s,box-shadow .2s}
+  .ajuste-campo select:hover,#reporte-consejo:hover{border-color:var(--hoja)}
+  .ajuste-campo select:open,#reporte-consejo:open{border-color:var(--hoja); box-shadow:0 0 0 3px color-mix(in srgb,var(--hoja) 22%,transparent)}
+  .ajuste-campo select::picker-icon,#reporte-consejo::picker-icon{color:var(--hoja); transition:rotate .25s var(--muelle)}
+  .ajuste-campo select:open::picker-icon,#reporte-consejo:open::picker-icon{rotate:180deg}
+  .ajuste-campo select::picker(select),#reporte-consejo::picker(select){appearance:base-select; margin-top:6px; padding:6px; border:1.5px solid var(--linea); border-radius:14px; background:var(--blanco); color:var(--tinta); box-shadow:0 18px 44px rgba(13,43,42,.28); max-height:min(320px,60dvh)}
+  .ajuste-campo select option,#reporte-consejo option{display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; font-weight:500; cursor:pointer}
+  .ajuste-campo select option:hover,#reporte-consejo option:hover,.ajuste-campo select option:focus-visible,#reporte-consejo option:focus-visible{background:var(--menta)}
+  .ajuste-campo select option:checked,#reporte-consejo option:checked{background:var(--cielo); color:var(--hoja); font-weight:700}
+  .ajuste-campo select option::checkmark,#reporte-consejo option::checkmark{color:var(--hoja); order:2; margin-left:auto}
+}
+.inicio-marca{display:inline-flex; align-items:center; gap:12px; margin-bottom:18px}
+.inicio-marca svg{width:46px; height:46px; overflow:visible; animation:pop .7s var(--muelle) .1s backwards}
+.inicio-marca .lg-fondo{transform-box:fill-box; transform-origin:center; animation:respira 3.4s ease-in-out infinite}
+.inicio-marca .lg-rayo{transform-box:fill-box; transform-origin:center; animation:chispa 4.5s ease-in-out 1.5s infinite}
+.inicio-marca span{font-size:1.45rem; font-weight:800; letter-spacing:-.02em; color:var(--hoja)}
+#mov-auto{margin-top:4px}
+#mov-auto[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -1365,7 +1438,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
     <div class="progreso" id="progreso" aria-hidden="true">
       <span></span><span></span><span></span><span></span>
     </div>
-    <button type="button" class="info" id="btn-ajustes" aria-label="Ajustes y acerca" onclick="abrirAjustes()">
+    <button type="button" class="info" id="btn-ajustes" aria-label="Ajustes y acerca" onclick="alternarAjustes()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M4 7h5m4 0h7M4 17h9m4 0h3"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/>
       </svg>
@@ -1379,37 +1452,69 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
   <section id="pantalla1" class="pantalla activa" aria-labelledby="t1">
     <div class="inicio-encabezado">
       <div class="inicio-principal">
+        <div class="inicio-marca" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><circle class="lg-fondo" cx="16" cy="16" r="15"/><path class="lg-rayo" d="M18 5 9 18h6l-1 9 9-13h-6z"/></svg>
+          <span>Eficiencia</span>
+        </div>
         <h1 id="t1" tabindex="-1">Calculadora y Gestor de Eficiencia Energética</h1>
         <p class="lead">Agrega los aparatos de tu hogar para estimar su consumo eléctrico y saber cuánto podrías ahorrar.</p>
         <div class="acciones">
           <button type="button" id="inicio-comenzar" onclick="iniciarDesdeInicio()"><svg class="bi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><span id="inicio-comenzar-txt">Comenzar</span></button>
           <button type="button" class="sec" onclick="abrirConfiguraciones()"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>Mis configuraciones</button>
         </div>
-        <p class="inicio-nota" id="inicio-nota" hidden><span id="inicio-nota-txt"></span> <button type="button" class="enlace" onclick="empezarNuevoDesdeInicio()">Empezar de nuevo</button></p>
+        <p class="inicio-nota" id="inicio-nota" hidden><span id="inicio-nota-txt"></span> <button type="button" class="sec nueva" onclick="empezarNuevoDesdeInicio()"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Empezar de nuevo</button></p>
       </div>
       <div class="inicio-lateral">
-      <svg class="escena" viewBox="0 0 320 226" role="img" aria-label="Ilustración: una casa con paneles solares y un medidor de luz; la energía fluye hacia la casa y el consumo baja.">
+      <svg class="escena" viewBox="0 0 320 226" role="img" aria-label="Ilustración: una casa con paneles solares y un medidor inteligente; la energía fluye hacia la casa y el consumo baja.">
+        <defs>
+          <linearGradient id="gCielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--cielo)"/><stop offset="1" style="stop-color:var(--blanco)"/></linearGradient>
+          <linearGradient id="gPanel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--agua)"/><stop offset="1" style="stop-color:var(--hoja)"/></linearGradient>
+          <radialGradient id="gSol"><stop offset="0" style="stop-color:var(--amarillo);stop-opacity:.55"/><stop offset="1" style="stop-color:var(--amarillo);stop-opacity:0"/></radialGradient>
+          <radialGradient id="gLuz"><stop offset="0" style="stop-color:var(--amarillo);stop-opacity:.65"/><stop offset="1" style="stop-color:var(--amarillo);stop-opacity:0"/></radialGradient>
+          <clipPath id="cFondo"><rect x="6" y="10" width="308" height="206" rx="28"/></clipPath>
+          <clipPath id="cPanel"><path d="M200 78 232 105 223 116 191 89z"/></clipPath>
+        </defs>
         <rect class="es-cielo" x="6" y="10" width="308" height="206" rx="28"/>
+        <g clip-path="url(#cFondo)">
+          <circle class="es-halo" cx="262" cy="52" r="38" fill="url(#gSol)"/>
+          <path class="es-colina" d="M6 178c40-28 78-26 112-10s86 14 112-6 60-6 84 6v48H6z"/>
+          <path class="es-colina2" d="M6 190c50-14 96-10 150 0s100 6 158-8v34H6z"/>
+          <g transform="translate(150 -4) scale(.7)"><path class="es-nube" style="animation-duration:22s" d="M44 58h46a11 11 0 0 0 0-22 16 16 0 0 0-30-3 13 13 0 0 0-16 25z"/></g>
+          <path class="es-nube" d="M30 58h46a11 11 0 0 0 0-22 16 16 0 0 0-30-3 13 13 0 0 0-16 25z"/>
+          <path class="es-pasto" d="M6 196H314V216H6z"/>
+        </g>
         <g class="es-sol" transform="translate(262 52)"><path class="es-rayos" d="M0-24v5M0 19v5M-24 0h5M19 0h5M-17-17l3.5 3.5M13.5 13.5l3.5 3.5M17-17l-3.5 3.5M-13.5 13.5l-3.5 3.5"/><circle r="12"/></g>
-        <path class="es-nube" d="M44 58h46a11 11 0 0 0 0-22 16 16 0 0 0-30-3 13 13 0 0 0-16 25z"/>
         <path class="es-suelo" d="M22 196h276"/>
+        <ellipse cx="190" cy="198" rx="64" ry="5" fill="var(--tinta)" opacity=".12"/>
+        <path class="es-lin" d="M56 128V112Q56 98 6 94"/>
         <rect class="es-casa" x="140" y="120" width="100" height="76"/>
         <path class="es-techo" d="M130 122 190 70 250 122z"/>
         <path class="es-panel" d="M200 78 232 105 223 116 191 89z"/>
+        <path class="es-celda" d="M216 91.5 207 102.5M195.5 83.5 227.5 110.5"/>
+        <g clip-path="url(#cPanel)"><rect class="es-barre" x="190" y="70" width="8" height="60"/></g>
         <path class="es-linea" pathLength="1" d="M140 196V120M240 120V196"/>
         <path class="es-linea" pathLength="1" style="--d:.25s" d="M130 122 190 70 250 122"/>
+        <circle class="es-glow" cx="168" cy="152" r="26" fill="url(#gLuz)"/>
         <rect class="es-vent" x="156" y="140" width="24" height="24" rx="4"/>
+        <path class="es-cruz" d="M168 140v24M156 152h24"/>
         <rect class="es-puerta" x="204" y="152" width="22" height="44" rx="4"/>
+        <circle cx="221" cy="175" r="1.8" fill="var(--amarillo)"/>
         <rect class="es-casa" x="30" y="128" width="52" height="68" rx="10"/>
         <rect class="es-linea" pathLength="1" style="--d:.5s" x="30" y="128" width="52" height="68" rx="10"/>
+        <circle class="es-led" cx="73" cy="137" r="2.6"/>
         <circle class="es-dial" cx="56" cy="152" r="15"/>
         <path class="es-aguja" d="M56 152V140"/>
         <rect class="es-dig" x="43" y="176" width="7" height="9" rx="1.5"/><rect class="es-dig" x="53" y="176" width="7" height="9" rx="1.5"/><rect class="es-dig es-dig-u" x="63" y="176" width="7" height="9" rx="1.5"/>
         <path class="es-cable" d="M82 170H140"/>
+        <circle class="es-part" r="3"><animateMotion dur="1.8s" repeatCount="indefinite" path="M82 170H140"/></circle>
+        <circle class="es-part" r="3"><animateMotion dur="1.8s" begin=".6s" repeatCount="indefinite" path="M82 170H140"/></circle>
+        <circle class="es-part" r="3"><animateMotion dur="1.8s" begin="1.2s" repeatCount="indefinite" path="M82 170H140"/></circle>
         <path class="es-rayo" d="M114 136 104 153h7l-2 15 11-18h-7z"/>
-        <rect class="es-barra" style="--i:0" x="262" y="152" width="10" height="44" rx="3"/>
-        <rect class="es-barra" style="--i:1" x="278" y="166" width="10" height="30" rx="3"/>
-        <rect class="es-barra" style="--i:2" x="294" y="180" width="10" height="16" rx="3"/>
+        <rect class="es-casa es-tarjeta" x="254" y="138" width="54" height="58" rx="10"/>
+        <rect class="es-barra" style="--i:0" x="262" y="154" width="10" height="34" rx="3"/>
+        <rect class="es-barra" style="--i:1" x="276" y="166" width="10" height="22" rx="3"/>
+        <rect class="es-barra" style="--i:2" x="290" y="178" width="10" height="10" rx="3"/>
+        <path class="es-linea es-trend" pathLength="1" style="--d:1.9s" d="M262 148 276 156 290 164 300 170"/>
       </svg>
       <section class="cfe-inicio" aria-labelledby="cfe-titulo">
         <h2 id="cfe-titulo">Cuotas de CFE</h2>
@@ -1434,6 +1539,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
         </ol>
       </section>
       <section class="bloque" aria-labelledby="inicio-ods">
+        <svg class="ods-ico" viewBox="0 0 64 64" aria-hidden="true"><circle class="oi-halo" cx="32" cy="27" r="22"/><path class="oi-trazo" pathLength="1" d="M22 40c0-3-6-6-6-14a16 16 0 0 1 32 0c0 8-6 11-6 14zM24 46h16M26 52h12M32 38V28"/><path class="oi-hoja" d="M32 31c-6 0-9-3-9-8 5 0 9 3 9 8zM32 33c5 0 8-3 8-7-5 0-8 3-8 7z"/></svg>
         <h2 id="inicio-ods">Energía asequible y no contaminante</h2>
         <p>Este proyecto apoya el ODS 7. Usar la energía con inteligencia ayuda a reducir tu recibo de luz y las emisiones asociadas al consumo eléctrico.</p>
       </section>
@@ -1553,12 +1659,6 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
   <section id="pantalla4" class="pantalla" aria-labelledby="t4">
     <h2 id="t4" tabindex="-1">Dashboard de resultados</h2>
     <p class="contexto" id="contexto-casa"></p>
-    <button type="button" class="reporte-boton" id="abrir-reporte">Generar recibo de recomendaciones</button>
-    <div class="pildora pestanas" id="pestanas" role="tablist" aria-label="Secciones de resultados">
-      <button type="button" class="opt activa" role="tab" id="tab-consumo" aria-selected="true" aria-controls="panel-consumo" onclick="irPestana('consumo')">Tu Consumo</button>
-      <button type="button" class="opt" role="tab" id="tab-guia" aria-selected="false" tabindex="-1" aria-controls="panel-guia" onclick="irPestana('guia')">Guía de Recomendaciones</button>
-      <button type="button" class="opt" role="tab" id="tab-ods" aria-selected="false" tabindex="-1" aria-controls="panel-ods" onclick="irPestana('ods')">ODS 7</button>
-    </div>
 
     <!-- Pestaña 1: Tu Consumo -->
     <div id="panel-consumo" role="tabpanel" aria-labelledby="tab-consumo">
@@ -1666,6 +1766,14 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
       <button type="button" class="sec" onclick="reiniciar()">Nueva estimación</button>
       <button type="button" class="sec" onclick="abrirGuardarConfiguracion()">Guardar configuración</button>
     </div>
+    <div class="dock-resultados" id="dock-resultados">
+    <button type="button" class="reporte-boton" id="abrir-reporte"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>Generar recibo de recomendaciones</button>
+    <div class="pildora pestanas" id="pestanas" role="tablist" aria-label="Secciones de resultados">
+      <button type="button" class="opt activa" role="tab" id="tab-consumo" aria-selected="true" aria-controls="panel-consumo" onclick="irPestana('consumo')">Tu Consumo</button>
+      <button type="button" class="opt" role="tab" id="tab-guia" aria-selected="false" tabindex="-1" aria-controls="panel-guia" onclick="irPestana('guia')">Guía de Recomendaciones</button>
+      <button type="button" class="opt" role="tab" id="tab-ods" aria-selected="false" tabindex="-1" aria-controls="panel-ods" onclick="irPestana('ods')">ODS 7</button>
+    </div>
+    </div>
   </section>
 
   <section id="pantalla5" class="pantalla" aria-labelledby="t-acerca">
@@ -1689,6 +1797,11 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
             <button type="button" class="tema-op" role="radio" data-tema="atardecer" aria-checked="false" onclick="elegirTema('atardecer')"><span class="muestra"><i></i><i></i><i></i></span><span>Atardecer</span></button>
             <button type="button" class="tema-op" role="radio" data-tema="violeta" aria-checked="false" onclick="elegirTema('violeta')"><span class="muestra"><i></i><i></i><i></i></span><span>Violeta</span></button>
           </div>
+          <div class="fila-switch">
+            <div><b>Reducir movimiento</b><p id="estado-movimiento"></p></div>
+            <button type="button" class="switch" id="sw-mov" role="switch" aria-checked="false" aria-label="Reducir movimiento" onclick="alternarMovimiento()"><span class="knob"></span></button>
+          </div>
+          <button type="button" class="ajuste-accion sec" id="mov-auto" onclick="seguirMovimientoDelSistema()" hidden>Usar el ajuste de mi dispositivo</button>
         </section>
         <section class="ajuste-tarjeta" aria-labelledby="t-datos-locales">
           <div class="ajuste-seccion">
@@ -1765,21 +1878,22 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
             </div>
           </dl>
         </section>
-        <details class="panel ajustes-fuentes">
-          <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span><span>Fuentes y supuestos</span></summary>
-          <div class="panel-cuerpo">
-            <ul class="fuentes">
-              <li><b>Cuotas domésticas:</b> tabla de referencia de noviembre de 2026 basada en los cuadros de Hacienda del <a href="https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Acuerdos/DescargaAcuerdo.aspx?anio=2026&amp;id=1114&amp;idCliente=1&amp;tipo=SHCP" target="_blank" rel="noopener">oficio 349-B-1-070</a>. IVA estimado de 16 %.</li>
-              <li><b>Bloques y mínimo mensual:</b> <a href="https://sidof.segob.gob.mx/notas/docFuente/5506179" target="_blank" rel="noopener">Acuerdo de tarifas domésticas</a>. Confirma tu tarifa y la temporada en tu recibo.</li>
-              <li><b>Emisiones:</b> cerca de 0.44 kg de CO₂ por kWh, valor aproximado de la red eléctrica de México.</li>
-              <li><b>Paneles solares:</b> se supone un panel de 550 W, unas 5 horas de sol pico al día y 80 % de rendimiento del sistema.</li>
-              <li><b>Aparatos eficientes:</b> los porcentajes de ahorro son valores típicos de referencia. El ahorro real depende del modelo, del uso y de tu tarifa.</li>
-              <li><b>ODS 7:</b> metas de las Naciones Unidas y datos de Tracking SDG 7 (2025), de IEA, IRENA, UNSD, Banco Mundial y OMS.</li>
-            </ul>
-          </div>
-        </details>
       </div>
     </div>
+    <section class="fuentes-card" aria-labelledby="t-fuentes">
+      <header class="fuentes-cab">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg></span>
+        <div><h3 id="t-fuentes">Fuentes y supuestos</h3><p>De dónde salen las cifras y qué se da por hecho en los cálculos.</p></div>
+      </header>
+      <ul class="fuentes-lista">
+          <li><span class="fi" style="--i:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.5.7-2.5 1.8s1 1.6 2.5 2 2.5.9 2.5 2-1.1 1.8-2.5 1.8c-1.1 0-2-.4-2.5-1.2M12 6.5V8M12 16v1.5"/></svg></span><div><b>Cuotas domésticas</b><p>Tabla de referencia de noviembre de 2026 basada en los cuadros de Hacienda del <a href="https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Acuerdos/DescargaAcuerdo.aspx?anio=2026&amp;id=1114&amp;idCliente=1&amp;tipo=SHCP" target="_blank" rel="noopener">oficio 349-B-1-070</a>. IVA estimado de 16 %.</p></div></li>
+          <li><span class="fi" style="--i:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg></span><div><b>Bloques y mínimo mensual</b><p><a href="https://sidof.segob.gob.mx/notas/docFuente/5506179" target="_blank" rel="noopener">Acuerdo de tarifas domésticas</a>. Confirma tu tarifa y la temporada en tu recibo.</p></div></li>
+          <li><span class="fi" style="--i:2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4 4 0 0 1-.6-7.96A6 6 0 0 1 18 9.5 4 4 0 0 1 17 18z"/></svg></span><div><b>Emisiones</b><p>Cerca de 0.44 kg de CO₂ por kWh, valor aproximado de la red eléctrica de México.</p></div></li>
+          <li><span class="fi" style="--i:3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg></span><div><b>Paneles solares</b><p>Se supone un panel de 550 W, unas 5 horas de sol pico al día y 80 % de rendimiento del sistema.</p></div></li>
+          <li><span class="fi" style="--i:4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v3a5 5 0 0 1-10 0ZM12 16v5"/></svg></span><div><b>Aparatos eficientes</b><p>Los porcentajes de ahorro son valores típicos de referencia. El ahorro real depende del modelo, del uso y de tu tarifa.</p></div></li>
+          <li><span class="fi" style="--i:5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><div><b>ODS 7</b><p>Metas de las Naciones Unidas y datos de Tracking SDG 7 (2025), de IEA, IRENA, UNSD, Banco Mundial y OMS.</p></div></li>
+      </ul>
+    </section>
   </section>
 
   <footer>Proyecto Eficiencia V1.15 · ODS 7 de la Agenda 2030</footer>
@@ -3139,6 +3253,7 @@ var TIPS_CAT = {
   function abrirAjustes() {
     if (pantallaActual !== 5) { mostrarPantalla(5); }
   }
+  function alternarAjustes() { if (pantallaActual === 5) { volverDeAjustes(); } else { abrirAjustes(); } }
   function volverDeAjustes() {
     var destino = origenAjustes;
     while (destino > 1 && !pantallaPermitida(destino)) { destino--; }
@@ -3390,7 +3505,10 @@ var TIPS_CAT = {
   var ETQ_PERIODO = { dia: "(día)", semana: "(semana)", mes: "(mes)", bim: "(2 meses)" };
   var PALETA = ["var(--hoja)", "var(--agua)", "#f5b50a", "#e5392f", "#7c5cd6", "#e87d1e", "var(--brote)"];   // los tres de tema siguen el tema elegido
   var COLOR_RESTO = "#8aa39e";
-  var REDUCIR = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var REDUCIR = (function () {   // la preferencia guardada en Ajustes manda; si no hay, la del dispositivo
+    try { var g = JSON.parse(localStorage.getItem("eficiencia-apariencia")); if (g && typeof g.reducir === "boolean") { return g.reducir; } } catch (e) {}
+    return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  })();
   var SVG_COPIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
   var MIN_VACIAR = 8;   // con tantos equipos o más aparece el botón «Vaciar lista»
   var SVG_PAPELERA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
@@ -4717,8 +4835,9 @@ var TIPS_CAT = {
   // ---------- Temas y modo oscuro ----------
   var CLAVE_APARIENCIA = "eficiencia-apariencia";
   var TEMAS_IDS = ["verde", "oceano", "atardecer", "violeta"];
-  var apariencia = { tema: "verde", auto: true, manual: "claro" };   // primera visita: modo oscuro automático activado
+  var apariencia = { tema: "verde", auto: true, manual: "claro", reducir: null };   // primera visita: modo oscuro automático activado
   var mqOscuro = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  var mqMov = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
 
   function leerApariencia() {
     try {
@@ -4727,6 +4846,7 @@ var TIPS_CAT = {
         if (TEMAS_IDS.indexOf(g.tema) >= 0) { apariencia.tema = g.tema; }
         if (typeof g.auto === "boolean") { apariencia.auto = g.auto; }
         if (g.manual === "claro" || g.manual === "oscuro") { apariencia.manual = g.manual; }
+        if (typeof g.reducir === "boolean") { apariencia.reducir = g.reducir; }
       }
     } catch (err) { /* sin almacenamiento: se usan los valores de la primera visita */ }
   }
@@ -4754,7 +4874,17 @@ var TIPS_CAT = {
     $("estado-modo").textContent = apariencia.auto
       ? "Sigue el modo de tu dispositivo (ahora: " + (oscuro ? "oscuro" : "claro") + ")."
       : "Desactivado: elige claro u oscuro a mano.";
+    var red = movimientoReducido(), propio = typeof apariencia.reducir === "boolean";
+    REDUCIR = red;
+    raiz.setAttribute("data-movimiento", red ? "reducido" : "normal");
+    $("sw-mov").setAttribute("aria-checked", red ? "true" : "false");
+    $("mov-auto").hidden = !propio;
+    $("estado-movimiento").textContent = (red ? "Animaciones y transiciones apagadas." : "Animaciones activas.") + (propio ? "" : " Sigue el ajuste de tu dispositivo.");
+    if (escenaHero && escenaHero.pauseAnimations) { if (red) { escenaHero.pauseAnimations(); } else { escenaHero.unpauseAnimations(); } }
   }
+  function movimientoReducido() { return typeof apariencia.reducir === "boolean" ? apariencia.reducir : !!(mqMov && mqMov.matches); }
+  function alternarMovimiento() { apariencia.reducir = !movimientoReducido(); guardarApariencia(); aplicarApariencia(); }
+  function seguirMovimientoDelSistema() { apariencia.reducir = null; guardarApariencia(); aplicarApariencia(); }
   function alternarAuto() {
     var oscuroAhora = esOscuro();
     apariencia.auto = !apariencia.auto;
@@ -4770,6 +4900,10 @@ var TIPS_CAT = {
     if (mqOscuro) {
       var alCambiar = function () { if (apariencia.auto) { aplicarApariencia(); } };
       if (mqOscuro.addEventListener) { mqOscuro.addEventListener("change", alCambiar); } else if (mqOscuro.addListener) { mqOscuro.addListener(alCambiar); }
+    }
+    if (mqMov) {
+      var alMover = function () { if (typeof apariencia.reducir !== "boolean") { aplicarApariencia(); } };
+      if (mqMov.addEventListener) { mqMov.addEventListener("change", alMover); } else if (mqMov.addListener) { mqMov.addListener(alMover); }
     }
   }
 
@@ -5114,6 +5248,9 @@ var TIPS_CAT = {
     }, { threshold: 0.08, rootMargin: "0px 0px -6% 0px" });
     document.querySelectorAll("main .inicio-info > *, main .panel").forEach(function (el) { el.classList.add("rv"); io.observe(el); });
   }
+
+  var escenaHero = document.querySelector(".escena");
+  if (REDUCIR && escenaHero && escenaHero.pauseAnimations) { escenaHero.pauseAnimations(); }
 
   // ---------- Inicialización ----------
   prepararReporte(function () {
