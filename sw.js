@@ -1,6 +1,6 @@
 /* Caché independiente para cada ubicación donde se publique la app. */
 const PREFIJO = "eficiencia:" + self.registration.scope + ":";
-const CACHE = PREFIJO + "v1.60";
+const CACHE = PREFIJO + "v1.61";
 const ARCHIVOS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
 
 self.addEventListener("install", (e) => {
