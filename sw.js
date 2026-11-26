@@ -1,6 +1,6 @@
 /* Service worker de Proyecto Eficiencia.
    IMPORTANTE: cambia VERSION en cada entrega para que las apps instaladas se actualicen. */
-const VERSION = "2026.11.26-8";
+const VERSION = "2026.11.26-11";
 const CACHE = "eficiencia-" + VERSION;
 const ARCHIVOS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png"];
 

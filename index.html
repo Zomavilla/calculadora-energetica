@@ -1439,15 +1439,10 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 .es-casa{fill:var(--blanco)}
 .es-techo{fill:var(--menta)}
 .es-panel{fill:url(#gPanel); animation:fundido-in .5s ease-out 1.3s backwards}
-.es-vent{fill:var(--amarillo); animation:es-luz 3.2s ease-in-out 1.6s infinite}
 .es-puerta{fill:var(--hoja)}
 .es-suelo{stroke:var(--linea); stroke-width:3; stroke-linecap:round}
-.es-dial{fill:var(--cielo); stroke:var(--linea); stroke-width:2}
-.es-aguja{stroke:var(--hoja); stroke-width:3; stroke-linecap:round; transform-box:view-box; transform-origin:56px 152px; animation:es-aguja 5s ease-in-out 1s infinite alternate}
 .es-dig{fill:var(--brote)}
 .es-dig-u{animation:es-luz 1s steps(2,jump-none) infinite}
-.es-cable{fill:none; stroke:var(--linea); stroke-width:4; stroke-linecap:round}
-.es-rayo{fill:var(--brote); transform-box:fill-box; transform-origin:center; animation:pop .6s var(--muelle) 1.1s backwards, chispa 4.5s ease-in-out 2s infinite}
 .es-sol circle{fill:var(--amarillo)}
 .es-rayos{fill:none; stroke:var(--amarillo); stroke-width:3; stroke-linecap:round; transform-box:fill-box; transform-origin:center; animation:gira 24s linear infinite}
 .es-nube{fill:var(--blanco); stroke:var(--linea); stroke-width:2; animation:es-nube 16s ease-in-out infinite alternate}
@@ -1474,17 +1469,63 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
 .es-colina{fill:var(--linea); opacity:.55}
 .es-colina2{fill:var(--menta)}
 .es-pasto{fill:var(--menta)}
-.es-lin{fill:none; stroke:var(--gris); stroke-width:2; opacity:.55}
 .es-halo{animation:es-luz 4s ease-in-out infinite}
-.es-glow{animation:es-luz 3.2s ease-in-out 1.6s infinite}
 .es-cruz{stroke:var(--blanco); stroke-width:2; opacity:.75}
 .es-celda{fill:none; stroke:#fff; stroke-width:1; opacity:.5}
 .es-barre{fill:#fff; opacity:.5; transform-box:fill-box; transform-origin:center; transform:skewX(-30deg); animation:es-barre 5s ease-in-out 2s infinite}
 .es-led{fill:var(--brote); animation:es-luz 1.4s ease-in-out infinite}
-.es-part{fill:var(--brote); filter:drop-shadow(0 0 3px var(--brote))}
-.es-tarjeta{stroke:var(--linea); stroke-width:2}
 .es-trend{stroke:var(--agua); stroke-width:2.5}
 @keyframes es-barre{0%,65%{transform:translateX(0) skewX(-30deg)}100%{transform:translateX(48px) skewX(-30deg)}}
+/* Hero: poste, acometida y ciclo de día y noche (18 s). Sin animación se muestra de día */
+.es-vent{fill:var(--amarillo)}
+.es-hilo{fill:none; stroke:var(--gris); stroke-width:1.3; opacity:.7}
+.es-poste{fill:#8d9a96; stroke:#6c7a76; stroke-width:1; stroke-linejoin:round}
+.es-cruceta{stroke:#6c7a76; stroke-width:3.2; stroke-linecap:round}
+.es-aislador{stroke:var(--agua); stroke-width:4; stroke-linecap:round}
+.es-trafo{fill:#b9c6c2; stroke:#6c7a76; stroke-width:1.5}
+.es-trafo-det{fill:none; stroke:#6c7a76; stroke-width:1.3; stroke-linecap:round}
+.es-brazo{fill:none; stroke:#6c7a76; stroke-width:2.5; stroke-linecap:round}
+.es-farol{fill:#6c7a76}
+.es-cable{fill:none; stroke:var(--gris); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; opacity:.65}
+.es-cable-sol{stroke:var(--amarillo)}
+.es-part{fill:var(--brote); filter:drop-shadow(0 0 3px var(--brote))}
+.es-part-sol{fill:var(--amarillo); filter:drop-shadow(0 0 3px var(--amarillo))}
+.es-haz{fill:none; stroke:var(--amarillo); stroke-width:2.2; stroke-linecap:round; stroke-dasharray:3 9; animation:es-fluye 1s linear infinite, es-dia 18s ease-in-out infinite}
+.es-inversor,.es-medidor{fill:var(--blanco); stroke:var(--hoja); stroke-width:2}
+.es-dial{fill:var(--cielo); stroke:var(--linea); stroke-width:1.5}
+.es-aguja{stroke:var(--hoja); stroke-width:2; stroke-linecap:round; transform-box:view-box; transform-origin:137px 158px; animation:gira 3s linear infinite}
+.es-arbusto{fill:var(--brote); opacity:.75}
+.es-tarjeta{fill:var(--blanco); stroke:var(--linea); stroke-width:2}
+.es-flota{animation:es-flota 5s ease-in-out infinite alternate}
+.es-baja{fill:none; stroke:var(--hoja); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.es-txt{fill:var(--tinta); font-size:8.5px; font-weight:700}
+.es-txt-card{fill:var(--gris)}
+.es-leyenda{fill:var(--blanco); opacity:.92}
+.es-ley-red{fill:var(--brote)} .es-ley-sol{fill:var(--amarillo)}
+.es-noche,.es-estrellas,.es-luna,.es-farol-luz,.es-sombra-noche,.es-sombra-casa{opacity:0}
+.es-noche{animation:es-noche 18s ease-in-out infinite}
+.es-sombra-noche{fill:#0b1a3a; animation:es-suelo-noche 18s ease-in-out infinite}
+.es-sombra-casa{fill:#0b1a3a; animation:es-sombra 18s ease-in-out infinite}
+.es-estrellas,.es-farol-luz{animation:es-oscuro 18s ease-in-out infinite}
+.es-estrellas circle{fill:#fff}
+.es-titila{animation:es-luz 2.4s ease-in-out infinite}
+.es-t2{animation-delay:-1.2s}
+.es-luna{fill:#f4f1d8; animation:es-luna 18s ease-in-out infinite}
+.es-sol-ciclo{animation:es-ocaso 18s ease-in-out infinite}
+.es-nubes{animation:es-nubes 18s ease-in-out infinite}
+.es-solar{animation:es-dia 18s ease-in-out infinite}
+.es-glow{opacity:.35; animation:es-encendida 18s ease-in-out infinite}
+@keyframes es-dia{0%,42%,94%,100%{opacity:1}52%,84%{opacity:0}}
+@keyframes es-oscuro{0%,42%,94%,100%{opacity:0}54%,82%{opacity:1}}
+@keyframes es-noche{0%,40%,96%,100%{opacity:0}54%,82%{opacity:.92}}
+@keyframes es-sombra{0%,40%,96%,100%{opacity:0}54%,82%{opacity:.3}}
+@keyframes es-suelo-noche{0%,40%,96%,100%{opacity:0}54%,82%{opacity:.68}}
+@keyframes es-encendida{0%,42%,94%,100%{opacity:.35}54%,82%{opacity:1}}
+@keyframes es-ocaso{0%,38%,100%{transform:none; opacity:1}52%,84%{transform:translateY(60px); opacity:0}}
+@keyframes es-luna{0%,44%,94%,100%{transform:translateY(30px); opacity:0}58%,80%{transform:none; opacity:1}}
+@keyframes es-nubes{0%,42%,94%,100%{opacity:1}54%,82%{opacity:.18}}
+@keyframes es-flota{to{transform:translateY(-5px)}}
+@media (min-width:768px){.escena{max-width:420px}}
 /* Icono ODS 7 */
 .ods-ico{display:block; width:58px; height:58px; margin-bottom:10px}
 .oi-halo{fill:var(--brote); opacity:.2; animation:es-luz 3s ease-in-out infinite}
@@ -1667,6 +1708,10 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
   .barra-centro .dock-resultados .pestanas .opt{min-width:0; min-height:44px; white-space:nowrap}
   .barra-centro .dock-resultados .reporte-boton{min-width:0; min-height:52px; padding:10px 20px; white-space:nowrap}
 }
+/* PC: la barra «Guardar / Ver resultados» queda casi al borde inferior (compensa el margen de la página) */
+@media (min-width:1024px) and (orientation:landscape){
+  .acciones.dock-acciones{bottom:calc(10px - 5vh)}
+}
 /* PC angosta: se ocultan los adornos para que todo quepa sin apretarse */
 @media (min-width:1024px) and (max-width:1365px) and (orientation:landscape){
   header.barra.con-extra{padding-inline:16px; gap:12px}
@@ -1772,56 +1817,98 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
         <p class="inicio-nota" id="inicio-nota" hidden><span id="inicio-nota-txt"></span> <button type="button" class="sec nueva" onclick="empezarNuevoDesdeInicio()"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Empezar de nuevo</button></p>
       </div>
       <div class="inicio-lateral">
-      <svg class="escena" viewBox="0 0 320 226" role="img" aria-label="Ilustración: una casa con paneles solares y un medidor inteligente; la energía fluye hacia la casa y el consumo baja.">
+      <svg class="escena" viewBox="0 0 320 226" role="img" aria-label="Ilustración animada: un poste de luz lleva energía al medidor de una casa; de día sus paneles solares también la alimentan, de noche se encienden las luces y el consumo va bajando.">
         <defs>
           <linearGradient id="gCielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--cielo)"/><stop offset="1" style="stop-color:var(--blanco)"/></linearGradient>
+          <linearGradient id="gNoche" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1a3a"/><stop offset="1" stop-color="#27496b"/></linearGradient>
           <linearGradient id="gPanel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--agua)"/><stop offset="1" style="stop-color:var(--hoja)"/></linearGradient>
+          <linearGradient id="gFarol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd54a" stop-opacity=".75"/><stop offset="1" stop-color="#ffd54a" stop-opacity="0"/></linearGradient>
           <radialGradient id="gSol"><stop offset="0" style="stop-color:var(--amarillo);stop-opacity:.55"/><stop offset="1" style="stop-color:var(--amarillo);stop-opacity:0"/></radialGradient>
-          <radialGradient id="gLuz"><stop offset="0" style="stop-color:var(--amarillo);stop-opacity:.65"/><stop offset="1" style="stop-color:var(--amarillo);stop-opacity:0"/></radialGradient>
+          <radialGradient id="gLuz"><stop offset="0" style="stop-color:var(--amarillo);stop-opacity:.75"/><stop offset="1" style="stop-color:var(--amarillo);stop-opacity:0"/></radialGradient>
           <clipPath id="cFondo"><rect x="6" y="10" width="308" height="206" rx="28"/></clipPath>
           <clipPath id="cPanel"><path d="M200 78 232 105 223 116 191 89z"/></clipPath>
         </defs>
         <rect class="es-cielo" x="6" y="10" width="308" height="206" rx="28"/>
         <g clip-path="url(#cFondo)">
-          <circle class="es-halo" cx="262" cy="52" r="38" fill="url(#gSol)"/>
+          <rect class="es-noche" x="6" y="10" width="308" height="206" fill="url(#gNoche)"/>
+          <g class="es-estrellas"><g class="es-titila"><circle cx="34" cy="30" r="1.1"/><circle cx="118" cy="24" r="1"/><circle cx="196" cy="38" r="1.2"/><circle cx="296" cy="84" r="1"/></g><g class="es-titila es-t2"><circle cx="74" cy="48" r=".9"/><circle cx="154" cy="46" r="1.1"/><circle cx="226" cy="22" r="1"/><circle cx="300" cy="30" r="1.2"/><circle cx="100" cy="66" r=".8"/></g></g>
+          <g class="es-sol-ciclo"><circle class="es-halo" cx="268" cy="46" r="36" fill="url(#gSol)"/>
+            <g class="es-sol" transform="translate(268 46)"><path class="es-rayos" d="M0-22v5M0 17v5M-22 0h5M17 0h5M-15.5-15.5l3.5 3.5M12 12l3.5 3.5M15.5-15.5l-3.5 3.5M-12 12l-3.5 3.5"/><circle r="11"/></g></g>
+          <path class="es-luna" d="M270 32a15 15 0 1 0 12 24 12.5 12.5 0 0 1-12-24z"/>
+          <g class="es-nubes"><path class="es-nube" d="M82 52h34a8 8 0 0 0 0-16 12 12 0 0 0-22-2 10 10 0 0 0-12 18z"/>
+            <g transform="translate(162 8) scale(.55)"><path class="es-nube" style="animation-duration:23s" d="M44 58h46a11 11 0 0 0 0-22 16 16 0 0 0-30-3 13 13 0 0 0-16 25z"/></g></g>
           <path class="es-colina" d="M6 178c40-28 78-26 112-10s86 14 112-6 60-6 84 6v48H6z"/>
           <path class="es-colina2" d="M6 190c50-14 96-10 150 0s100 6 158-8v34H6z"/>
-          <g transform="translate(150 -4) scale(.7)"><path class="es-nube" style="animation-duration:22s" d="M44 58h46a11 11 0 0 0 0-22 16 16 0 0 0-30-3 13 13 0 0 0-16 25z"/></g>
-          <path class="es-nube" d="M30 58h46a11 11 0 0 0 0-22 16 16 0 0 0-30-3 13 13 0 0 0-16 25z"/>
           <path class="es-pasto" d="M6 196H314V216H6z"/>
+          <path class="es-sombra-noche" d="M6 178c40-28 78-26 112-10s86 14 112-6 60-6 84 6v48H6z"/>
+          <path class="es-hilo" d="M6 56Q18 70 29 69M6 70Q26 82 44 68M6 64Q32 90 59 69"/>
         </g>
-        <g class="es-sol" transform="translate(262 52)"><path class="es-rayos" d="M0-24v5M0 19v5M-24 0h5M19 0h5M-17-17l3.5 3.5M13.5 13.5l3.5 3.5M17-17l-3.5 3.5M-13.5 13.5l-3.5 3.5"/><circle r="12"/></g>
         <path class="es-suelo" d="M22 196h276"/>
         <ellipse cx="190" cy="198" rx="64" ry="5" fill="var(--tinta)" opacity=".12"/>
-        <path class="es-lin" d="M56 128V112Q56 98 6 94"/>
+
+        <!-- Poste de luz con transformador y farol -->
+        <path class="es-farol-luz" d="M66 124 52 196H88L74 124z" fill="url(#gFarol)"/>
+        <path class="es-poste" d="M41.5 196 43 60h4l1.5 136z"/>
+        <path class="es-cruceta" d="M27 71H61M31 83H57"/>
+        <path class="es-aislador" d="M29 70v-4M44 69v-5M59 70v-4"/>
+        <rect class="es-trafo" x="47" y="90" width="13" height="19" rx="4"/>
+        <path class="es-trafo-det" d="M50 90v-7M57 90v-7M47 96h13M47 103h13"/>
+        <path class="es-brazo" d="M46 120Q58 112 70 119"/>
+        <path class="es-farol" d="M63 119h14l-3 6h-8z"/>
+
+        <!-- Casa -->
         <rect class="es-casa" x="140" y="120" width="100" height="76"/>
         <path class="es-techo" d="M130 122 190 70 250 122z"/>
+        <path class="es-sombra-casa" d="M130 122 190 70 250 122H240V196H140V122z"/>
         <path class="es-panel" d="M200 78 232 105 223 116 191 89z"/>
         <path class="es-celda" d="M216 91.5 207 102.5M195.5 83.5 227.5 110.5"/>
         <g clip-path="url(#cPanel)"><rect class="es-barre" x="190" y="70" width="8" height="60"/></g>
         <path class="es-linea" pathLength="1" d="M140 196V120M240 120V196"/>
         <path class="es-linea" pathLength="1" style="--d:.25s" d="M130 122 190 70 250 122"/>
-        <circle class="es-glow" cx="168" cy="152" r="26" fill="url(#gLuz)"/>
-        <rect class="es-vent" x="156" y="140" width="24" height="24" rx="4"/>
-        <path class="es-cruz" d="M168 140v24M156 152h24"/>
-        <rect class="es-puerta" x="204" y="152" width="22" height="44" rx="4"/>
-        <circle cx="221" cy="175" r="1.8" fill="var(--amarillo)"/>
-        <rect class="es-casa" x="30" y="128" width="52" height="68" rx="10"/>
-        <rect class="es-linea" pathLength="1" style="--d:.5s" x="30" y="128" width="52" height="68" rx="10"/>
-        <circle class="es-led" cx="73" cy="137" r="2.6"/>
-        <circle class="es-dial" cx="56" cy="152" r="15"/>
-        <path class="es-aguja" d="M56 152V140"/>
-        <rect class="es-dig" x="43" y="176" width="7" height="9" rx="1.5"/><rect class="es-dig" x="53" y="176" width="7" height="9" rx="1.5"/><rect class="es-dig es-dig-u" x="63" y="176" width="7" height="9" rx="1.5"/>
-        <path class="es-cable" d="M82 170H140"/>
-        <circle class="es-part" r="3"><animateMotion dur="1.8s" repeatCount="indefinite" path="M82 170H140"/></circle>
-        <circle class="es-part" r="3"><animateMotion dur="1.8s" begin=".6s" repeatCount="indefinite" path="M82 170H140"/></circle>
-        <circle class="es-part" r="3"><animateMotion dur="1.8s" begin="1.2s" repeatCount="indefinite" path="M82 170H140"/></circle>
-        <path class="es-rayo" d="M114 136 104 153h7l-2 15 11-18h-7z"/>
-        <rect class="es-casa es-tarjeta" x="254" y="138" width="54" height="58" rx="10"/>
-        <rect class="es-barra" style="--i:0" x="262" y="154" width="10" height="34" rx="3"/>
-        <rect class="es-barra" style="--i:1" x="276" y="166" width="10" height="22" rx="3"/>
-        <rect class="es-barra" style="--i:2" x="290" y="178" width="10" height="10" rx="3"/>
-        <path class="es-linea es-trend" pathLength="1" style="--d:1.9s" d="M262 148 276 156 290 164 300 170"/>
+        <path class="es-haz" d="M253 59 226 84M260 66 237 94"/>
+
+        <!-- Acometida: del poste al medidor y del medidor a la casa -->
+        <path class="es-cable" d="M60 80Q92 134 136 128V162H161"/>
+        <path class="es-cable es-cable-sol" d="M225 110 233 120V146H185"/>
+        <circle class="es-glow" cx="173" cy="152" r="30" fill="url(#gLuz)"/>
+        <rect class="es-vent" x="161" y="140" width="24" height="24" rx="4"/>
+        <path class="es-cruz" d="M173 140v24M161 152h24"/>
+        <rect class="es-puerta" x="200" y="154" width="22" height="42" rx="4"/>
+        <circle cx="217" cy="176" r="1.8" fill="var(--amarillo)"/>
+        <g class="es-red">
+          <circle class="es-part" r="2.6"><animateMotion dur="3s" begin="-0.0s" repeatCount="indefinite" path="M60 80Q92 134 136 128V162H161"/></circle>
+          <circle class="es-part" r="2.6"><animateMotion dur="3s" begin="-0.75s" repeatCount="indefinite" path="M60 80Q92 134 136 128V162H161"/></circle>
+          <circle class="es-part" r="2.6"><animateMotion dur="3s" begin="-1.5s" repeatCount="indefinite" path="M60 80Q92 134 136 128V162H161"/></circle>
+          <circle class="es-part" r="2.6"><animateMotion dur="3s" begin="-2.25s" repeatCount="indefinite" path="M60 80Q92 134 136 128V162H161"/></circle>
+        </g>
+        <g class="es-solar">
+          <circle class="es-part es-part-sol" r="2.4"><animateMotion dur="1.8s" begin="-0.0s" repeatCount="indefinite" path="M225 110 233 120V146H185"/></circle>
+          <circle class="es-part es-part-sol" r="2.4"><animateMotion dur="1.8s" begin="-0.6s" repeatCount="indefinite" path="M225 110 233 120V146H185"/></circle>
+          <circle class="es-part es-part-sol" r="2.4"><animateMotion dur="1.8s" begin="-1.2s" repeatCount="indefinite" path="M225 110 233 120V146H185"/></circle>
+        </g>
+        <rect class="es-inversor" x="227" y="126" width="11" height="16" rx="2.5"/>
+        <circle class="es-led" cx="232.5" cy="131" r="1.8"/>
+        <rect class="es-medidor" x="125" y="146" width="24" height="31" rx="6"/>
+        <circle class="es-dial" cx="137" cy="158" r="8"/>
+        <path class="es-aguja" d="M137 158v-6"/>
+        <rect class="es-dig" x="129.5" y="169" width="4" height="4.5" rx="1"/><rect class="es-dig" x="135" y="169" width="4" height="4.5" rx="1"/><rect class="es-dig es-dig-u" x="140.5" y="169" width="4" height="4.5" rx="1"/>
+
+        <!-- Arbusto y tarjeta de consumo a la baja -->
+        <path class="es-arbusto" d="M98 196a9 9 0 0 1 3-17 11 11 0 0 1 19 3 8 8 0 0 1 1 14z"/>
+        <g class="es-flota">
+          <rect class="es-tarjeta" x="256" y="132" width="52" height="62" rx="10"/>
+          <text class="es-txt es-txt-card" x="264" y="145">kWh</text>
+          <path class="es-baja" d="M297 138v7m-3-3 3 3.5 3-3.5"/>
+          <rect class="es-barra" style="--i:0" x="264" y="158" width="9" height="28" rx="2.5"/>
+          <rect class="es-barra" style="--i:1" x="277.5" y="167" width="9" height="19" rx="2.5"/>
+          <rect class="es-barra" style="--i:2" x="291" y="176" width="9" height="10" rx="2.5"/>
+          <path class="es-linea es-trend" pathLength="1" style="--d:1.9s" d="M264 152 277 158 289 167 300 171"/>
+        </g>
+
+        <!-- Leyenda -->
+        <rect class="es-leyenda" x="99" y="200" width="146" height="14" rx="7"/>
+        <circle class="es-ley-red" cx="108" cy="207" r="3"/><text class="es-txt" x="114" y="210">Red CFE</text>
+        <circle class="es-ley-sol" cx="176" cy="207" r="3"/><text class="es-txt" x="182" y="210">Energía solar</text>
       </svg>
       <section class="cfe-inicio" aria-labelledby="cfe-titulo">
         <h2 id="cfe-titulo">Cuotas de CFE</h2>
@@ -2271,7 +2358,7 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
     </details>
   </section>
 
-  <footer>Proyecto Eficiencia V1.16 · ODS 7 de la Agenda 2030</footer>
+  <footer>Proyecto Eficiencia V1.18 · ODS 7 de la Agenda 2030</footer>
 </main>
 
 <dialog id="reporte-dialogo" aria-labelledby="reporte-titulo">
@@ -2484,24 +2571,33 @@ function dibujarReporte(c, consejo, incluirCosto) {
   lienzo.height = 2246;
   const ctx = lienzo.getContext("2d");
   ctx.scale(2, 2);
-  const tinta = "#18352d";
-  const verde = "#10553f";
-  const suave = "#48655b";
-  const lineaSuave = "#cfdfd6";
-  const menta = "#eaf4ee";
-  const colores = ["#24815c", "#2f779e", "#b27519", "#7d639c"];
+  const tinta = "#0f2b23";
+  const verde = "#075c3d";
+  const suave = "#3d594f";
+  const lineaSuave = "#bfd6ca";
+  const menta = "#e4f3eb";
+  const colores = ["#0f8558", "#146fa8", "#bd7408", "#7450a8"];
   const numero = new Intl.NumberFormat("es-MX", { maximumFractionDigits: 2 });
   const moneda = new Intl.NumberFormat("es-MX", { style: "currency", currency: c.moneda, currencyDisplay: "symbol" });
   const fecha = new Date().toLocaleDateString("es-MX", { dateStyle: "long" });
   const nivel = 2 - c.nivelBloque;
   const bloque = ["Excedente", "Intermedio", "Básico"][nivel];
   const varios = c.items.length > 1;
-  const filas = c.items.slice(0, 3).map(function (equipo) {
-    return { nombre: equipo.nombre, kwh: equipo.kwhDia * c.diasBimestre };
+  const periodo = c.diasBimestre === 60 ? "bimestre" : "periodo";
+  const dinero = function (n) { return moneda.format(n / c.divisorMoneda); };
+  const maxFilas = c.items.length > 4 ? 3 : 4;
+  const filas = c.items.slice(0, maxFilas).map(function (equipo) {
+    return { nombre: equipo.nombre, kwh: equipo.kwhDia * c.diasBimestre,
+      detalle: numero.format(equipo.watts) + " W · " + (equipo.horasDia > 0 ? duracion(equipo.horasDia) + " al día" : "sin uso") };
   });
-  if (c.items.length > 3) {
-    const resto = c.items.slice(3).reduce(function (suma, equipo) { return suma + equipo.kwhDia * c.diasBimestre; }, 0);
-    filas.push({ nombre: "Otros equipos (" + (c.items.length - 3) + ")", kwh: resto });
+  if (c.items.length > maxFilas) {
+    const resto = c.items.slice(maxFilas).reduce(function (suma, equipo) { return suma + equipo.kwhDia * c.diasBimestre; }, 0);
+    filas.push({ nombre: "Otros equipos (" + (c.items.length - maxFilas) + ")", kwh: resto, detalle: "Suma de los de menor consumo" });
+  }
+
+  function duracion(horas) {
+    const min = Math.round(horas * 60), h = Math.floor(min / 60), m = min % 60;
+    return h ? h + " h" + (m ? " " + m + " min" : "") : m + " min";
   }
 
   function caja(x, y, ancho, alto, color) {
@@ -2518,6 +2614,13 @@ function dibujarReporte(c, consejo, incluirCosto) {
     }
     ctx.fillStyle = color;
     ctx.fillText(valor, x, y);
+  }
+
+  // Reduce la letra hasta que el texto quepa completo (las cifras nunca se cortan)
+  function ajustado(valor, x, y, tam, color, ancho) {
+    ctx.font = "700 " + tam + "px 'Segoe UI', Arial, sans-serif";
+    while (tam > 12 && ctx.measureText(valor).width > ancho) { tam -= .5; ctx.font = "700 " + tam + "px 'Segoe UI', Arial, sans-serif"; }
+    texto(valor, x, y, tam, color, true, ancho);
   }
 
   function parrafo(valor, x, y, ancho, tam, color, maxLineas, negrita) {
@@ -2548,59 +2651,69 @@ function dibujarReporte(c, consejo, incluirCosto) {
   }
 
   caja(0, 0, 794, 1123, "#ffffff");
-  caja(0, 0, 794, 12, verde);
-  circulo(63, 62, 19, verde);
+  caja(44, 42, 706, 8, verde);
+  circulo(63, 84, 19, verde);
   ctx.beginPath();
-  ctx.moveTo(65, 49);
-  ctx.lineTo(55, 64);
-  ctx.lineTo(62, 64);
-  ctx.lineTo(60, 75);
-  ctx.lineTo(71, 59);
-  ctx.lineTo(64, 59);
+  [[65, 71], [55, 86], [62, 86], [60, 97], [71, 81], [64, 81]].forEach(function (p, i) { ctx[i ? "lineTo" : "moveTo"](p[0], p[1]); });
   ctx.closePath();
   ctx.fillStyle = "#a4e8c7";
   ctx.fill();
-  texto("PROYECTO EFICIENCIA", 94, 67, 14, verde, true);
+  texto("PROYECTO EFICIENCIA", 94, 89, 14, verde, true);
   ctx.textAlign = "right";
-  texto(fecha, 750, 61, 14, tinta, true);
-  texto((c.diasBimestre === 60 ? "Bimestre estimado" : "Periodo estimado") + " · " + c.diasBimestre + " días", 750, 83, 13, suave);
+  texto(fecha, 750, 82, 14, tinta, true);
+  texto((c.diasBimestre === 60 ? "Bimestre estimado" : "Periodo estimado") + " · " + c.diasBimestre + " días", 750, 103, 13, suave);
   ctx.textAlign = "left";
-  texto("Recibo de recomendaciones", 44, 134, 30, tinta, true);
-  caja(44, 155, 706, 1, lineaSuave);
+  texto("Recibo de recomendaciones", 44, 144, 30, tinta, true);
+  caja(44, 160, 706, 1, lineaSuave);
 
-  caja(44, 179, 706, 143, menta);
-  texto("CONSUMO ESTIMADO", 63, 218, 13, verde, true);
-  texto(numero.format(c.kwhBimestre) + " kWh", 63, 269, 37, tinta, true, 239);
-  texto(c.diasBimestre === 60 ? "En dos meses" : "En " + c.diasBimestre + " días", 64, 293, 14, suave);
+  // Resumen principal
+  caja(44, 174, 706, 118, menta);
+  texto("CONSUMO ESTIMADO", 63, 202, 13, verde, true);
+  ajustado(numero.format(c.kwhBimestre) + " kWh", 63, 249, 37, tinta, 239);
+  texto(c.diasBimestre === 60 ? "En dos meses" : "En " + c.diasBimestre + " días", 64, 274, 14, suave);
   if (incluirCosto) {
-    caja(319, 203, 1, 94, lineaSuave);
-    texto("COSTO ESTIMADO", 339, 218, 13, verde, true);
-    texto(moneda.format(c.costoBimestre / c.divisorMoneda), 339, 265, 25, tinta, true, 182);
-    texto(c.moneda + " con IVA", 339, 291, 14, suave);
+    caja(319, 189, 1, 88, lineaSuave);
+    texto("COSTO ESTIMADO", 339, 202, 13, verde, true);
+    ajustado(moneda.format(c.costoBimestre / c.divisorMoneda), 339, 245, 27, tinta, 182);
+    texto(c.moneda + " con IVA", 339, 274, 14, suave);
   }
   const separador = incluirCosto ? 534 : 411;
-  caja(separador, 203, 1, 94, lineaSuave);
-  caja(separador + 19, 212, 30, 77, tinta);
-  ["#ff6e62", "#ffd451", "#59d79a"].forEach(function (color, i) {
-    circulo(separador + 34, 229 + i * 22, 7, i === nivel ? color : "#526a61");
+  caja(separador, 189, 1, 88, lineaSuave);
+  caja(separador + 19, 194, 30, 77, tinta);
+  ["#ff5a4d", "#ffcc33", "#3fd68c"].forEach(function (color, i) {
+    circulo(separador + 34, 211 + i * 22, 7, i === nivel ? color : "#4d655c");
   });
   const bloqueX = separador + 62;
-  texto("BLOQUE DE COBRO", bloqueX, 223, 12, verde, true);
-  texto(bloque, bloqueX, 255, 21, tinta, true);
-  parrafo(c.tarifaTxt, bloqueX, 277, 736 - bloqueX, 12, suave, 2);
+  texto("BLOQUE DE COBRO", bloqueX, 205, 12, verde, true);
+  texto(bloque, bloqueX, 237, 21, tinta, true);
+  parrafo(c.tarifaTxt, bloqueX, 259, 736 - bloqueX, 12, suave, 2);
 
-  texto(varios ? "Consumo por equipo" : "Consumo de tu aparato", 44, 374, 23, tinta, true);
-  texto(c.items.length + (varios ? " aparatos registrados" : " aparato registrado"), 44, 400, 14, suave);
+  // Datos complementarios
+  const datos = [
+    ["AL MES (30 DÍAS)", numero.format(c.kwhMes) + " kWh" + (incluirCosto ? " · " + dinero(c.mes) : "")],
+    incluirCosto ? ["PROYECCIÓN A UN AÑO", dinero(c.costoAnual)] : ["PROMEDIO DIARIO", numero.format(c.totalDia) + " kWh"],
+    ["EMISIONES DE CO₂ DEL " + periodo.toUpperCase(), numero.format(c.co2) + " kg"]
+  ];
+  datos.forEach(function (d, i) {
+    const x = 63 + i * 235.5;
+    if (i) { caja(x - 20, 304, 1, 36, lineaSuave); }
+    texto(d[0], x, 316, 10.5, suave, true, 200);
+    texto(d[1], x, 337, 15, tinta, true, 205);
+  });
+  caja(44, 352, 706, 1, lineaSuave);
+
+  texto(varios ? "Consumo por equipo" : "Consumo de tu aparato", 44, 392, 23, tinta, true, 350);
+  texto(c.items.length + (varios ? " aparatos registrados" : " aparato registrado"), 44, 416, 14, suave);
 
   // Indicador de eficiencia A–G (a la derecha del título de la sección)
   if (c.ef) {
     const clases = [["A", "#1f7a45", "#ffffff"], ["B", "#36883a", "#ffffff"], ["C", "#a0c85b", "#18352d"], ["D", "#ddcf55", "#18352d"],
       ["E", "#e5a94a", "#18352d"], ["F", "#d97b3f", "#18352d"], ["G", "#c0392b", "#ffffff"]];
-    const anchoChip = 44, hueco = 5, efX = 750 - (7 * anchoChip + 6 * hueco), base = 396;
-    texto("INDICADOR DE EFICIENCIA", efX, 350, 12, verde, true);
+    const anchoChip = 44, hueco = 5, efX = 750 - (7 * anchoChip + 6 * hueco), base = 416;
+    texto("INDICADOR DE EFICIENCIA", efX, 373, 12, verde, true);
     clases.forEach(function (cl, i) {
-      const activa = cl[0] === c.ef.clase, alto = 16 + i * 4, x = efX + i * (anchoChip + hueco), y = base - alto;
-      ctx.globalAlpha = activa ? 1 : .38;
+      const activa = cl[0] === c.ef.clase, alto = 15 + i * 3.5, x = efX + i * (anchoChip + hueco), y = base - alto;
+      ctx.globalAlpha = activa ? 1 : .42;
       caja(x, y, anchoChip, alto, cl[1]);
       ctx.globalAlpha = 1;
       if (activa) {
@@ -2609,43 +2722,44 @@ function dibujarReporte(c, consejo, incluirCosto) {
         ctx.strokeRect(x - 2, y - 2, anchoChip + 4, alto + 4);
       }
       ctx.textAlign = "center";
-      ctx.globalAlpha = activa ? 1 : .7;
-      texto(cl[0], x + anchoChip / 2, y + alto / 2 + 4.5, 13, cl[2], true);
+      ctx.globalAlpha = activa ? 1 : .75;
+      texto(cl[0], x + anchoChip / 2, y + alto / 2 + 4.5, 12.5, activa ? cl[2] : tinta, true);
       ctx.globalAlpha = 1;
       ctx.textAlign = "left";
     });
-    texto("Clase " + c.ef.clase + " · " + numero.format(c.ef.kwh) + " kWh/mes · el excedente empieza en " + numero.format(Math.round(c.ef.limite)) + " kWh", efX, 416, 12, suave, false, 750 - efX);
+    ctx.textAlign = "right";
+    texto("Clase " + c.ef.clase + " · " + numero.format(c.ef.kwh) + " kWh/mes · el excedente empieza en " + numero.format(Math.round(c.ef.limite)) + " kWh", 750, 434, 12, suave, false, 400);
+    ctx.textAlign = "left";
   }
+
   const tablaX = varios ? 258 : 44;
-  caja(tablaX, 429, 750 - tablaX, 35, verde);
-  texto("Equipo", tablaX + 14, 451, 13, "#ffffff", true);
+  caja(tablaX, 448, 750 - tablaX, 32, verde);
+  texto("Equipo", tablaX + 14, 469, 13, "#ffffff", true);
   ctx.textAlign = "right";
-  texto("kWh / " + c.diasBimestre + " días", 653, 451, 13, "#ffffff", true);
-  texto("Parte", 735, 451, 13, "#ffffff", true);
+  texto("kWh / " + c.diasBimestre + " días", 668, 469, 13, "#ffffff", true);
+  texto("Parte", 735, 469, 13, "#ffffff", true);
   ctx.textAlign = "left";
   filas.forEach(function (fila, i) {
-    const y = 464 + i * 43;
-    caja(tablaX, y, 750 - tablaX, 42, i % 2 ? "#ffffff" : "#f2f7f4");
-    if (varios) { circulo(tablaX + 16, y + 21, 4.5, colores[i]); }
-    const nombreX = tablaX + (varios ? 28 : 14);
-    const anchoNombre = 555 - nombreX;
-    ctx.font = "700 14px 'Segoe UI', Arial, sans-serif";
-    if (ctx.measureText(fila.nombre).width <= anchoNombre) {
-      texto(fila.nombre, nombreX, y + 26, 14, tinta, true, anchoNombre);
-    } else {
-      parrafo(fila.nombre, nombreX, y + 16, anchoNombre, 14, tinta, 2, true);
-    }
+    const y = 480 + i * 39;
+    caja(tablaX, y, 750 - tablaX, 38, i % 2 ? "#ffffff" : "#eff6f2");
+    if (varios) { circulo(tablaX + 16, y + 14, 4.5, colores[i]); }
+    const nombreX = tablaX + (varios ? 28 : 14), anchoNombre = 588 - nombreX;
+    // El nombre completo cabe reduciendo un poco la letra antes de recortarlo
+    let tam = 13.5;
+    ctx.font = "700 " + tam + "px 'Segoe UI', Arial, sans-serif";
+    while (tam > 11.5 && ctx.measureText(fila.nombre).width > anchoNombre) { tam -= .5; ctx.font = "700 " + tam + "px 'Segoe UI', Arial, sans-serif"; }
+    texto(fila.nombre, nombreX, y + 18, tam, tinta, true, anchoNombre);
+    texto(fila.detalle, nombreX, y + 32, 11, suave, false, anchoNombre);
     ctx.textAlign = "right";
-    texto(numero.format(fila.kwh), 653, y + 26, 14, tinta, false, 90);
-    texto(c.kwhBimestre ? Math.round(fila.kwh / c.kwhBimestre * 100) + " %" : "0 %", 735, y + 26, 14, suave);
+    texto(numero.format(fila.kwh), 668, y + 24, 14, tinta, false, 76);
+    texto(c.kwhBimestre ? Math.round(fila.kwh / c.kwhBimestre * 100) + " %" : "0 %", 735, y + 24, 14, suave);
     ctx.textAlign = "left";
   });
-  caja(tablaX, 464 + filas.length * 43, 750 - tablaX, 1, lineaSuave);
+  const finTabla = 480 + filas.length * 39;
+  caja(tablaX, finTabla, 750 - tablaX, 1, lineaSuave);
 
   if (varios) {
-    const centroX = 138;
-    const centroY = 532;
-    const radio = 75;
+    const centroX = 138, centroY = 540, radio = 75;
     circulo(centroX, centroY, radio, menta);
     let angulo = -Math.PI / 2;
     filas.forEach(function (fila, i) {
@@ -2665,27 +2779,63 @@ function dibujarReporte(c, consejo, incluirCosto) {
     ctx.textAlign = "left";
   }
 
-  const seccion = varios ? 669 : 564;
-  caja(44, seccion, 706, 161, menta);
-  caja(44, seccion, 5, 161, colores[0]);
-  texto("TU ACCIÓN PARA ESTE BIMESTRE", 64, seccion + 30, 13, verde, true);
-  const lineasTitulo = parrafo(consejo[0], 64, seccion + 59, 663, 20, tinta, 2, true);
-  parrafo(consejo[1], 64, seccion + 62 + lineasTitulo * 25, 663, 15, tinta, lineasTitulo === 1 ? 4 : 3);
+  // Con pocos equipos la tabla es corta: el espacio libre se reparte entre los bloques siguientes
+  const finSeccion = Math.max(finTabla, varios ? 616 : finTabla);
+  const aire = Math.min(16, Math.max(0, 636 - finSeccion) / 4);
+  let y = finSeccion + 16 + aire;
 
-  const seguimiento = varios ? 862 : 809;
-  texto("Cómo revisar tu avance", 44, seguimiento, 20, tinta, true);
-  caja(44, seguimiento + 19, 706, 108, "#f4f7f5");
-  texto("PROMEDIO DIARIO ESTIMADO", 64, seguimiento + 51, 12, verde, true);
-  texto(numero.format(c.totalDia) + " kWh/día", 64, seguimiento + 88, 24, tinta, true, 224);
-  caja(306, seguimiento + 36, 1, 72, lineaSuave);
-  parrafo("Divide los kWh del siguiente recibo entre sus días facturados y compara ese promedio con el de tu recibo anterior.", 324, seguimiento + 61, 398, 14, suave, 3);
+  // Acción principal y otras recomendaciones
+  const ideas = c.consejos.filter(function (o) { return o[0] !== consejo[0]; }).slice(0, 2);
+  const altoAccion = 148 + Math.min(20, aire);
+  caja(44, y, 706, altoAccion, menta);
+  caja(44, y, 5, altoAccion, colores[0]);
+  texto("TU ACCIÓN PARA ESTE " + periodo.toUpperCase(), 64, y + 26, 13, verde, true);
+  ajustado(consejo[0], 64, y + 52, 19, tinta, 668);
+  parrafo(consejo[1], 64, y + 74, 668, 13.5, tinta, 2);
+  if (ideas.length) {
+    caja(64, y + 112, 668, 1, lineaSuave);
+    texto("También:", 64, y + 134, 12, verde, true);
+    ideas.forEach(function (idea, i) {
+      const x = 134 + i * 304;
+      circulo(x, y + 130, 3, verde);
+      texto(idea[0], x + 10, y + 134, 12, tinta, false, 285);
+    });
+  }
+  y += altoAccion + 12 + aire;
 
-  caja(44, 1022, 706, 1, lineaSuave);
-  texto("Proyecto Eficiencia · Documento informativo", 44, 1046, 13, verde, true);
-  parrafo(incluirCosto
+  // Ahorro posible
+  const ahorro = c.ahorro;
+  ctx.strokeStyle = lineaSuave;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(44.5, y + .5, 705, 73);
+  texto("AHORRO POSIBLE ESTIMADO", 64, y + 24, 12, verde, true);
+  caja(306, y + 14, 1, 46, lineaSuave);
+  if (ahorro.kwh >= .005) {
+    const enDinero = incluirCosto && ahorro.dinero >= .5;
+    ajustado(enDinero ? dinero(ahorro.dinero) : numero.format(ahorro.kwh) + " kWh", 64, y + 52, 22, tinta, 224);
+    parrafo((enDinero ? numero.format(ahorro.kwh) + " kWh menos" : "Consumo que evitarías") + " por " + periodo + " (" + ahorro.pct + " %) con equipos eficientes. Empieza por «" +
+      ahorro.equipo + "»: cámbialo por " + ahorro.alternativa + ".", 324, y + 24, 408, 12, suave, 3);
+  } else {
+    texto("Sin dato", 64, y + 52, 22, tinta, true);
+    parrafo("Con los datos capturados no se estima un ahorro por cambio de equipos.", 324, y + 34, 408, 12.5, suave, 2);
+  }
+  y += 74 + 28 + aire;
+
+  texto("Cómo revisar tu avance", 44, y, 18, tinta, true);
+  caja(44, y + 12, 706, 72, "#f1f6f3");
+  texto("PROMEDIO DIARIO ESTIMADO", 64, y + 37, 12, verde, true);
+  ajustado(numero.format(c.totalDia) + " kWh/día", 64, y + 66, 22, tinta, 224);
+  caja(306, y + 24, 1, 48, lineaSuave);
+  parrafo("Divide los kWh del siguiente recibo entre sus días facturados y compara ese promedio con el de tu recibo anterior.", 324, y + 44, 408, 13, suave, 2);
+
+  caja(44, 1024, 706, 1, lineaSuave);
+  texto("Proyecto Eficiencia · Documento informativo", 44, 1044, 13, verde, true);
+  parrafo((incluirCosto
     ? (c.diasBimestre === 60 ? "Dos meses iguales" : c.diasBimestre + " días iguales") + " con cuotas de " + c.periodoCuotas + ", IVA y mínimo de 25 kWh por mes. " +
-      (c.fechaCambio ? "Conversión BCE del " + c.fechaCambio + "." : "El recibo puede incluir otros cargos.")
-    : "El consumo se estima con los datos capturados para un periodo de " + c.diasBimestre + " días.", 44, 1070, 706, 13, suave, 2);
+      (c.tarifa === "1" ? "" : "Año: 6 meses de verano y 6 fuera. ") +
+      (c.fechaCambio ? "Conversión BCE del " + c.fechaCambio + ". " : "El recibo puede incluir otros cargos. ")
+    : "El consumo se estima con los datos capturados para un periodo de " + c.diasBimestre + " días. ") +
+    "CO₂: " + numero.format(c.factorCo2) + " kg por kWh (aproximado). Ahorro según porcentajes típicos.", 44, 1062, 706, 11, suave, 2);
   return { lienzo: lienzo, bloque: bloque, filas: filas };
 }
 
@@ -2751,7 +2901,9 @@ function prepararReporte(obtenerDatos) {
       " kWh estimados en un periodo de " + datos.diasBimestre + " días. Bloque " +
       reporte.bloque + ". " + (datos.ef ? "Clase de eficiencia " + datos.ef.clase + ": " + datos.ef.kwh.toLocaleString("es-MX", { maximumFractionDigits: 2 }) + " kWh al mes; el bloque excedente empieza en " + Math.round(datos.ef.limite) + " kWh. " : "") + (precios.checked ? "Costo estimado: " + (datos.costoBimestre / datos.divisorMoneda).toFixed(2) + " " + datos.moneda + ". " : "") +
       reporte.filas.map(function (fila) { return fila.nombre + ": " + fila.kwh.toFixed(2) + " kWh"; }).join(". ") +
-      ". " + elegido[0] + ". " + elegido[1];
+      ". " + elegido[0] + ". " + elegido[1] +
+      " Ahorro posible con equipos eficientes: " + datos.ahorro.kwh.toLocaleString("es-MX", { maximumFractionDigits: 2 }) + " kWh en el periodo. Huella aproximada: " +
+      datos.co2.toLocaleString("es-MX", { maximumFractionDigits: 2 }) + " kg de CO2.";
     estado.textContent = "";
   }
 
@@ -2810,12 +2962,12 @@ function prepararReporte(obtenerDatos) {
   document.getElementById("reporte-imprimir").addEventListener("click", function () {
     const marco = document.createElement("iframe");
     marco.setAttribute("aria-hidden", "true");
-    marco.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden";
+    marco.style.cssText = "position:fixed;left:-10000px;top:0;width:794px;height:1123px;border:0";   // tamaño A4 real: un marco de 0 px hacía que la hoja saliera centrada y reducida
     document.body.appendChild(marco);
     const doc = marco.contentDocument;
     doc.open();
     doc.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Recibo de recomendaciones</title>' +
-      '<style>@page{size:A4;margin:0}html,body{margin:0;padding:0;background:#fff}img{display:block;width:210mm;height:297mm}</style></head><body></body></html>');
+      '<style>@page{size:A4 portrait;margin:0}html,body{margin:0;padding:0;background:#fff;width:210mm;height:297mm;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}img{display:block;margin:0;padding:0;border:0;width:210mm;height:297mm}</style></head><body></body></html>');
     doc.close();
     const hoja = doc.createElement("img");
     const quitar = function () { setTimeout(function () { marco.remove(); }, 500); };
@@ -2824,6 +2976,7 @@ function prepararReporte(obtenerDatos) {
         marco.contentWindow.onafterprint = quitar;
         marco.contentWindow.focus();
         marco.contentWindow.print();
+        estado.textContent = "Si salen fecha y título en los bordes, desactiva «Encabezados y pies de página» en Más ajustes.";
       } catch (error) {
         quitar();
         estado.textContent = "No se pudo abrir la impresión. Descarga el PDF para imprimirlo.";
@@ -6184,6 +6337,16 @@ var TIPS_CAT = {
     var c = contexto();
     var equipo = c.items[0];
     c.consejos = consejosDe(equipo, c.totalDia ? equipo.kwhDia / c.totalDia : 0);
+    // En equipos que deben quedar siempre encendidos (como el refrigerador) el recibo no sugiere apagarlos antes
+    if (SIEMPRE_ENCENDIDO[equipo.tipo]) { c.consejos = c.consejos.filter(function (t) { return t[2] !== "urg"; }); }
+    // Datos que solo usa el recibo: proyección anual, CO2 y ahorro posible del periodo
+    c.costoAnual = 6 * (costoMes(c.kwhMes, c.tarifa, true) + costoMes(c.kwhMes, c.tarifa, false));
+    c.factorCo2 = KG_CO2_POR_KWH;
+    c.co2 = c.kwhBimestre * KG_CO2_POR_KWH;
+    var a = ahorroPotencial(c);
+    var mayor = c.items.reduce(function (m, it) { return it.ahorroKwh > m.ahorroKwh ? it : m; }, c.items[0]);
+    c.ahorro = { kwh: a.tot * escalaPeriodo(), dinero: Math.max(0, c.mes - a.mesEf) * escalaPeriodo(),
+      pct: c.kwhMes > 0 ? a.pct : 0, equipo: mayor.nombre, alternativa: mayor.ef.alt };
     return c;
   });
   iniciarApariencia();
