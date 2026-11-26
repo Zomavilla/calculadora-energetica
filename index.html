@@ -1768,38 +1768,15 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
   .barra-centro .dock-resultados .reporte-boton{min-width:0; min-height:52px; padding:10px 20px; white-space:nowrap}
 }
 @media (min-width:1024px) and (orientation:landscape) and (pointer:fine) {
-  #pantalla4 {
-    --ancho-acciones: clamp(226px, 20vw, 254px);
-    --separacion-resultados: clamp(16px, 2vw, 28px);
-    max-width: calc(1060px + var(--ancho-acciones) + var(--separacion-resultados));
-    padding: 0;
-    border: 0;
-    background: none;
-  }
-  #pantalla4.activa {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) var(--ancho-acciones);
-    align-items: start;
-    gap: var(--separacion-resultados);
-  }
-  .resultados-contenido {
-    display: block;
-    min-width: 0;
-    padding: clamp(24px, 3.5vw, 48px) clamp(24px, 3.35vw, 64px);
-    border: 1px solid var(--linea);
-    border-radius: inherit;
-    background: color-mix(in srgb, var(--blanco) 84%, transparent);
-  }
   #pantalla4 > .acciones-resultados {
     position: sticky;
-    top: 0;
-    margin: 0;
-    padding: clamp(6px, 1.5vh, 12px);
-    flex-flow: column nowrap;
-    gap: clamp(4px, 1vh, 8px);
-    /* Reserva espacio para la cabecera, el pie y los márgenes del área de resultados. */
-    max-height: max(44px, calc(90dvh - 140px));
-    overflow-y: auto;
+    bottom: 12px;
+    z-index: 10;
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+    padding: 8px;
+    gap: 8px;
     border: 1px solid var(--linea);
     border-radius: 16px;
     background: var(--blanco);
@@ -1809,11 +1786,60 @@ html[data-modo="oscuro"] #reporte-dialogo { color-scheme: dark; }
     min-width: 0;
     min-height: 44px;
     padding: 8px 10px;
-    justify-content: flex-start;
-    text-align: left;
     font-size: .88rem;
     line-height: 1.25;
   }
+}
+@media (min-width:1560px) and (orientation:landscape) and (pointer:fine) {
+  #pantalla4 {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  #pantalla4.activa {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+  .resultados-contenido {
+    grid-area: 1 / 1;
+    display: block;
+    min-width: 0;
+    padding: 48px 64px;
+    border: 1px solid var(--linea);
+    border-radius: inherit;
+    background: color-mix(in srgb, var(--blanco) 84%, transparent);
+  }
+  #pantalla4 > .acciones-resultados {
+    grid-area: 1 / 1;
+    justify-self: end;
+    top: 0;
+    bottom: auto;
+    width: 226px;
+    margin: 0;
+    padding: 10px;
+    translate: calc(100% + 16px);
+    flex-flow: column nowrap;
+    max-height: max(44px, calc(90dvh - 140px));
+    overflow-y: auto;
+  }
+  #pantalla4 > .acciones-resultados > button {
+    flex: none;
+    justify-content: flex-start;
+    text-align: left;
+  }
+  .acciones-resultados .nota {
+    flex: none;
+    min-width: 0;
+    margin: 4px 0 0;
+    overflow-wrap: anywhere;
+  }
+  .acciones-resultados .nota summary { padding: 8px; gap: 6px; font-size: .8rem; }
+  .acciones-resultados .nota summary .ico { width: 26px; height: 26px; }
+  .acciones-resultados .nota summary svg { width: 16px; height: 16px; }
+  .acciones-resultados .nota .panel-cuerpo { padding: 10px 8px; }
+  .acciones-resultados .nota .datos { margin: 0; gap: 10px; }
+  .acciones-resultados .nota .datos li { padding-inline-start: 7px; font-size: .78rem; }
 }
 /* PC: la barra «Guardar / Ver resultados» queda casi al borde inferior (compensa el margen de la página) */
 @media (min-width:1024px) and (orientation:landscape){
@@ -2351,7 +2377,7 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
         <ul class="des-lista" id="desglose"></ul>
         <div class="total-casa"><span id="total-etq">Total acumulado</span><b id="total-valor">0 kWh</b></div>
 
-        <details class="panel nota">
+        <details class="panel nota" id="calculo-resultados">
           <summary><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span><span>Cómo se calcula</span></summary>
           <div class="panel-cuerpo"><ul class="datos" id="datos-casa"></ul></div>
         </details>
@@ -2597,7 +2623,7 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
     </details>
   </section>
 
-  <footer>Proyecto Eficiencia V1.58 · ODS 7 de la Agenda 2030</footer>
+  <footer>Proyecto Eficiencia V1.60 · ODS 7 de la Agenda 2030</footer>
 </main>
 
 <dialog id="reporte-dialogo" aria-labelledby="reporte-titulo">
@@ -3903,6 +3929,24 @@ var TIPS_CAT = {
     else if (BARRA_PC.addListener) { BARRA_PC.addListener(colocarBarra); }
   }
   colocarBarra();
+
+  var lateralResultados = window.matchMedia("(min-width:1560px) and (orientation:landscape) and (pointer:fine)");
+  var detalleCalculo = $("calculo-resultados"), lugarCalculo = document.createComment("Lugar original de la explicación");
+  detalleCalculo.before(lugarCalculo);
+  var calculoAbiertoEnContenido = detalleCalculo.open;
+  function colocarDetalleCalculo() {
+    if (lateralResultados.matches) {
+      calculoAbiertoEnContenido = detalleCalculo.open;
+      document.querySelector("#pantalla4 > .acciones-resultados").appendChild(detalleCalculo);
+      detalleCalculo.open = true;
+    } else {
+      lugarCalculo.after(detalleCalculo);
+      detalleCalculo.open = calculoAbiertoEnContenido;
+    }
+  }
+  if (lateralResultados.addEventListener) { lateralResultados.addEventListener("change", colocarDetalleCalculo); }
+  else { lateralResultados.addListener(colocarDetalleCalculo); }
+  colocarDetalleCalculo();
 
   // Una pantalla solo se abre desde el historial si ya hay datos que mostrar
   function pantallaPermitida(n) {
