@@ -1,30 +1,38 @@
-// Service worker: guarda la app para usarla sin conexión.
-// Al cambiar index.html, sube el número de versión para que los teléfonos descarguen la nueva.
-var PREFIJO_CACHE = "eficiencia:" + self.registration.scope + ":";
-var CACHE = PREFIJO_CACHE + "v12";
-var ARCHIVOS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
+/* Service worker de Proyecto Eficiencia.
+   IMPORTANTE: cambia VERSION en cada entrega para que las apps instaladas se actualicen. */
+const VERSION = "2026.11.26-8";
+const CACHE = "eficiencia-" + VERSION;
+const ARCHIVOS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png"];
 
-self.addEventListener("install", function (e) {
-  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ARCHIVOS); }).then(function () { return self.skipWaiting(); }));
+self.addEventListener("install", (e) => {
+  e.waitUntil(
+    caches.open(CACHE).then((c) => Promise.all(ARCHIVOS.map((u) => c.add(u).catch(() => {}))))
+      .then(() => self.skipWaiting())
+  );
 });
-self.addEventListener("activate", function (e) {
-  e.waitUntil(caches.keys().then(function (ks) {
-    return Promise.all(ks.filter(function (k) { return k.startsWith(PREFIJO_CACHE) && k !== CACHE; }).map(function (k) { return caches.delete(k); }));
-  }).then(function () { return self.clients.claim(); }));
+
+self.addEventListener("activate", (e) => {
+  e.waitUntil(
+    caches.keys()
+      .then((claves) => Promise.all(claves.filter((k) => k.startsWith("eficiencia-") && k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
 });
-self.addEventListener("fetch", function (e) {
-  if (e.request.method !== "GET") { return; }
-  if (e.request.url === new URL("tarifas-cfe.json", self.registration.scope).href) { return; }
-  if (e.request.mode === "navigate") {   // la página: primero la red (para tener la última versión) y, sin conexión, la copia guardada
-    var red = fetch(e.request);
-    e.waitUntil(red.then(function (r) {
-      if (r.ok) {
-        var copia = r.clone();
-        return caches.open(CACHE).then(function (c) { return c.put("./index.html", copia); });
-      }
-    }).catch(function () {}));
-    e.respondWith(red.catch(function () { return caches.open(CACHE).then(function (c) { return c.match("./index.html"); }); }));
-    return;
+
+self.addEventListener("fetch", (e) => {
+  const req = e.request;
+  if (req.method !== "GET" || new URL(req.url).origin !== location.origin) { return; }
+  const esPagina = req.mode === "navigate" || req.destination === "document";
+  const esTabla = req.url.includes("tarifas-cfe.json");
+  if (esPagina || esTabla) {
+    // Red primero (siempre lo más nuevo); sin conexión, la copia guardada
+    e.respondWith(
+      fetch(req).then((r) => { const copia = r.clone(); caches.open(CACHE).then((c) => c.put(req, copia)); return r; })
+        .catch(() => caches.match(req).then((r) => r || caches.match("./index.html")))
+    );
+  } else {
+    e.respondWith(
+      caches.match(req).then((r) => r || fetch(req).then((n) => { const copia = n.clone(); caches.open(CACHE).then((c) => c.put(req, copia)); return n; }))
+    );
   }
-  e.respondWith(caches.open(CACHE).then(function (c) { return c.match(e.request); }).then(function (r) { return r || fetch(e.request); }));
 });
