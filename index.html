@@ -1951,6 +1951,21 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
   #pantalla3 #pildora-modo .opt svg{width:17px; height:17px}
   #pildora-temporada .opt{flex:1 1 auto; min-height:44px; white-space:normal; line-height:1.15; text-align:center}
 }
+/* Ubicación: pin en reposo; mientras busca, el pin salta sobre una onda */
+.ajuste-accion .pin,.ajuste-accion .ubicando{width:24px; height:24px; color:var(--brote)}
+.ajuste-accion.cargando .giro.ubicando{animation:none; overflow:visible}
+.ubicando .salta{animation:ubica-salta .9s ease-in-out infinite}
+.ubicando .onda{transform-origin:12px 20.5px; animation:ubica-onda .9s ease-out infinite}
+@keyframes ubica-salta{50%{transform:translateY(-3.5px)}}
+@keyframes ubica-onda{0%{transform:scale(.35); opacity:1}100%{transform:scale(1.35); opacity:0}}
+/* Teléfono: los botones de diálogos y «Empezar de nuevo» ocupan todo el ancho */
+@media (max-width:767px), (max-height:500px) and (pointer:coarse){
+  .guardar-acciones{flex-direction:column; align-items:stretch; gap:10px}
+  .guardar-acciones button{width:100%; min-height:48px; justify-content:center; text-align:center}
+  .guardar-acciones button:not(.sec){order:-1}
+  .guardar-acciones #guardar-principal{order:-1}
+  .inicio-nota .nueva,#pantalla2 .local-nueva{width:100%; flex:1 1 100%; min-height:48px; justify-content:center; text-align:center}
+}
 </style>
 </head>
 <body>
@@ -2341,7 +2356,7 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
               <p class="ayuda" id="ayuda-region"></p>
               <p class="ayuda" id="ayuda-temporada"></p>
               <div class="ajuste-acciones">
-                <button type="button" class="ajuste-accion sec" data-detectar-tarifa><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><svg class="bi giro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" opacity=".22"/><path d="M12 3a9 9 0 0 1 9 9"/></svg><span class="bt">Sugerir por región</span></button>
+                <button type="button" class="ajuste-accion sec" data-detectar-tarifa><svg class="bi pin" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12 2a7.5 7.5 0 0 0-7.5 7.5c0 5 5.6 10.6 7 11.9a.75.75 0 0 0 1 0c1.4-1.3 7-6.9 7-11.9A7.5 7.5 0 0 0 12 2Zm0 10.4a2.9 2.9 0 1 1 0-5.8 2.9 2.9 0 0 1 0 5.8Z"/></svg><svg class="bi giro ubicando" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><ellipse class="onda" cx="12" cy="20.5" rx="8" ry="2.6" fill="none" stroke="currentColor" stroke-width="1.5"/><g class="salta"><path fill-rule="evenodd" transform="translate(2.4 .6) scale(.8)" d="M12 2a7.5 7.5 0 0 0-7.5 7.5c0 5 5.6 10.6 7 11.9a.75.75 0 0 0 1 0c1.4-1.3 7-6.9 7-11.9A7.5 7.5 0 0 0 12 2Zm0 10.4a2.9 2.9 0 1 1 0-5.8 2.9 2.9 0 0 1 0 5.8Z"/></g></svg><span class="bt">Sugerir por región</span></button>
                 <button type="button" class="ajuste-accion" data-aplicar-tarifa hidden><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg><span class="bt">Usar la tarifa sugerida</span></button>
               </div>
               <p class="ayuda" data-estado-ubicacion role="status"></p>
@@ -2577,7 +2592,7 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
             </div>
             <p>Si lo solicitas, usamos tu ubicación para sugerir una tarifa. Confirma la tarifa con tu recibo.</p>
             <div class="ajuste-acciones">
-              <button type="button" class="ajuste-accion sec" data-detectar-tarifa><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><svg class="bi giro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" opacity=".22"/><path d="M12 3a9 9 0 0 1 9 9"/></svg><span class="bt">Sugerir por ubicación</span></button>
+              <button type="button" class="ajuste-accion sec" data-detectar-tarifa><svg class="bi pin" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12 2a7.5 7.5 0 0 0-7.5 7.5c0 5 5.6 10.6 7 11.9a.75.75 0 0 0 1 0c1.4-1.3 7-6.9 7-11.9A7.5 7.5 0 0 0 12 2Zm0 10.4a2.9 2.9 0 1 1 0-5.8 2.9 2.9 0 0 1 0 5.8Z"/></svg><svg class="bi giro ubicando" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><ellipse class="onda" cx="12" cy="20.5" rx="8" ry="2.6" fill="none" stroke="currentColor" stroke-width="1.5"/><g class="salta"><path fill-rule="evenodd" transform="translate(2.4 .6) scale(.8)" d="M12 2a7.5 7.5 0 0 0-7.5 7.5c0 5 5.6 10.6 7 11.9a.75.75 0 0 0 1 0c1.4-1.3 7-6.9 7-11.9A7.5 7.5 0 0 0 12 2Zm0 10.4a2.9 2.9 0 1 1 0-5.8 2.9 2.9 0 0 1 0 5.8Z"/></g></svg><span class="bt">Sugerir por ubicación</span></button>
               <button type="button" class="ajuste-accion" data-aplicar-tarifa hidden><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg><span class="bt">Usar la tarifa sugerida</span></button>
             </div>
             <p data-estado-ubicacion role="status"></p>
@@ -2618,7 +2633,7 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
             </ul>
           </details>
           <div class="ajuste-seccion" id="actualizacion-instalada" hidden>
-            <p>Versión actual <strong id="version-app">V1.67</strong></p>
+            <p>Versión actual <strong id="version-app">V1.68</strong></p>
             <div class="ajuste-acciones">
               <button type="button" class="ajuste-accion sec" id="comprobar-actualizacion"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg><span class="bt">Comprobar actualización</span></button>
             </div>
@@ -2667,7 +2682,7 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
     </details>
   </section>
 
-  <footer>Proyecto Eficiencia V1.67 · ODS 7 de la Agenda 2030</footer>
+  <footer>Proyecto Eficiencia V1.68 · ODS 7 de la Agenda 2030</footer>
 </main>
 
 <dialog id="reporte-dialogo" aria-labelledby="reporte-titulo">
@@ -5599,6 +5614,68 @@ var TIPS_CAT = {
     return mejor;
   }
 
+  var DONA_TELEFONO = window.matchMedia("(max-width:767px), (max-height:500px) and (pointer:coarse)");
+
+  // Reparte en vertical las etiquetas de un lado: cada una queda lo más cerca posible de su porción sin encimarse.
+  function repartirEtiquetas(grupo, hueco) {
+    var bloques = [], base = 0;
+    grupo.forEach(function (e, i) {
+      if (i) { base += (e.h + grupo[i - 1].h) / 2 + hueco; }
+      var b = { suma: e.ideal - base, n: 1, items: [{ e: e, base: base }] };
+      while (bloques.length && bloques[bloques.length - 1].suma / bloques[bloques.length - 1].n >= b.suma / b.n) {
+        var a = bloques.pop();
+        b = { suma: a.suma + b.suma, n: a.n + b.n, items: a.items.concat(b.items) };
+      }
+      bloques.push(b);
+    });
+    bloques.forEach(function (b) { b.items.forEach(function (x) { x.e.yl = b.suma / b.n + x.base; }); });
+  }
+
+  function segmentosSeCruzan(a, b, c, d) {
+    function giro(p, q, r) { return (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x); }
+    return giro(a, b, c) * giro(a, b, d) < 0 && giro(c, d, a) * giro(c, d, b) < 0;
+  }
+
+  function distanciaAlCentro(a, b) {
+    var dx = b.x - a.x, dy = b.y - a.y, largo = dx * dx + dy * dy;
+    var t = largo ? Math.max(0, Math.min(1, -(a.x * dx + a.y * dy) / largo)) : 0;
+    return Math.hypot(a.x + t * dx, a.y + t * dy);
+  }
+
+  // Teléfono: prueba cada giro de la gráfica (sin cambiar su tamaño ni el orden) y elige el que
+  // equilibra ambos lados, deja cada texto junto a su porción y evita líneas cruzadas.
+  function anguloDonaTelefono(fracciones, altos, R, PROY, codo, hueco) {
+    var mejor = -Math.PI / 2, mejorCosto = Infinity;
+    for (var paso = 0; paso < 144; paso++) {
+      var giro = Math.ceil(paso / 2) * (paso % 2 ? 1 : -1) * Math.PI / 72;
+      var ang = -Math.PI / 2 + giro, costo = Math.abs(giro) * 6;
+      var lados = { "1": [], "-1": [] };
+      fracciones.forEach(function (frac, i) {
+        var mid = ang + frac * Math.PI, s = Math.cos(mid) >= 0 ? 1 : -1;
+        ang += frac * 2 * Math.PI;
+        lados[s].push({ h: altos[i], ideal: Math.sin(mid) * (R + 28), s: s,
+          p: { x: (R + PROY) * Math.cos(mid), y: (R + PROY) * Math.sin(mid) } });
+      });
+      costo += Math.abs(lados[1].length - lados[-1].length) * 60;
+      var arriba = 0, abajo = 0;
+      [1, -1].forEach(function (s) {
+        var gr = lados[s].sort(function (a, b) { return a.p.y - b.p.y; });
+        repartirEtiquetas(gr, hueco);
+        gr.forEach(function (e, i) {
+          e.q = { x: s * codo, y: e.yl };
+          costo += Math.abs(e.yl - e.ideal);
+          arriba = Math.min(arriba, e.yl - e.h / 2);
+          abajo = Math.max(abajo, e.yl + e.h / 2);
+          if (distanciaAlCentro(e.p, e.q) < R + 3) { costo += 2000; }
+          for (var j = 0; j < i; j++) { if (segmentosSeCruzan(e.p, e.q, gr[j].p, gr[j].q)) { costo += 2000; } }
+        });
+      });
+      costo += (abajo - arriba) * 0.6 + Math.abs(abajo + arriba) * 0.3;
+      if (costo < mejorCosto) { mejor = -Math.PI / 2 + giro; mejorCosto = costo; }
+    }
+    return mejor;
+  }
+
   function dibujarDonaSpider(contenedor, datos, opc) {
     opc = opc || {};
     contenedor._ultima = { datos: datos, opc: opc };
@@ -5611,12 +5688,13 @@ var TIPS_CAT = {
     contenedor._cw = anchoReal;
     contenedor._oculto = !anchoReal;
     var escritorio = DONA_ESCRITORIO.matches;
+    var telefono = !escritorio && DONA_TELEFONO.matches;
     var W = Math.max(260, Math.min(anchoReal || 340, escritorio ? 900 : 640));
     var esc = (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16) / 16;
     var fs = (W < 420 ? 12 : 13.5) * esc, fsp = fs - 1, LH = Math.round(fs * 1.3);
     var R = Math.round(Math.max(46, Math.min(W * 0.165, 108))), r = Math.round(R * 0.64);
     var PROY = W < 420 ? 8 : 10, CODO = escritorio ? 28 : W < 420 ? 12 : 16;
-    var GAP = escritorio ? 8 : 4, GAPV = escritorio ? 8 : 3;
+    var GAP = escritorio ? 8 : 4, GAPV = escritorio ? 8 : telefono ? 7 : 3;
     var borde = R + PROY + CODO;                                   // dónde termina la línea guía y empieza el texto
     var colW = Math.max(40, Math.floor(W / 2 - borde - GAP - 2));  // ancho disponible para cada etiqueta
 
@@ -5666,7 +5744,8 @@ var TIPS_CAT = {
         else { lin.push(act); act = pal[i]; }
       }
       if (act) { lin.push(act); }
-      if (lin.length > 2) { lin = [lin[0], lin.slice(1).join(" ")]; }
+      var tope = telefono ? 4 : 2;     // en teléfono el nombre se lee completo
+      if (lin.length > tope) { lin = lin.slice(0, tope - 1).concat(lin.slice(tope - 1).join(" ")); }
       return lin;
     }
 
@@ -5677,7 +5756,27 @@ var TIPS_CAT = {
     barr.style.setProperty("--circ", f(circ));
     gSeg.setAttribute("mask", "url(#dona-mascara)");
     if (opc.intro) { svg.setAttribute("class", "donut-intro"); }
-    var etiquetas = [], ang = escritorio ? anguloDonaEscritorio(datos, total) : -Math.PI / 2;
+    // Contenido de cada etiqueta: nombre + porcentaje (se mide antes de girar la gráfica)
+    var visibles = datos.filter(function (d) { return d.valor > 0; });
+    var textos = visibles.map(function (d) {
+      var pct = (d.valor / total * 100).toFixed(2) + " %";
+      var lins = lineasNombre(d.nombre).map(function (t) { return { txt: t, size: fs, peso: 700, color: "var(--tinta, #111)" }; });
+      var extras = !d.detalle ? [pct] : telefono ? [pct, d.detalle] : [pct + " · " + d.detalle];
+      extras.forEach(function (t) { lins.push({ txt: t, size: fsp, peso: 600, color: "var(--gris, #777)" }); });
+      lins.forEach(function (L) {
+        L.w = medir(L.txt, L.size, L.peso);
+        // Teléfono: una palabra apenas más ancha que la columna reduce un poco su letra antes de recortarse
+        if (telefono && L.w > colW && L.w * 0.76 <= colW) { L.size = L.size * colW / L.w * 0.99; L.w = medir(L.txt, L.size, L.peso); }
+        L.desb = L.w > colW + 0.5;
+        if (L.desb) { L.corto = recortar(L.txt, colW, L.size, L.peso); }
+      });
+      return lins;
+    });
+    var etiquetas = [];
+    var ang = escritorio ? anguloDonaEscritorio(datos, total)
+      : telefono ? anguloDonaTelefono(visibles.map(function (d) { return d.valor / total; }),
+          textos.map(function (l) { return l.length * LH; }), R, PROY, borde - 6, GAPV)
+      : -Math.PI / 2;
 
     datos.forEach(function (d) {
       var frac = d.valor / total;
@@ -5703,23 +5802,19 @@ var TIPS_CAT = {
       etiquetas.push({ d: d, frac: frac, lado: lado, seg: seg, x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, yl: p2.y });
     });
 
-    // Contenido de cada etiqueta: nombre (1-2 líneas) + porcentaje
-    etiquetas.forEach(function (e) {
-      var pct = (e.frac * 100).toFixed(2) + " %" + (e.d.detalle ? " · " + e.d.detalle : "");
-      var lins = lineasNombre(e.d.nombre).map(function (t) { return { txt: t, size: fs, peso: 700, color: "var(--tinta, #111)" }; });
-      lins.push({ txt: pct, size: fsp, peso: 600, color: "var(--gris, #777)" });
-      lins.forEach(function (L) {
-        L.w = medir(L.txt, L.size, L.peso);
-        L.desb = L.w > colW + 0.5;
-        if (L.desb) { L.corto = recortar(L.txt, colW, L.size, L.peso); }
-      });
-      e.lineas = lins;
-      e.h = lins.length * LH;
+    etiquetas.forEach(function (e, i) {
+      e.lineas = textos[i];
+      e.h = textos[i].length * LH;
     });
 
     // Anti-solapamiento por lado: se empuja hacia abajo y luego se recentra respecto a los puntos de origen
     [1, -1].forEach(function (s) {
       var gr = etiquetas.filter(function (e) { return e.lado === s; }).sort(function (a, b) { return a.y2 - b.y2; });
+      if (telefono) {
+        gr.forEach(function (e) { e.ideal = e.y2 / (R + PROY) * (R + 28); });
+        repartirEtiquetas(gr, GAPV);
+        return;
+      }
       var i, desp = 0;
       for (i = 1; i < gr.length; i++) {
         var min = (gr[i].h + gr[i - 1].h) / 2 + GAPV;
@@ -5732,7 +5827,8 @@ var TIPS_CAT = {
     var minY = -(R + 16), maxY = R + 16, segs = [], labs = [];
     etiquetas.forEach(function (e, idx) {
       var s = e.lado, g = el("g", { "class": "lab" }, gTxt);
-      el("polyline", { points: f(e.x1) + "," + f(e.y1) + " " + f(e.x2) + "," + f(e.y2) + " " + f(s * borde) + "," + f(e.yl), pathLength: 1 }, g);
+      var codo = telefono ? " " + f(s * (borde - 6)) + "," + f(e.yl) : "";   // remate horizontal que llega recto al texto
+      el("polyline", { points: f(e.x1) + "," + f(e.y1) + " " + f(e.x2) + "," + f(e.y2) + codo + " " + f(s * borde) + "," + f(e.yl), pathLength: 1 }, g);
       var punto = el("circle", { cx: f(e.x1), cy: f(e.y1), r: 2.4 }, g);
       punto.style.fill = e.d.color;
       punto.style.stroke = "var(--blanco, #fff)";
@@ -5767,8 +5863,6 @@ var TIPS_CAT = {
       segs.push(e.seg);
       labs.push(g);
     });
-    svg.removeChild(tm);
-
     // Interacción: pasar el cursor, tocar o enfocar un segmento o su etiqueta lo resalta y activa el marquee
     function limpiar() {
       svg.classList.remove("hay-sel");
@@ -5797,11 +5891,24 @@ var TIPS_CAT = {
       v.style.cssText = "font-size:" + fc.toFixed(1) + "px;font-weight:800;fill:var(--tinta,#111);font-variant-numeric:tabular-nums";
       v.textContent = opc.centroValor;
       if (opc.centroTexto) {
-        var s2 = el("text", { x: 0, y: fc * 0.5 + 8, "text-anchor": "middle" }, svg);
-        s2.style.cssText = "font-size:" + Math.min(10.5 * esc, r * 0.26).toFixed(1) + "px;font-weight:700;fill:var(--gris,#777)";
-        s2.textContent = opc.centroTexto;
+        var tam = Math.min(10.5 * esc, r * 0.26), yc = fc * 0.5 + 8;
+        var libre = 2 * Math.sqrt(Math.max(0, r * r - (yc + 2) * (yc + 2))) - 4;   // ancho del hueco a esa altura
+        var partes = [String(opc.centroTexto)];
+        // Si no cabe dentro del aro, «kWh» y el periodo van en dos renglones
+        if (medir(partes[0], tam, 700) > libre && partes[0].indexOf(" ") > 0) {
+          var corte = partes[0].indexOf(" ");
+          partes = [partes[0].slice(0, corte), partes[0].slice(corte + 1)];
+          yc -= 2;
+          v.setAttribute("y", -6);
+        }
+        partes.forEach(function (t, k) {
+          var s2 = el("text", { x: 0, y: f(yc + k * tam * 1.15), "text-anchor": "middle" }, svg);
+          s2.style.cssText = "font-size:" + tam.toFixed(1) + "px;font-weight:700;fill:var(--gris,#777)";
+          s2.textContent = t;
+        });
       }
     }
+    svg.removeChild(tm);
     // El alto del SVG se ajusta al contenido: nunca se corta ni se amontona
     svg.setAttribute("viewBox", (-W / 2) + " " + f(minY) + " " + W + " " + f(maxY - minY));
   }
