@@ -79,11 +79,51 @@ html[data-modo="oscuro"] .fe-s1{stop-color:#0b2338}
 html[data-modo="oscuro"] .fe-c1{fill:#0d2b34; opacity:.9}
 html[data-modo="oscuro"] .fe-c2{fill:#0a2229; opacity:.95}
 html[data-modo="oscuro"] .fe-c3{fill:#07181d; opacity:1}
-html[data-modo="oscuro"] .fe-nube ellipse{fill:#9fb8d8; opacity:.09}
+html[data-modo="oscuro"] .fe-nube ellipse{fill:#9fb8d8}
+html[data-modo="oscuro"] .fe-nube>g{opacity:.26}
 html[data-modo="oscuro"] .fe-t{fill:color-mix(in srgb,var(--hoja) 18%,var(--cielo)); stroke:var(--hoja); stroke-opacity:.75}
 html[data-modo="oscuro"] .fe-luz{fill:var(--hoja)}
 html[data-modo="oscuro"] .fondo-eolico{--panel-solar-relleno:#10324f; --panel-solar-borde:#5fb4e0; --panel-solar-opacidad:.6}
-.fe-nube ellipse{fill:var(--blanco); opacity:.75}
+/* Cambio de tema: fundido entre dos capas (lo dibuja la tarjeta gráfica). Los colores graduales quedan de reserva */
+html.tema-funde::view-transition-group(root),html.tema-funde::view-transition-old(root),html.tema-funde::view-transition-new(root){animation-duration:.26s; animation-timing-function:ease-out}
+@property --hoja{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --brote{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --cielo{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --agua{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --blanco{syntax:"<color>"; inherits:true; initial-value:#ffffff}
+@property --tinta{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --gris{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --linea{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --menta{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --hoja-hover{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --sobre-hoja{syntax:"<color>"; inherits:true; initial-value:#ffffff}
+@property --tecnm{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --tecnm-suave{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --tecnm-hover{syntax:"<color>"; inherits:true; initial-value:transparent}
+@property --sobre-tecnm{syntax:"<color>"; inherits:true; initial-value:#ffffff}
+html.tema-suave{transition:--hoja .28s ease,
+  --brote .28s ease,
+  --cielo .28s ease,
+  --agua .28s ease,
+  --blanco .28s ease,
+  --tinta .28s ease,
+  --gris .28s ease,
+  --linea .28s ease,
+  --menta .28s ease,
+  --hoja-hover .28s ease,
+  --sobre-hoja .28s ease,
+  --tecnm .28s ease,
+  --tecnm-suave .28s ease,
+  --tecnm-hover .28s ease,
+  --sobre-tecnm .28s ease}
+html.tema-suave .fondo-eolico :is(stop,path,ellipse,circle,rect){transition:fill .28s ease,stroke .28s ease,stop-color .28s ease,opacity .28s ease !important}
+/* Nubes del fondo: la opacidad va en la nube completa para que no se marquen las uniones */
+.fe-nube ellipse{fill:color-mix(in srgb,var(--agua) 27%,#fff)}
+.fe-nube>g{opacity:.95}
+/* Pantallas anchas recortan la parte alta del paisaje: las nubes bajan para quedar a la vista */
+@media (min-aspect-ratio:3/2){.fe-nubes{transform:translateY(130px)}}
+@media (min-aspect-ratio:2/1){.fe-nubes{transform:translateY(200px)}}
+@media (min-aspect-ratio:5/2){.fe-nubes{transform:translateY(270px)}}
 .fe-nube{animation:fe-nube linear infinite}
 .fe-rotor{animation:fe-gira linear infinite}
 @keyframes fe-gira{to{transform:rotate(360deg)}}
@@ -793,7 +833,7 @@ html[data-modo="oscuro"] .modal .salir-borrar{color:#ff9d94; border-color:#ff8f8
 @keyframes llena{from{width:0}}
 @keyframes entra-lado{from{opacity:0; transform:translateX(-14px)}}
 
-/* Botones: elevan, brillan, hacen onda y se aplastan al pulsar */
+/* Botones: elevan, brillan y se aplastan al pulsar */
 button{position:relative; overflow:hidden; transition:background .2s, color .2s, border-color .2s, opacity .25s, box-shadow .25s, transform .2s var(--muelle)}
 button:active:not(:disabled){transform:scale(.96)}
 @media (hover:hover) and (pointer:fine){.acciones button:not(.sec):not(:disabled):hover,.modal .cerrar:hover{transform:translateY(-2px); box-shadow:0 10px 22px color-mix(in srgb,var(--hoja) 38%,transparent)}}
@@ -806,8 +846,6 @@ button.sec{background-image:linear-gradient(var(--menta),var(--menta)); backgrou
 @keyframes listo{0%{transform:scale(.94)}60%{transform:scale(1.05)}}
 #pantalla1 .acciones button{animation:anillo 2.4s ease-out 1.2s 3}
 @keyframes anillo{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--hoja) 55%,transparent)}70%,100%{box-shadow:0 0 0 16px transparent}}
-.onda{position:absolute; border-radius:50%; background:currentColor; opacity:.25; transform:scale(0); pointer-events:none; animation:onda .6s ease-out forwards}
-@keyframes onda{to{transform:scale(1); opacity:0}}
 button svg{transition:transform .3s var(--muelle)}
 @media (hover:hover) and (pointer:fine){button.atras:hover svg{transform:translateX(-4px)}}
 @media (hover:hover) and (pointer:fine){.info:hover svg{transform:rotate(14deg) scale(1.12)}}
@@ -1651,21 +1689,22 @@ html[data-modo="oscuro"][data-oled] .escena .es-nube{fill:#617d8c; stroke:#8fa6b
 #mov-auto[hidden]{display:none}
 /* Pantalla 3 rediseñada: tiempo de uso */
 .contador-flotante{gap:14px; padding:14px 18px; border-radius:20px; background:linear-gradient(135deg,var(--hoja),color-mix(in srgb,var(--hoja) 68%,var(--brote)))}
-.cf-ico{flex:none; width:44px; height:44px; min-width:0; min-height:0; padding:3px; border-radius:50%; background:transparent}
-.cf-ico svg{display:block; width:100%; height:100%}
-.cf-ico:hover{background:transparent}
-.cf-ico:active,.cf-ico.destello{background:rgba(255,255,255,.24)}
-.cf-ico:focus-visible{outline-color:var(--sobre-hoja)}
-.cf-ico circle{fill:rgba(255,255,255,.2)}
-.cf-ico path{fill:var(--sobre-hoja); transform-box:fill-box; transform-origin:center; animation:chispa 4.5s ease-in-out 1s infinite}
-.cf-datos{display:flex; flex:1; min-width:0; align-items:center; justify-content:space-between; gap:inherit}
 .cf-izq{flex:1; min-width:0}
 .cf-sub{display:block; margin-top:2px; font-size:.78rem; font-weight:600; opacity:.92}
 .cf-der small{margin-top:2px}
-@media (max-width:420px){.cf-ico{width:36px; height:36px; padding:3px}}
 .t3-cab{display:flex; align-items:center; justify-content:space-between; gap:16px}
 .t3-cab .lead{margin-bottom:0}
-.t3-reloj{flex:none; width:84px; height:84px}
+.t3-reloj{flex:none; width:84px; height:84px; cursor:pointer; touch-action:pan-y pinch-zoom; -webkit-touch-callout:none; border-radius:50%; outline:none}
+.t3-reloj:focus-visible{outline:2px solid var(--agua); outline-offset:3px}
+.rl-cuerpo{transform-origin:40px 40px}
+.t3-reloj.acelerado .rl-cuerpo{animation:reloj-tiembla .24s linear infinite}
+.t3-reloj.acelerado .rl-aro{fill:var(--menta); stroke:var(--brote)}
+@keyframes reloj-tiembla{
+  0%,100%{transform:translate(-1.3px,1.3px) rotate(-3deg)}
+  27%{transform:translate(2.4px,-1.3px) rotate(3deg)}
+  54%{transform:translate(-2.4px,-1.3px) rotate(-2deg)}
+  78%{transform:translate(1.3px,2.4px) rotate(2deg)}
+}
 .rl-aro{fill:var(--cielo); stroke:var(--hoja); stroke-width:3}
 .rl-marcas{fill:none; stroke:var(--hoja); stroke-width:3; stroke-linecap:round}
 .rl-hora,.rl-min{fill:none; stroke:var(--tinta); stroke-width:3.5; stroke-linecap:round; transform-origin:40px 40px}
@@ -1780,7 +1819,6 @@ html[data-modo="oscuro"][data-oled] .escena .es-nube{fill:#617d8c; stroke:#8fa6b
   .barra-centro > .en-barra{opacity:1; visibility:visible; pointer-events:auto; transform:none;
     transition:opacity .4s ease .12s, transform .6s cubic-bezier(.34,1.4,.5,1) .12s, visibility 0s}
   .barra-centro .contador-flotante{position:relative; top:auto; max-width:760px; min-height:70px; margin:0; padding:8px 20px; gap:14px; border-radius:18px; box-shadow:0 6px 18px rgba(13,43,42,.22)}
-  .barra-centro .cf-ico{width:40px; height:40px}
   .barra-centro .cf-izq{display:grid; grid-template-columns:auto 1fr; align-items:baseline; column-gap:12px}
   .barra-centro .cf-etq{grid-column:1 / -1; font-size:.74rem; line-height:1.2}
   .barra-centro .contador-flotante .cf-costo{font-size:1.65rem}
@@ -1875,7 +1913,6 @@ html[data-modo="oscuro"][data-oled] .escena .es-nube{fill:#617d8c; stroke:#8fa6b
   header.barra.con-extra{padding-inline:16px; gap:12px}
   header.barra.con-extra .progreso,header.barra.con-extra .marca span,header.barra.con-extra .ajustes-etiqueta,header.barra.con-extra button.atras .txt{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
   header.barra.con-extra button.info{width:44px; min-width:0; padding:0}
-  header.barra.con-extra .barra-centro .cf-ico{display:none}
   header.barra.con-extra .barra-centro .dock-resultados .pestanas .opt{font-size:.76rem}
 }
 </style>
@@ -2014,6 +2051,8 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
 <g class="fe-nube" style="animation-duration:130s;animation-delay:-20s"><g transform="translate(0 70) scale(1)"><ellipse cx="60" cy="30" rx="60" ry="18"/><ellipse cx="100" cy="18" rx="38" ry="20"/><ellipse cx="35" cy="20" rx="30" ry="16"/></g></g>
 <g class="fe-nube" style="animation-duration:170s;animation-delay:-90s"><g transform="translate(0 150) scale(0.7)"><ellipse cx="60" cy="30" rx="60" ry="18"/><ellipse cx="100" cy="18" rx="38" ry="20"/><ellipse cx="35" cy="20" rx="30" ry="16"/></g></g>
 <g class="fe-nube" style="animation-duration:150s;animation-delay:-60s"><g transform="translate(0 40) scale(0.55)"><ellipse cx="60" cy="30" rx="60" ry="18"/><ellipse cx="100" cy="18" rx="38" ry="20"/><ellipse cx="35" cy="20" rx="30" ry="16"/></g></g>
+<g class="fe-nube" style="animation-duration:145s;animation-delay:-112s"><g transform="translate(0 105) scale(0.85)"><ellipse cx="60" cy="30" rx="60" ry="18"/><ellipse cx="100" cy="18" rx="38" ry="20"/><ellipse cx="35" cy="20" rx="30" ry="16"/></g></g>
+<g class="fe-nube" style="animation-duration:160s;animation-delay:-135s"><g transform="translate(0 55) scale(0.7)"><ellipse cx="60" cy="30" rx="60" ry="18"/><ellipse cx="100" cy="18" rx="38" ry="20"/><ellipse cx="35" cy="20" rx="30" ry="16"/></g></g>
 </g>
 <path class="fe-c1" d="M0 470 C150 430 300 440 450 465 S750 500 900 455 S1120 430 1200 450 V700 H0Z"/>
 <g transform="translate(70 468) scale(0.55)" opacity="0.5"><path class="fe-t" d="M-2.6 0 L-1.3 -120 L1.3 -120 L2.6 0Z"/><circle class="fe-luz" cx="0" cy="-131" r="2.6" style="animation-delay:0.0s"/><g transform="translate(0 -120)"><g class="fe-rotor" style="animation-duration:13s;animation-delay:-2s"><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(120)"/><path class="fe-t" d="M0 0 L-2.4 -8 L-1.1 -62 L0 -64 L1.1 -62 L2.4 -8Z" transform="rotate(240)"/><circle class="fe-t" r="3.6"/></g></g></g>
@@ -2311,19 +2350,16 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
 
   <!-- Pantalla 3: Tiempo de uso con costo en vivo -->
   <section id="pantalla3" class="pantalla" aria-labelledby="t3">
-    <div class="contador-flotante" id="contador-flot">
-      <button class="cf-ico" id="cf-pulso" type="button" aria-label="Destello del medidor"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15"/><path d="M18 5 9 18h6l-1 9 9-13h-6z"/></svg></button>
-      <div class="cf-datos" role="status" aria-live="polite">
-        <div class="cf-izq"><span class="cf-etq">Costo estimado al bimestre</span><span class="cf-costo" id="cf-costo">$0.00</span><small class="cf-sub" id="cf-mes"></small></div>
-        <div class="cf-der"><span id="cf-kwh">0.00 kWh al bimestre</span><small id="cf-tarifa"></small><small id="cf-dias">Bimestre de 60 días</small></div>
-      </div>
+    <div class="contador-flotante" id="contador-flot" role="status" aria-live="polite">
+      <div class="cf-izq"><span class="cf-etq">Costo estimado al bimestre</span><span class="cf-costo" id="cf-costo">$0.00</span><small class="cf-sub" id="cf-mes"></small></div>
+      <div class="cf-der"><span id="cf-kwh">0.00 kWh al bimestre</span><small id="cf-tarifa"></small><small id="cf-dias">Bimestre de 60 días</small></div>
     </div>
     <header class="t3-cab">
       <div>
         <h2 id="t3" tabindex="-1">Tiempo de uso</h2>
         <p class="lead">Mueve la barra, usa − y + o escribe las horas y los minutos de cada aparato. El costo se calcula al bimestre.</p>
       </div>
-      <svg class="t3-reloj" viewBox="0 0 80 80" aria-hidden="true"><circle class="rl-aro" cx="40" cy="40" r="34"/><path class="rl-marcas" d="M40 11v5M69 40h-5M40 69v-5M11 40h5"/><path class="rl-hora" d="M40 40V25"/><path class="rl-min" d="M40 40V17"/><circle class="rl-c" cx="40" cy="40" r="3.5"/></svg>
+      <svg class="t3-reloj" viewBox="0 0 80 80" role="button" tabindex="0" aria-label="Reloj. Mantén pulsado o presiona Intro para acelerarlo."><g class="rl-cuerpo"><circle class="rl-aro" cx="40" cy="40" r="34"/><path class="rl-marcas" d="M40 11v5M69 40h-5M40 69v-5M11 40h5"/><path class="rl-hora" d="M40 40V25"/><path class="rl-min" d="M40 40V17"/><circle class="rl-c" cx="40" cy="40" r="3.5"/></g></svg>
     </header>
     <div class="panel-modo">
       <div class="pm-txt">
@@ -2669,7 +2705,7 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
             </ul>
           </details>
           <div class="ajuste-seccion" id="actualizacion-instalada" hidden>
-            <p>Versión actual <strong id="version-app">V1.88</strong></p>
+            <p>Versión actual <strong id="version-app">V1.96</strong></p>
             <div class="ajuste-acciones">
               <button type="button" class="ajuste-accion sec" id="comprobar-actualizacion"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg><span class="bt">Comprobar actualización</span></button>
             </div>
@@ -2718,7 +2754,7 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
     </details>
   </section>
 
-  <footer>Proyecto Eficiencia V1.88 · ODS 7 de la Agenda 2030</footer>
+  <footer>Proyecto Eficiencia V1.96 · ODS 7 de la Agenda 2030</footer>
 </main>
 
 <dialog id="reporte-dialogo" aria-labelledby="reporte-titulo">
@@ -6641,7 +6677,48 @@ var TIPS_CAT = {
   }
   function esOscuro() { return apariencia.auto ? !!(mqOscuro && mqOscuro.matches) : apariencia.manual === "oscuro"; }
 
+  // Transición al cambiar de color, modo oscuro u OLED: no espera a la anterior, parte del color que se ve
+  var finTema = 0, fundidoTema = null;
+  // Un toque durante el fundido lo termina al instante y llega al control que está debajo.
+  document.addEventListener("click", function (e) {
+    var actual = fundidoTema;
+    if (!actual || !e.isTrusted || e.target !== document.documentElement) { return; }
+    e.stopPropagation();
+    actual.skipTransition();
+    function entregar() {
+      var debajo = document.elementFromPoint(e.clientX, e.clientY);
+      var control = debajo && debajo.closest("button, summary, a[href], input, label, [role='option']");
+      if (control) { pulsoHaptico(e, 12); control.click(); }
+    }
+    actual.finished.then(entregar, entregar);
+  }, true);
+
   function aplicarApariencia(animarFondo) {
+    var raiz = document.documentElement, oscuro = esOscuro();
+    var cambia = raiz.getAttribute("data-tema") !== apariencia.tema ||
+      raiz.getAttribute("data-modo") !== (oscuro ? "oscuro" : "claro") ||
+      raiz.hasAttribute("data-oled") !== (oscuro && apariencia.oled);
+    if (cambia) {
+      clearTimeout(finTema);
+      var suave = !movimientoReducido() && !document.hidden;
+      if (suave && document.startViewTransition) {
+        raiz.classList.add("tema-funde");
+        var nueva = fundidoTema = document.startViewTransition(function () { pintarApariencia(animarFondo); });
+        var limpiar = function () { if (fundidoTema === nueva) { fundidoTema = null; raiz.classList.remove("tema-funde"); } };
+        nueva.ready.catch(function () { /* Otro cambio la interrumpió: el tema ya queda aplicado. */ });
+        nueva.finished.then(limpiar, limpiar);
+        return;
+      }
+      raiz.classList.toggle("tema-suave", suave);
+      if (suave) {
+        void getComputedStyle(raiz).transitionDuration;   // activa la transición antes de cambiar los colores
+        finTema = setTimeout(function () { raiz.classList.remove("tema-suave"); }, 400);
+      }
+    }
+    pintarApariencia(animarFondo);
+  }
+
+  function pintarApariencia(animarFondo) {
     var raiz = document.documentElement, oscuro = esOscuro();
     raiz.setAttribute("data-tema", apariencia.tema);
     raiz.setAttribute("data-modo", oscuro ? "oscuro" : "claro");
@@ -6652,8 +6729,11 @@ var TIPS_CAT = {
     $("sw-haptica").setAttribute("aria-checked", String(apariencia.haptica));
     var meta = $("meta-tema");
     if (meta) {
-      var estilos = getComputedStyle(raiz);
-      var colorBarra = estilos.getPropertyValue("--barra-sistema").trim() || estilos.getPropertyValue("--hoja").trim();
+      // El color final se lee de una muestra nueva: el de la raíz todavía puede estar en transición.
+      var muestra = document.body.appendChild(document.createElement("i"));
+      muestra.hidden = true; muestra.setAttribute("data-tema", apariencia.tema);
+      var colorBarra = getComputedStyle(raiz).getPropertyValue("--barra-sistema").trim() || getComputedStyle(muestra).getPropertyValue("--hoja").trim();
+      muestra.remove();
       meta.setAttribute("content", colorBarra || "#0f7a4f");
     }
     $("sw-auto").setAttribute("aria-checked", apariencia.auto ? "true" : "false");
@@ -6907,7 +6987,7 @@ var TIPS_CAT = {
       e.returnValue = "";
     }
   });
-  // ---------- Animaciones: onda al pulsar e indicador deslizante de las píldoras ----------
+  // ---------- Interacciones: vibración e indicador deslizante de las píldoras ----------
   var ultimoPulsoHaptico = -Infinity;
   function pulsoHaptico(e, duracion, intervalo) {
     if (!apariencia.haptica || e.pointerType !== "touch" || typeof navigator.vibrate !== "function") { return; }
@@ -6916,37 +6996,11 @@ var TIPS_CAT = {
       if (navigator.vibrate(duracion)) { ultimoPulsoHaptico = e.timeStamp; return true; }
     } catch (err) { /* La vibración depende del navegador y del dispositivo. */ }
   }
-  function onda(b, x, y) {
-    var r = b.getBoundingClientRect(), d = Math.max(r.width, r.height) * 2, s = document.createElement("span");
-    s.className = "onda"; s.setAttribute("aria-hidden", "true");
-    s.style.width = s.style.height = d + "px";
-    s.style.left = (x - r.left - d / 2) + "px"; s.style.top = (y - r.top - d / 2) + "px";
-    b.appendChild(s);
-    s.addEventListener("animationend", function () { s.remove(); });
-    setTimeout(function () { if (s.parentNode) { s.remove(); } }, 900);
-  }
-  function botonOnda(e) {
-    var b = e.target.closest && e.target.closest("button, .panel summary, .dd-lista li");
-    return (!REDUCIR && b && !b.disabled && !b.classList.contains("switch")) ? b : null;
-  }
-  document.addEventListener("pointerdown", function (e) {
-    var b = botonOnda(e);
-    if (b && e.button === 0) { onda(b, e.clientX, e.clientY); }
-  }, { passive: true });
   document.addEventListener("click", function (e) {
     var control = e.target.closest && e.target.closest("button, .panel summary, [role='option']");
     if (control && !control.disabled && control.getAttribute("aria-disabled") !== "true") {
-      pulsoHaptico(e, control.matches(".principal, #inicio-comenzar, #guardar-res, #reporte-pdf, #cf-pulso") ? 20 : 12);
+      pulsoHaptico(e, control.matches(".principal, #inicio-comenzar, #guardar-res, #reporte-pdf") ? 20 : 12);
     }
-    var b = botonOnda(e);
-    if (b && e.detail === 0) { var r = b.getBoundingClientRect(); onda(b, r.left + r.width / 2, r.top + r.height / 2); }   // activado con teclado
-  });
-  var quitarDestelloMedidor;
-  $("cf-pulso").addEventListener("click", function (e) {
-    var boton = e.currentTarget;
-    clearTimeout(quitarDestelloMedidor);
-    boton.classList.add("destello");
-    quitarDestelloMedidor = setTimeout(function () { boton.classList.remove("destello"); }, 240);
   });
   (function () {
     if (!window.ResizeObserver || !window.MutationObserver) { return; }
@@ -7099,57 +7153,107 @@ var TIPS_CAT = {
   var escenaHero = document.querySelector(".escena");
   if (REDUCIR && escenaHero && escenaHero.pauseAnimations) { escenaHero.pauseAnimations(); }
 
-  (function () {
+  function gestoSostenido(elemento, pantalla, activar, desactivar) {
     var pulsacion = null, apagar;
-    function apagarLuces() { escenaHero.classList.remove("encendida", "sostenida"); }
-    function encender(sostenida) {
-      clearTimeout(apagar);
-      escenaHero.classList.add("encendida");
-      escenaHero.classList.toggle("sostenida", !!sostenida);
-      if (!sostenida) { apagar = setTimeout(apagarLuces, 1600); }
-    }
+    var TRAMO = 10000;   // máximo que admite el navegador por vibración
     function cancelar(e) {
-      if (!pulsacion || (e && e.pointerId !== pulsacion.id)) { return; }
-      clearTimeout(pulsacion.temporizador);
-      clearInterval(pulsacion.vibracion);
-      if (pulsacion.vibro) {
+      if (!pulsacion || (e && e.pointerId !== undefined && e.pointerId !== pulsacion.id)) { return; }
+      var actual = pulsacion;
+      pulsacion = null;
+      clearTimeout(actual.temporizador);
+      clearTimeout(actual.vibracion);
+      if (actual.vibro) {
         try { navigator.vibrate(0); } catch (err) { /* La última vibración termina por sí sola. */ }
       }
-      if (pulsacion.activada) { apagarLuces(); }
-      pulsacion = null;
+      if (actual.activada) { desactivar(); }
     }
-    escenaHero.addEventListener("pointerdown", function (e) {
+    // Una sola vibración larga que se renueva justo antes de terminar: sin cortes cada segundo.
+    function sostenerVibracion() {
+      if (!pulsacion) { return; }
+      if (pantallaActual !== pantalla || document.hidden || !apariencia.haptica) { cancelar(); return; }
+      try { if (navigator.vibrate(TRAMO)) { pulsacion.vibro = true; } } catch (err) { /* Depende del dispositivo. */ }
+      pulsacion.vibracion = setTimeout(sostenerVibracion, TRAMO - 120);
+    }
+    elemento.addEventListener("pointerdown", function (e) {
       if (e.button !== 0 || !e.isPrimary) { return; }
+      cancelar();
+      var tactil = e.pointerType === "touch";
       pulsacion = { id: e.pointerId, x: e.clientX, y: e.clientY, tipo: e.pointerType };
       pulsacion.temporizador = setTimeout(function () {
         pulsacion.activada = true;
-        encender(true);
-        if (e.pointerType !== "touch" || !apariencia.haptica || typeof navigator.vibrate !== "function") { return; }
-        function sostenerVibracion() {
-          if (pantallaActual !== 1 || document.hidden || !apariencia.haptica) { cancelar(); return; }
-          if (pulsoHaptico(e, 1200)) { pulsacion.vibro = true; }
-        }
-        pulsacion.vibracion = setInterval(sostenerVibracion, 1000);
-        sostenerVibracion();
+        clearTimeout(apagar);
+        try { elemento.setPointerCapture(pulsacion.id); } catch (err) { /* El toque ya queda ligado al elemento. */ }
+        activar(true);
+        if (tactil && apariencia.haptica && typeof navigator.vibrate === "function") { sostenerVibracion(); }
       }, 650);
     });
-    escenaHero.addEventListener("pointermove", function (e) {
-      if (pulsacion && Math.hypot(e.clientX - pulsacion.x, e.clientY - pulsacion.y) > 10) { cancelar(e); }
+    // Antes de activarse, deslizar el dedo desplaza la página; ya activado, el temblor del dedo no lo corta.
+    elemento.addEventListener("pointermove", function (e) {
+      if (pulsacion && !pulsacion.activada && Math.hypot(e.clientX - pulsacion.x, e.clientY - pulsacion.y) > (pulsacion.tipo === "touch" ? 16 : 10)) { cancelar(e); }
     });
-    escenaHero.addEventListener("pointerup", cancelar);
-    escenaHero.addEventListener("pointercancel", cancelar);
-    escenaHero.addEventListener("pointerleave", cancelar);
+    elemento.addEventListener("touchmove", function (e) {
+      if (pulsacion && pulsacion.activada && e.cancelable) { e.preventDefault(); }
+    }, { passive: false });
+    elemento.addEventListener("pointerup", cancelar);
+    elemento.addEventListener("pointercancel", cancelar);
+    elemento.addEventListener("pointerleave", function (e) { if (pulsacion && !pulsacion.activada) { cancelar(e); } });
+    window.addEventListener("pointerup", cancelar);
     window.addEventListener("blur", function () { cancelar(); });
     document.addEventListener("visibilitychange", function () { if (document.hidden) { cancelar(); } });
-    escenaHero.addEventListener("contextmenu", function (e) {
+    elemento.addEventListener("contextmenu", function (e) {
       if (e.pointerType === "touch" || (pulsacion && pulsacion.tipo === "touch")) { e.preventDefault(); }
     });
-    escenaHero.addEventListener("keydown", function (e) {
+    elemento.addEventListener("dragstart", function (e) { e.preventDefault(); });
+    elemento.addEventListener("keydown", function (e) {
       if (e.key !== "Enter" && e.key !== " ") { return; }
       e.preventDefault();
-      if (!e.repeat) { encender(); }
+      if (e.repeat || (pulsacion && pulsacion.activada)) { return; }
+      clearTimeout(apagar);
+      activar(false);
+      apagar = setTimeout(desactivar, 1600);
     });
-  })();
+  }
+  var finChispas;
+  gestoSostenido(escenaHero, 1, function (sostenida) {
+    clearTimeout(finChispas);
+    escenaHero.classList.add("encendida");
+    escenaHero.classList.toggle("sostenida", sostenida);
+  }, function () {
+    escenaHero.classList.remove("encendida");
+    finChispas = setTimeout(function () { escenaHero.classList.remove("sostenida"); }, 500);
+  });
+
+  var relojTiempo = document.querySelector(".t3-reloj");
+  // Las dos manecillas avanzan al mismo ritmo relativo (12 a 1) y aceleran y frenan de forma gradual.
+  var RITMO_RELOJ = 16, ritmoReloj = 1, metaReloj = 1, cuadroReloj = 0, antesReloj = 0;
+  function animacionesReloj() {
+    var todas = [];
+    relojTiempo.querySelectorAll(".rl-hora, .rl-min").forEach(function (mano) {
+      if (mano.getAnimations) { todas = todas.concat(mano.getAnimations()); }
+    });
+    return todas;
+  }
+  function moverReloj(ahora) {
+    var dt = Math.min(50, Math.max(0, ahora - antesReloj)), manos = animacionesReloj();
+    antesReloj = ahora;
+    ritmoReloj += (metaReloj - ritmoReloj) * (1 - Math.exp(-dt / (metaReloj > 1 ? 280 : 220)));
+    var termino = !manos.length || (metaReloj === 1 && ritmoReloj < 1.05);
+    manos.forEach(function (a) {
+      a.currentTime = (a.currentTime || 0) + dt * ritmoReloj;
+      if (termino) { a.play(); }
+    });
+    if (termino) { ritmoReloj = 1; cuadroReloj = 0; return; }
+    cuadroReloj = requestAnimationFrame(moverReloj);
+  }
+  function ajustarReloj(acelerado) {
+    relojTiempo.classList.toggle("acelerado", acelerado);
+    metaReloj = acelerado ? RITMO_RELOJ : 1;
+    if (cuadroReloj || !animacionesReloj().length) { return; }
+    animacionesReloj().forEach(function (a) { a.pause(); });
+    antesReloj = performance.now();
+    cuadroReloj = requestAnimationFrame(moverReloj);
+  }
+  gestoSostenido(relojTiempo, 3, function () { ajustarReloj(true); }, function () { ajustarReloj(false); });
 
   // Paneles solares: campos de Ajustes con límites; lo escrito se aplica al instante si es válido
   (function () {
