@@ -110,7 +110,6 @@ header.barra{
 .barra-der{display:flex; align-items:center; gap:10px; flex:none}
 .estado-conexion:empty{position:absolute}
 .estado-conexion:not(:empty){padding:4px 9px; border:1px solid var(--linea); border-radius:999px; background:var(--menta); color:var(--tinta); font-size:.75rem; font-weight:700; white-space:nowrap}
-@media (max-width:480px){.estado-conexion:not(:empty) + .progreso{display:none}}
 .info{
   width:38px; height:38px; min-width:0; min-height:0; padding:0; border-radius:50%;
   background:transparent; color:var(--hoja); display:flex; align-items:center; justify-content:center;
@@ -1918,6 +1917,40 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
 #cuotas-especiales[hidden], #campo-temporada[hidden] { display:none; }
 #cuotas-especiales { margin-top:12px; }
 #cuotas-especiales input { width:100%; min-width:0; }
+/* Teléfono: sin conexión se avisa al centro de la barra con un icono amarillo y su texto */
+@media (max-width:767px), (max-height:500px) and (pointer:coarse){
+  header.barra{position:relative}
+  header.barra .estado-conexion:not(:empty){position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:2px; padding:0; border:0; border-radius:0; background:none; color:#a97700; font-size:.68rem; font-weight:800; line-height:1.15; white-space:nowrap; pointer-events:none}
+  html[data-modo="oscuro"] header.barra .estado-conexion:not(:empty){color:#f2b200}
+  header.barra .estado-conexion:not(:empty)::before{content:""; width:29px; height:29px; background:#f2b200; -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 48 48%27%3E%3Cmask id=%27x%27 maskUnits=%27userSpaceOnUse%27 x=%270%27 y=%270%27 width=%2748%27 height=%2748%27%3E%3Cpath fill=%27white%27 d=%27M0 0h48v48H0z%27/%3E%3Cpath stroke=%27black%27 stroke-width=%272.4%27 stroke-linecap=%27round%27 d=%27M21.6 28.2l4.8 4.8M26.4 28.2l-4.8 4.8%27/%3E%3C/mask%3E%3Ccircle cx=%2724%27 cy=%2724%27 r=%2722%27 fill=%27none%27 stroke=%27black%27 stroke-width=%273%27/%3E%3Cpath fill=%27none%27 stroke=%27black%27 stroke-width=%274.2%27 stroke-linecap=%27round%27 d=%27M12.85 18.56a15 15 0 0 1 22.3 0M17.68 22.91a8.5 8.5 0 0 1 12.64 0%27/%3E%3Ccircle cx=%2724%27 cy=%2730.6%27 r=%276%27 mask=%27url%28%23x%29%27/%3E%3C/svg%3E") center/contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 48 48%27%3E%3Cmask id=%27x%27 maskUnits=%27userSpaceOnUse%27 x=%270%27 y=%270%27 width=%2748%27 height=%2748%27%3E%3Cpath fill=%27white%27 d=%27M0 0h48v48H0z%27/%3E%3Cpath stroke=%27black%27 stroke-width=%272.4%27 stroke-linecap=%27round%27 d=%27M21.6 28.2l4.8 4.8M26.4 28.2l-4.8 4.8%27/%3E%3C/mask%3E%3Ccircle cx=%2724%27 cy=%2724%27 r=%2722%27 fill=%27none%27 stroke=%27black%27 stroke-width=%273%27/%3E%3Cpath fill=%27none%27 stroke=%27black%27 stroke-width=%274.2%27 stroke-linecap=%27round%27 d=%27M12.85 18.56a15 15 0 0 1 22.3 0M17.68 22.91a8.5 8.5 0 0 1 12.64 0%27/%3E%3Ccircle cx=%2724%27 cy=%2730.6%27 r=%276%27 mask=%27url%28%23x%29%27/%3E%3C/svg%3E") center/contain no-repeat}
+  header.barra:has(.estado-conexion:not(:empty)) .marca span{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+}
+@media (max-width:359px){ header.barra .estado-conexion:not(:empty){font-size:.6rem} }
+/* Teléfonos: sin conexión el avance se acorta un poco para dejar libre el centro */
+@media (max-width:413px){
+  header.barra:has(.estado-conexion:not(:empty)) .progreso{gap:3px}
+  header.barra:has(.estado-conexion:not(:empty)) .progreso span{width:11px}
+  header.barra:has(.estado-conexion:not(:empty)) .progreso span.actual{width:20px}
+}
+/* Botones de ajustes y tarifa: icono junto al texto; en teléfono ocupan todo el ancho */
+:is(.ajuste-tarjeta,.panel-tarifa) .ajuste-accion:not([hidden]){display:inline-flex; align-items:center; justify-content:center; gap:10px}
+.ajuste-accion .bi{width:20px; height:20px; flex:none}
+.ajuste-accion .bt{min-width:0}
+.ajuste-accion .giro{display:none}
+.ajuste-accion.cargando .bi{display:none}
+.ajuste-accion.cargando .giro{display:block; animation:gira .8s linear infinite}
+:is(.ajuste-tarjeta,.panel-tarifa) .ajuste-accion.sec.cargando:disabled{opacity:1; cursor:progress; background:var(--menta)}
+@media (max-width:767px){
+  :is(.ajuste-tarjeta,.panel-tarifa) .ajuste-acciones{flex-direction:column; align-items:stretch; gap:10px}
+  :is(.ajuste-tarjeta,.panel-tarifa) .ajuste-accion:not([hidden]){display:flex; width:100%; min-height:50px; padding-inline:10px; font-size:.92rem; line-height:1.25; text-wrap:balance}
+  .panel-tarifa .ajuste-acciones{margin-bottom:6px}
+  #campo-temporada{margin-top:14px}
+  /* Píldoras a todo el ancho; si la letra del teléfono es grande, el texto pasa a dos líneas en vez de salirse */
+  #pantalla3 #pildora-modo{width:100%; align-self:stretch}
+  #pantalla3 #pildora-modo .opt{flex:1 1 0; min-height:46px; font-size:.9rem; white-space:normal; line-height:1.15; gap:7px}
+  #pantalla3 #pildora-modo .opt svg{width:17px; height:17px}
+  #pildora-temporada .opt{flex:1 1 auto; min-height:44px; white-space:normal; line-height:1.15; text-align:center}
+}
 </style>
 </head>
 <body>
@@ -2308,8 +2341,8 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
               <p class="ayuda" id="ayuda-region"></p>
               <p class="ayuda" id="ayuda-temporada"></p>
               <div class="ajuste-acciones">
-                <button type="button" class="ajuste-accion sec" data-detectar-tarifa>Sugerir por región</button>
-                <button type="button" class="ajuste-accion" data-aplicar-tarifa hidden>Usar la tarifa sugerida</button>
+                <button type="button" class="ajuste-accion sec" data-detectar-tarifa><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><svg class="bi giro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" opacity=".22"/><path d="M12 3a9 9 0 0 1 9 9"/></svg><span class="bt">Sugerir por región</span></button>
+                <button type="button" class="ajuste-accion" data-aplicar-tarifa hidden><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg><span class="bt">Usar la tarifa sugerida</span></button>
               </div>
               <p class="ayuda" data-estado-ubicacion role="status"></p>
             </div>
@@ -2485,22 +2518,22 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
             <div><b>Reducir movimiento</b><p id="estado-movimiento"></p></div>
             <button type="button" class="switch" id="sw-mov" role="switch" aria-checked="false" aria-label="Reducir movimiento" onclick="alternarMovimiento()"><span class="knob"></span></button>
           </div>
-          <button type="button" class="ajuste-accion sec" id="mov-auto" onclick="seguirMovimientoDelSistema()" hidden>Usar el ajuste de mi dispositivo</button>
+          <button type="button" class="ajuste-accion sec" id="mov-auto" onclick="seguirMovimientoDelSistema()" hidden><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M10 18h4"/></svg><span class="bt">Usar el ajuste de mi dispositivo</span></button>
         </section>
         <section class="ajuste-tarjeta" aria-labelledby="t-datos-locales">
           <div class="ajuste-seccion">
             <h3 id="t-datos-locales">Configuraciones locales</h3>
             <p>Tus aparatos y horarios se guardan en este navegador.</p>
             <div class="ajuste-acciones">
-              <button type="button" class="ajuste-accion sec" onclick="abrirConfiguraciones()">Mis configuraciones</button>
+              <button type="button" class="ajuste-accion sec" onclick="abrirConfiguraciones()"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg><span class="bt">Mis configuraciones</span></button>
             </div>
           </div>
           <div class="ajuste-seccion">
             <h3>Respaldo</h3>
             <p>Descarga una copia de tus configuraciones para recuperarlas en otro dispositivo o navegador.</p>
             <div class="ajuste-acciones">
-              <button type="button" class="ajuste-accion sec" id="exportar-configuraciones">Exportar configuraciones</button>
-              <button type="button" class="ajuste-accion sec" id="importar-configuraciones">Restaurar respaldo</button>
+              <button type="button" class="ajuste-accion sec" id="exportar-configuraciones"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 20h16"/></svg><span class="bt">Exportar configuraciones</span></button>
+              <button type="button" class="ajuste-accion sec" id="importar-configuraciones"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg><span class="bt">Restaurar respaldo</span></button>
               <input type="file" id="archivo-configuraciones" accept=".html,.json,text/html,application/json" hidden>
             </div>
             <p id="estado-respaldo" role="status"></p>
@@ -2514,7 +2547,7 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
             <button type="button" class="opt" id="uso-def-manual" aria-pressed="false" onclick="elegirUsoDefecto('manual')">Manual</button>
           </div>
           <div class="ajuste-acciones">
-            <button type="button" class="ajuste-accion sec" id="uso-aplicar-lista" onclick="aplicarUsoALista()">Aplicar a mi lista actual</button>
+            <button type="button" class="ajuste-accion sec" id="uso-aplicar-lista" onclick="aplicarUsoALista()"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M3 6l1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/></svg><span class="bt">Aplicar a mi lista actual</span></button>
           </div>
           <p id="estado-uso-def" role="status"></p>
         </section>
@@ -2526,7 +2559,7 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
             <label for="panel-horas">Horas de sol pico al día <span class="panel-in"><input type="number" id="panel-horas" min="1" max="9" step="0.5" inputmode="decimal"><span class="unid">h</span></span></label>
             <label for="panel-rend">Rendimiento del sistema <span class="panel-in"><input type="number" id="panel-rend" min="50" max="100" step="1" inputmode="numeric"><span class="unid">%</span></span></label>
           </div>
-          <div class="ajuste-acciones"><button type="button" class="ajuste-accion sec" id="panel-restablecer">Restablecer valores</button></div>
+          <div class="ajuste-acciones"><button type="button" class="ajuste-accion sec" id="panel-restablecer"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg><span class="bt">Restablecer valores</span></button></div>
           <p id="panel-estado" role="status"></p>
         </section>
       </div>
@@ -2544,8 +2577,8 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
             </div>
             <p>Si lo solicitas, usamos tu ubicación para sugerir una tarifa. Confirma la tarifa con tu recibo.</p>
             <div class="ajuste-acciones">
-              <button type="button" class="ajuste-accion sec" data-detectar-tarifa>Sugerir por ubicación</button>
-              <button type="button" class="ajuste-accion" data-aplicar-tarifa hidden>Usar la tarifa sugerida</button>
+              <button type="button" class="ajuste-accion sec" data-detectar-tarifa><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><svg class="bi giro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" opacity=".22"/><path d="M12 3a9 9 0 0 1 9 9"/></svg><span class="bt">Sugerir por ubicación</span></button>
+              <button type="button" class="ajuste-accion" data-aplicar-tarifa hidden><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg><span class="bt">Usar la tarifa sugerida</span></button>
             </div>
             <p data-estado-ubicacion role="status"></p>
           </div>
@@ -2553,8 +2586,8 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
             <h3>Cuotas de CFE</h3>
             <p>¿CFE publicó cuotas nuevas y la tabla sigue vieja? Descarga la plantilla, escribe el periodo (AAAA-MM) y los precios por kWh de cada bloque, y cárgala aquí. Se valida antes de usarse y no se sube a ningún servidor.</p>
             <div class="ajuste-acciones">
-              <button type="button" class="ajuste-accion sec" id="cfe-archivo">Cargar cuotas desde un archivo</button>
-              <button type="button" class="ajuste-accion sec" id="cfe-plantilla">Descargar plantilla</button>
+              <button type="button" class="ajuste-accion sec" id="cfe-archivo"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6m-3 3 3-3 3 3"/></svg><span class="bt">Cargar cuotas desde un archivo</span></button>
+              <button type="button" class="ajuste-accion sec" id="cfe-plantilla"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 20h16"/></svg><span class="bt">Descargar plantilla</span></button>
               <input type="file" id="cfe-archivo-input" accept="application/json,.json" hidden>
             </div>
             <p id="cfe-estado-aj" role="status"></p>
@@ -2574,8 +2607,8 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
         <section class="ajuste-tarjeta" aria-labelledby="t-instalar">
           <h3 id="t-instalar">Instalar la app</h3>
           <p id="estado-instalacion" role="status">Puedes abrir la calculadora desde un icono en tu pantalla de inicio o escritorio.</p>
-          <button type="button" class="ajuste-accion" id="instalar-app" hidden>Instalar app</button>
-          <a class="ajuste-accion ajuste-accion-enlace sec" id="instalacion-sitio" href="https://zomavilla.github.io/calculadora-energetica/" target="_blank" rel="noopener noreferrer" hidden>Abrir sitio para instalar</a>
+          <button type="button" class="ajuste-accion" id="instalar-app" hidden><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M12 7v7m-3-3 3 3 3-3M10 18h4"/></svg><span class="bt">Instalar app</span></button>
+          <a class="ajuste-accion ajuste-accion-enlace sec" id="instalacion-sitio" href="https://zomavilla.github.io/calculadora-energetica/" target="_blank" rel="noopener noreferrer" hidden><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg><span class="bt">Abrir sitio para instalar</span></a>
           <details id="instalacion-manual">
             <summary>Cómo instalar desde el navegador</summary>
             <ul>
@@ -2584,6 +2617,13 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
               <li><b>Computadora.</b> Usa el botón de instalación de la barra de direcciones o busca la opción para instalar el sitio como aplicación en el menú del navegador.</li>
             </ul>
           </details>
+          <div class="ajuste-seccion" id="actualizacion-instalada" hidden>
+            <p>Versión actual <strong id="version-app">V1.67</strong></p>
+            <div class="ajuste-acciones">
+              <button type="button" class="ajuste-accion sec" id="comprobar-actualizacion"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg><span class="bt">Comprobar actualización</span></button>
+            </div>
+            <p id="estado-actualizacion" role="status"></p>
+          </div>
         </section>
         <section class="ajuste-tarjeta" aria-labelledby="t-proyecto">
           <h3 id="t-proyecto">Acerca de Proyecto Eficiencia</h3>
@@ -2627,7 +2667,7 @@ html[data-modo="oscuro"][data-oled] .fe-c3 { fill:color-mix(in srgb,var(--hoja) 
     </details>
   </section>
 
-  <footer>Proyecto Eficiencia V1.61 · ODS 7 de la Agenda 2030</footer>
+  <footer>Proyecto Eficiencia V1.67 · ODS 7 de la Agenda 2030</footer>
 </main>
 
 <dialog id="reporte-dialogo" aria-labelledby="reporte-titulo">
@@ -4119,7 +4159,14 @@ var TIPS_CAT = {
   ];
 
   function pintarSugerenciaTarifa(mensaje, buscando) {
-    document.querySelectorAll("[data-detectar-tarifa]").forEach(function (boton) { boton.disabled = !!buscando; });
+    document.querySelectorAll("[data-detectar-tarifa]").forEach(function (boton) {
+      var etiqueta = boton.querySelector(".bt");
+      if (!boton.dataset.texto) { boton.dataset.texto = etiqueta.textContent; }
+      boton.disabled = !!buscando;
+      boton.classList.toggle("cargando", !!buscando);
+      boton.setAttribute("aria-busy", buscando ? "true" : "false");
+      etiqueta.textContent = buscando ? "Obteniendo ubicación…" : boton.dataset.texto;
+    });
     document.querySelectorAll("[data-aplicar-tarifa]").forEach(function (boton) { boton.hidden = !tarifaSugerida; });
     document.querySelectorAll("[data-estado-ubicacion]").forEach(function (aviso) { aviso.textContent = mensaje; });
   }
@@ -4402,6 +4449,7 @@ var TIPS_CAT = {
   var sitioInstalacion = $("instalacion-sitio");
 
   function actualizarInstalacion() {
+    $("actualizacion-instalada").hidden = !instalada || location.protocol === "file:";
     botonInstalar.hidden = !instalacionPendiente || instalada;
     instruccionesInstalacion.hidden = instalada || location.protocol === "file:" || !window.isSecureContext;
     sitioInstalacion.hidden = instalada || !instruccionesInstalacion.hidden;
@@ -6919,13 +6967,63 @@ var TIPS_CAT = {
   iniciarRespaldos();
 
   // PWA: el service worker solo se registra en http(s) (no al abrir el archivo directamente)
-  var hayControlPrevio = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
-  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
-    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").then(function (reg) { reg.update(); }).catch(function () {}); });
+  var admiteActualizacion = !!navigator.serviceWorker && window.isSecureContext && /^https?:$/.test(location.protocol);
+  var registroApp;
+  var botonActualizacion = $("comprobar-actualizacion"), estadoActualizacion = $("estado-actualizacion");
+  function registrarApp() {
+    if (!registroApp) {
+      registroApp = navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).catch(function (error) {
+        registroApp = null;
+        throw error;
+      });
+    }
+    return registroApp;
+  }
+  botonActualizacion.addEventListener("click", async function () {
+    if (!admiteActualizacion) {
+      estadoActualizacion.textContent = "Abre la app desde su sitio web para comprobar actualizaciones.";
+      return;
+    }
+    if (navigator.onLine === false) {
+      estadoActualizacion.textContent = "Sin conexión. Conéctate para comprobar actualizaciones.";
+      return;
+    }
+    botonActualizacion.disabled = true;
+    estadoActualizacion.textContent = "Buscando actualizaciones…";
+    try {
+      var reg = await registrarApp();
+      var activaAntes = reg.active;
+      await reg.update();
+      var nueva = reg.installing || reg.waiting;
+      if (nueva || reg.active !== activaAntes) {
+        estadoActualizacion.textContent = activaAntes ? "Preparando la actualización…" : "Preparando la app para usarla sin conexión…";
+        if (nueva) {
+          await new Promise(function (resolve, reject) {
+            function revisar() {
+              if (nueva.state !== "activated" && nueva.state !== "redundant") { return; }
+              nueva.removeEventListener("statechange", revisar);
+              if (nueva.state === "activated") { resolve(); }
+              else { reject(new Error("La instalación no terminó")); }
+            }
+            nueva.addEventListener("statechange", revisar);
+            revisar();
+          });
+        }
+      }
+      estadoActualizacion.textContent = "La app está al día.";
+    } catch (error) {
+      estadoActualizacion.textContent = "No pudimos comprobar la actualización. Inténtalo de nuevo con conexión.";
+    } finally {
+      botonActualizacion.disabled = false;
+    }
+  });
+  if (admiteActualizacion) {
+    window.addEventListener("load", function () { registrarApp().then(function (reg) { return reg.update(); }).catch(function () {}); });
     // Cuando hay una versión nueva de la app, la recarga una sola vez para usarla
-    var recargada = false;
+    var recargada = false, hayControlPrevio = !!navigator.serviceWorker.controller;
     navigator.serviceWorker.addEventListener("controllerchange", function () {
-      if (recargada || !hayControlPrevio) { return; }
+      if (recargada || !navigator.serviceWorker.controller) { return; }
+      if (!hayControlPrevio) { hayControlPrevio = true; return; }
       recargada = true;
       location.reload();
     });
